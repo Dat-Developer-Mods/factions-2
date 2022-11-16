@@ -1,5 +1,6 @@
 package com.datdeveloper.datfactions.factionData;
 
+import java.util.Map;
 import java.util.UUID;
 
 public class FactionWorld {
@@ -19,5 +20,5 @@ public class FactionWorld {
     // Misc
     public int teleportDelay;
 
-
+    Map<ChunkKey, ChunkClaim> claims;
 }

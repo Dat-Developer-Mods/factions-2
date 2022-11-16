@@ -4,8 +4,6 @@ import com.datdeveloper.datfactions.permissions.FactionRole;
 import net.minecraft.core.BlockPos;
 
 import java.util.List;
-import java.util.Map;
-import java.util.UUID;
 
 public class Faction {
     String name;
@@ -17,12 +15,13 @@ public class Faction {
     BlockPos homeLocation;
 
     List<FactionRole> roles;
+    List<EFactionFlags> flags;
 
     public int getPower() {
         return 0;
     }
 
-    public int getLandWorth() {
+    public int getLandWorthInWorld(int worldId) {
 
         return 0;
     }

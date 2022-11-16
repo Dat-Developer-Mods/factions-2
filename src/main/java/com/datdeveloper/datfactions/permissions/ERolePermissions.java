@@ -1,6 +1,6 @@
 package com.datdeveloper.datfactions.permissions;
 
-public enum RolePermissions {
+public enum ERolePermissions {
     // Player Management
     INVITE,
     UNINVITE,

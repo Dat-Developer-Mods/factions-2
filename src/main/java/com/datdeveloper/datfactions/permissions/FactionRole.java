@@ -5,9 +5,9 @@ import java.util.List;
 public class FactionRole {
     String name;
     boolean administrator;
-    List<RolePermissions> permissions;
+    List<ERolePermissions> permissions;
 
-    public boolean hasPermission(RolePermissions permission) {
+    public boolean hasPermission(ERolePermissions permission) {
         return administrator || permissions.contains(permission);
     }
 }
