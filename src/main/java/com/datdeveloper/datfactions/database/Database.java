@@ -1,4 +1,5 @@
 package com.datdeveloper.datfactions.database;
 
-public class Database {
+public abstract class Database {
+
 }

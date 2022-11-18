@@ -1,4 +1,4 @@
-package com.datdeveloper.datfactions.permissions;
+package com.datdeveloper.datfactions.factionData.permissions;
 
 public enum ERolePermissions {
     // Player Management
@@ -12,19 +12,32 @@ public enum ERolePermissions {
     // Land
     CLAIM,
     UNCLAIM,
+    UNCLAIMALL,
     AUTOCLAIM,
+
+    // Land Access
+    CONTAINERS,
+    BUILD,
 
     // Faction Management
     SETNAME,
     SETMOTD,
+    DISBAND,
 
     // RELATION
     ENEMY,
     ALLY,
     NEUTRAL,
 
+    // Chat
+    FACTIONCHAT,
+    ALLYCHAT,
+
     // Role
-    ROLE,
+    SETROLE,
+    CREATEROLE,
+    REMOVEROLE,
+    MODIFYROLE,
 
     // Misc
     HOME,
