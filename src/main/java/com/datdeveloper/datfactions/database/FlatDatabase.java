@@ -18,6 +18,8 @@ public class FlatDatabase {
     private Gson buildGson() {
         return new GsonBuilder().setPrettyPrinting()
                 .excludeFieldsWithModifiers(Modifier.TRANSIENT)
+                .serializeNulls()
+                .enableComplexMapKeySerialization()
 
                 .registerTypeAdapter(BlockPos.class, new BlockPosAdapter())
                 .registerTypeAdapter(ResourceKey.class, new ResourceKeyAdapter())

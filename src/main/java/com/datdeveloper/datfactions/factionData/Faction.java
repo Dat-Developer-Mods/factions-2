@@ -27,7 +27,6 @@ public class Faction extends DatabaseEntity {
 
     long creationTime;
 
-
     BlockPos homeLocation;
     ResourceKey<Level> homeLevel;
 

@@ -18,6 +18,7 @@ public enum ERolePermissions {
     // Land Access
     CONTAINERS,
     BUILD,
+    INTERACT,
 
     // Faction Management
     SETNAME,

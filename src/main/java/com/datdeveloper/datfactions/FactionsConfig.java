@@ -23,6 +23,7 @@ public class FactionsConfig {
     // Power
     private static ConfigValue<Integer> playerStartingPower;
     private static ConfigValue<Integer> playerMaxPower;
+    private static ConfigValue<Integer> playerMinPower;
     private static ConfigValue<Integer> defaultFactionBasePower;
     private static ConfigValue<Integer> factionMaxPower;
 
@@ -82,6 +83,9 @@ public class FactionsConfig {
             playerMaxPower = builder
                     .comment("The maximum amount of power a player can have")
                     .defineInRange("PlayerMaxPower", 200, 0, Integer.MAX_VALUE);
+            playerMinPower = builder
+                    .comment("The minimum amount of power a player can have")
+                    .define("PlayerMaxPower", 0);
             defaultFactionBasePower = builder
                     .comment("The default amount of power a faction has on top of it's players collective power")
                     .defineInRange("DefaultFactionBasePower", 0, 0, Integer.MAX_VALUE);
@@ -193,6 +197,9 @@ public class FactionsConfig {
 
     public static int getPlayerMaxPower() {
         return playerMaxPower.get();
+    }
+    public static int getPlayerMinPower() {
+        return playerMinPower.get();
     }
 
     public static int getDefaultFactionBasePower() {

@@ -12,18 +12,13 @@ public class BlockPosAdapter extends TypeAdapter<BlockPos> {
     @Override
     public void write(JsonWriter jsonWriter, BlockPos blockPos) throws IOException {
         if (blockPos == null) {
-            jsonWriter.name("blockPos");
             jsonWriter.nullValue();
         } else {
-            jsonWriter
-                    .beginObject()
-                    .name("x")
-                    .value(blockPos.getX())
-                    .name("y")
-                    .value(blockPos.getY())
-                    .name("z")
-                    .value(blockPos.getZ())
-                    .endObject();
+            jsonWriter.beginObject();
+            jsonWriter.name("x").value(blockPos.getX());
+            jsonWriter.name("y").value(blockPos.getY());
+            jsonWriter.name("z").value(blockPos.getZ());
+            jsonWriter.endObject();
         }
     }
 
@@ -32,6 +27,23 @@ public class BlockPosAdapter extends TypeAdapter<BlockPos> {
         if (jsonReader.peek() == JsonToken.NULL) {
             return null;
         }
-        return new BlockPos(jsonReader.nextInt(), jsonReader.nextInt(), jsonReader.nextInt());
+
+        Integer x = null;
+        Integer y = null;
+        Integer z = null;
+
+        jsonReader.beginObject();
+        while (jsonReader.hasNext()) {
+            switch (jsonReader.nextName()) {
+                case "x" -> x = jsonReader.nextInt();
+                case "y" -> y = jsonReader.nextInt();
+                case "z" -> z = jsonReader.nextInt();
+            }
+        }
+        jsonReader.endObject();
+
+        if (x == null || y == null || z == null) return null;
+
+        return new BlockPos(x, y, z);
     }
 }
