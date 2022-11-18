@@ -1,0 +1,68 @@
+name: Release
+
+# Controls when the workflow will run
+on:
+  push:
+    # Pattern matched against refs/tags
+    tags:        
+      - '*'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
+jobs:
+  deployArtifact:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          java-version: 17
+          distribution: 'adopt'
+          cache: gradle
+      - name: deploy
+        env:
+          MAVENREPOUSER: ${{secrets.MAVENREPOUSER}}
+          MAVENREPOPASS: ${{secrets.MAVENREPOPASS}}
+        run: gradle publish
+        shell: bash
+  deployJavadoc:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup Pages
+        uses: actions/configure-pages@v2
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          java-version: 17
+          distribution: 'adopt'
+          cache: gradle
+      - name: Generate Javadoc
+        run: gradle javadoc
+        shell: bash
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v1
+        with:
+          path: './build/docs/javadoc'
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v1
