@@ -4,7 +4,7 @@ import com.datdeveloper.datfactions.FactionsConfig;
 import com.datdeveloper.datfactions.Util.RelationUtil;
 import com.datdeveloper.datfactions.database.DatabaseEntity;
 import com.datdeveloper.datfactions.factionData.permissions.FactionRole;
-import com.datdeveloper.datmoddingapi.util.ChatColours;
+import com.datdeveloper.datmoddingapi.util.DatChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -18,21 +18,63 @@ import java.util.*;
 import java.util.stream.IntStream;
 
 public class Faction extends DatabaseEntity {
+    /**
+     * The faction's ID
+     */
     UUID id;
+
+    /**
+     * The faction's name
+     */
     String name;
+
+    /**
+     * The faction's Description
+     */
     String description;
+
+    /**
+     * The faction's MOTD
+     */
     String motd;
 
+    /**
+     * The amount of bonus power that the faction has
+     */
     int factionPower;
 
+    /**
+     * The timestamp the faction was created
+     */
     long creationTime;
 
+    /**
+     * The block position of the faction's home
+     */
     BlockPos homeLocation;
+
+    /**
+     * The level of the faction's home
+     */
     ResourceKey<Level> homeLevel;
 
-    List<UUID> invites;
+    /**
+     * The invites to players the faction has
+     */
+    List<UUID> playerInvites;
+
+    /**
+     * The roles the faction has, in order from owner to recruit (owner at position 0, recruit in last place)
+     */
     List<FactionRole> roles;
+
+    /**
+     * A set of flags the faction has
+     */
     Set<EFactionFlags> flags;
+    /**
+     * The relations the faction has
+     */
     Map<UUID, FactionRelation> relations;
 
     public Faction(UUID id, String name) {
@@ -48,7 +90,7 @@ public class Faction extends DatabaseEntity {
         this.homeLocation = null;
         this.homeLevel = null;
 
-        this.invites = new ArrayList<>();
+        this.playerInvites = new ArrayList<>();
         this.roles = new ArrayList<>();
         this.flags = new HashSet<>();
         this.relations = new HashMap<>();
@@ -94,10 +136,6 @@ public class Faction extends DatabaseEntity {
     /* Setters
     /* ========================================= */
 
-    /**
-     * Set the name of the faction
-     * @param newName The new name of the faction
-     */
     public void setName(String newName) {
         if (newName.equals(name) || newName.isEmpty()) return;
 
@@ -105,10 +143,6 @@ public class Faction extends DatabaseEntity {
         markDirty();
     }
 
-    /**
-     * Set the description of the faction
-     * @param newDescription The new description of the faction
-     */
     public void setDescription(String newDescription) {
         if (newDescription.equals(description) || newDescription.isEmpty()) return;
 
@@ -116,10 +150,6 @@ public class Faction extends DatabaseEntity {
         markDirty();
     }
 
-    /**
-     * Set the MOTD of the faction
-     * @param newMotd The new MOTD of the faction
-     */
     public void setMotd(String newMotd) {
         if (newMotd.equals(motd) || newMotd.isEmpty()) return;
 
@@ -127,11 +157,6 @@ public class Faction extends DatabaseEntity {
         markDirty();
     }
 
-    /**
-     * Set the new home of the faction
-     * @param newHomeLevel The level that the home is in
-     * @param newHomeLocation The position of the home in the level
-     */
     public void setFactionHome(ResourceKey<Level> newHomeLevel, BlockPos newHomeLocation) {
         this.homeLocation = newHomeLocation;
         this.homeLevel = newHomeLevel;
@@ -161,7 +186,7 @@ public class Faction extends DatabaseEntity {
      * @return True if the faction owns the chunk
      */
     private boolean checkOwnsChunk(ResourceKey<Level> level, ChunkPos chunkPos) {
-        return this.getId().equals(FLevelCollection.getInstance().getFactionLevel(level).getChunkOwner(chunkPos));
+        return this.getId().equals(FLevelCollection.getInstance().getByKey(level).getChunkOwner(chunkPos));
     }
 
     /**
@@ -178,7 +203,7 @@ public class Faction extends DatabaseEntity {
      * @return the total worth of all the faction's chunks
      */
     public int getTotalLandWorth() {
-        return FLevelCollection.getInstance().getLevels().values().stream()
+        return FLevelCollection.getInstance().getAll().values().stream()
                 .mapToInt(factionLevel -> factionLevel.getClaimsWorth(this.getId()))
                 .sum();
     }
@@ -195,7 +220,7 @@ public class Faction extends DatabaseEntity {
      * @return the owner role of the faction
      */
     public FactionRole getOwnerRole() {
-        return roles.get(roles.size() - 1);
+        return roles.get(0);
     }
 
     /**
@@ -203,7 +228,7 @@ public class Faction extends DatabaseEntity {
      * @return The recruit role of the faction
      */
     public FactionRole getRecruitRole() {
-        return roles.get(0);
+        return roles.get(roles.size() - 1);
     }
 
     /**
@@ -407,11 +432,16 @@ public class Faction extends DatabaseEntity {
     /* Misc
     /* ========================================= */
 
+    /**
+     * Inform a faction about a relation that's just been created
+     * @param otherFaction The faction that created the relation
+     * @param fromRelation The relation that's been created
+     */
     public void informRelation(Faction otherFaction, EFactionRelation fromRelation) {
         FactionRelation toRelation = getRelation(otherFaction);
         EFactionRelation toRelationType = toRelation != null ? toRelation.relation : EFactionRelation.NEUTRAL;
         MutableComponent message = MutableComponent.create(RelationUtil.wrapFactionName(this, otherFaction).getContents());
-        message.append(ChatColours.TextColour.INFO.toString());
+        message.append(DatChatFormatting.TextColour.INFO.toString());
         switch (fromRelation){
             case ALLY -> {
                 message.append(" has declared you an ally, ");
@@ -423,7 +453,7 @@ public class Faction extends DatabaseEntity {
                         message.append("you still have a truce with them and are prevented from dealing pvp damage with each other, ");
                     case NEUTRAL:
                         message.append("you can add them as an ally with")
-                                .append(ChatColours.TextColour.COMMAND.toString())
+                                .append(DatChatFormatting.TextColour.COMMAND.toString())
                                 .append("/faction ally ")
                                 .append(RelationUtil.wrapFactionName(this, otherFaction));
                         break;
@@ -443,7 +473,7 @@ public class Faction extends DatabaseEntity {
                         break;
                     case NEUTRAL:
                         message.append("you can also declare a truce with them with ")
-                                .append(ChatColours.TextColour.COMMAND.toString())
+                                .append(DatChatFormatting.TextColour.COMMAND.toString())
                                 .append("/faction truce ")
                                 .append(RelationUtil.wrapFactionName(this, otherFaction));
                         break;
@@ -462,7 +492,7 @@ public class Faction extends DatabaseEntity {
                         message.append("you are currently at truce with them, but are not protected from pvp with them ");
                     case NEUTRAL:
                         message.append("you can also declare them as enemies with them with ")
-                                .append(ChatColours.TextColour.COMMAND.toString())
+                                .append(DatChatFormatting.TextColour.COMMAND.toString())
                                 .append("/faction enemy ")
                                 .append(RelationUtil.wrapFactionName(this, otherFaction));
                         break;
@@ -487,6 +517,10 @@ public class Faction extends DatabaseEntity {
         sendFactionWideMessage(message);
     }
 
+    /**
+     * Send a message to every member in the faction
+     * @param message The message to send
+     */
     public void sendFactionWideMessage(Component message) {
         getPlayers().forEach(player -> {
             ServerPlayer serverPlayer = player.getServerPlayer();
@@ -494,10 +528,14 @@ public class Faction extends DatabaseEntity {
         });
     }
 
-    public String getChatSummary() {
+    /**
+     * Get a summary of the faction for chat
+     * @return A chat component with the message
+     */
+    public Component getChatSummary() {
         StringBuilder message = new StringBuilder();
 
-        return "";
+        return Component.literal("");
     }
 
     /* ========================================= */
@@ -506,6 +544,7 @@ public class Faction extends DatabaseEntity {
 
     @Override
     public boolean isDirty() {
+        // Account for dirty roles
         return super.isDirty() || roles.stream()
                 .map(DatabaseEntity::isDirty)
                 .reduce(Boolean.FALSE, Boolean::logicalOr);

@@ -1,8 +1,12 @@
 package com.datdeveloper.datfactions.factionData;
 
+/**
+ * Flags that modify the behaviour of a faction
+ */
 public enum EFactionFlags {
     OPEN(false, "Allows people to join the faction without an invite"),
     FRIENDLYFIRE(false, "Allows faction members to harm eachother"),
+    TITLED(false, "Shows faction member's role title in their chat messages"),
     PROTECTED(true, "The members of the faction are protected from harm on their own territory"),
     NOPOWERLOSS(true, "You don't lose power when you die in this zone"),
     PERMANENT(true, "The faction cannot be deleted"),

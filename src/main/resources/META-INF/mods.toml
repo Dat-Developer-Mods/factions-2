@@ -66,9 +66,17 @@ ordering = "NONE"
 side = "BOTH"
 
 [[dependencies.datfactions]]
-modIf = "datmoddingapi"
+modId = "datmoddingapi"
 mandatory = true
 
 versionRange = "[${minecraftVersion}-${datModdingAPIVersion},)"
 ordering = "NONE"
-size = "BOTH"
+side = "BOTH"
+
+[[dependencies.datfactions]]
+modId = "infiniverse"
+mandatory = false
+
+versionRange = "[${infiniverseVersion},)"
+ordering = "NONE"
+side = "BOTH"

@@ -2,6 +2,10 @@ package com.datdeveloper.datfactions.factionData;
 
 import net.minecraft.ChatFormatting;
 
+/**
+ * Represents the relation from one faction to another
+ * Also stores the colour representing the relation
+ */
 public enum EFactionRelation {
     /**
      * Ally chat and no PVP
@@ -24,13 +28,12 @@ public enum EFactionRelation {
      */
     SELF(ChatFormatting.DARK_GREEN);
 
-    final ChatFormatting formatting;
+    /**
+     * The colour representing the relation
+     */
+    public final ChatFormatting formatting;
 
     EFactionRelation(ChatFormatting formatting) {
         this.formatting = formatting;
-    }
-
-    public ChatFormatting getFormatting() {
-        return formatting;
     }
 }

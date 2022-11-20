@@ -8,17 +8,54 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 
+/**
+ * The representation of a player
+ */
 public class FactionPlayer extends DatabaseEntity {
+    /**
+     * The id of the player
+     */
     UUID id;
+
+    /**
+     * The name of the player the last time they logged in
+     */
     String lastName;
+
+    /**
+     * The last time the player was active on the server
+     */
     long lastActiveTime;
 
+    /**
+     * The amount of power the player has
+     */
     int power;
+
+    /**
+     * The maximum amount of power the player can have
+     */
     int maxPower;
 
+    /**
+     * The ID of the faction the player belongs to
+     */
     UUID factionId;
+
+    /**
+     * The ID of the role of the player in its faction
+     */
     UUID role;
+
+    /**
+     * Whether the player is currently autoclaiming
+     */
     transient boolean autoClaim = false;
+
+    /**
+     * The chat mode the player is using
+     */
+    transient EFPlayerChatMode chatMode = EFPlayerChatMode.PUBLIC;
 
     public FactionPlayer(UUID id, String lastName) {
         this.id = id;
@@ -75,7 +112,7 @@ public class FactionPlayer extends DatabaseEntity {
 
     public Faction getFaction() {
         if (!hasFaction()) return null;
-        return FactionCollection.getInstance().getByID(factionId);
+        return FactionCollection.getInstance().getByKey(factionId);
     }
 
     public UUID getRole() {

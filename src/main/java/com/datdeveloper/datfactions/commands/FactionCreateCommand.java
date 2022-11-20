@@ -4,13 +4,12 @@ import com.datdeveloper.datfactions.Datfactions;
 import com.datdeveloper.datfactions.FactionsConfig;
 import com.datdeveloper.datfactions.Util.RelationUtil;
 import com.datdeveloper.datfactions.api.events.CreateFactionEvent;
-import com.datdeveloper.datfactions.database.FlatDatabase;
 import com.datdeveloper.datfactions.factionData.FPlayerCollection;
 import com.datdeveloper.datfactions.factionData.Faction;
 import com.datdeveloper.datfactions.factionData.FactionCollection;
 import com.datdeveloper.datfactions.factionData.FactionPlayer;
 import com.datdeveloper.datmoddingapi.permissions.DatPermissions;
-import com.datdeveloper.datmoddingapi.util.ChatColours;
+import com.datdeveloper.datmoddingapi.util.DatChatFormatting;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -51,16 +50,16 @@ public class FactionCreateCommand extends BaseFactionCommand{
                                 if (event.isCanceled()) return 0;
 
                                 Faction newFaction = FactionCollection.getInstance().createFaction(event.getName());
-                                new FlatDatabase().saveFaction(newFaction);
 
                                 c.getSource().sendSuccess(MutableComponent.create(ComponentContents.EMPTY)
-                                        .append(ChatColours.TextColour.INFO + "Successfully created faction ")
+                                        .append(DatChatFormatting.TextColour.INFO + "Successfully created faction ")
                                         .append(RelationUtil.wrapFactionName(newFaction, newFaction))
-                                        .append(ChatColours.TextColour.INFO + "\nAdd a description with ")
+                                        .append(DatChatFormatting.TextColour.INFO + "\nAdd a description with ")
                                         .append(wrapCommand("/f desc <description>", "/f desc "))
-                                        .append(ChatColours.TextColour.INFO + "\nand invite people using ")
+                                        .append(DatChatFormatting.TextColour.INFO + "\nand invite people using ")
                                         .append(wrapCommand("/f invite <player name>", "/f invite "))
                                 , false);
+
                                 return 1;
                             })
                 ).executes(c -> {

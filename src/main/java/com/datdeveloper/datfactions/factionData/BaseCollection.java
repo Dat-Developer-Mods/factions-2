@@ -5,15 +5,31 @@ import com.datdeveloper.datfactions.database.DatabaseEntity;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
-public abstract class BaseCollection<CollectionObject extends DatabaseEntity> {
-    Map<UUID, CollectionObject> map = new HashMap<>();
+/**
+ * The baseclass for FactionObject collections
+ * @param <Key> The key type for the store
+ * @param <CollectionObject> The object being stored in the database
+ */
+public abstract class BaseCollection<Key, CollectionObject extends DatabaseEntity> {
+    Map<Key, CollectionObject> map = new HashMap<>();
     boolean setup = false;
 
-    CollectionObject getByID(UUID id) {
-        return map.get(id);
+    public Map<Key, CollectionObject> getAll() {
+        return map;
     }
 
+    /**
+     * Get an object from the collection by its key
+     * @param key the key of the CollectionObject
+     * @return the object in the collection
+     */
+    CollectionObject getByKey(Key key) {
+        return map.get(key);
+    }
+
+    /**
+     * Initialise the collection
+     */
     abstract void initialise();
 }

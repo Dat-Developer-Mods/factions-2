@@ -1,17 +1,16 @@
 package com.datdeveloper.datfactions.factionData;
 
+import com.datdeveloper.datfactions.database.Database;
 import com.mojang.logging.LogUtils;
 import net.minecraft.server.level.ServerPlayer;
 import org.slf4j.Logger;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 import java.util.UUID;
 
-public class FPlayerCollection {
+public class FPlayerCollection extends BaseCollection<UUID, FactionPlayer> {
     Logger logger = LogUtils.getLogger();
 
-    Map<UUID, FactionPlayer> players;
     FactionPlayer template;
 
     // Singleton
@@ -21,12 +20,11 @@ public class FPlayerCollection {
     }
 
     FPlayerCollection() {
-        players = new HashMap<>();
         template = new FactionPlayer(UUID.randomUUID(), "null");
     }
 
     public boolean isPlayerRegistered(UUID player) {
-        return players.containsKey(player);
+        return map.containsKey(player);
     }
 
     public boolean isPlayerRegistered(ServerPlayer player) {
@@ -35,20 +33,28 @@ public class FPlayerCollection {
 
     public void registerNewPlayer(ServerPlayer player) {
         FactionPlayer newPlayer = new FactionPlayer(player, template);
-        players.put(player.getUUID(), newPlayer);
+        map.put(player.getUUID(), newPlayer);
         FactionIndex.getInstance().updatePlayer(newPlayer);
         logger.info("Registered new factions player: " + player.getName().getString());
     }
 
-    public FactionPlayer getPlayer(UUID playerId) {
-        return players.get(playerId);
-    }
-
     public FactionPlayer getPlayer(ServerPlayer player) {
-        return getPlayer(player.getUUID());
+        return this.getByKey(player.getUUID());
     }
 
-    public Map<UUID, FactionPlayer> getPlayers() {
-        return this.players;
+    @Override
+    public void initialise() {
+        List<UUID> storedPlayers = Database.instance.getAllStoredPlayers();
+        for (UUID playerId : storedPlayers) {
+            FactionPlayer player = Database.instance.loadPlayer(playerId);
+            if (player == null) continue;
+
+            if (player.hasFaction() && FactionCollection.getInstance().getByKey(player.factionId) == null) {
+                logger.warn("Player " + player.lastName + " (" + player.id + ") belongs to a faction that no longer exists, they will be corrected to no faction");
+                player.setFaction(null, null);
+            }
+
+            map.put(playerId, player);
+        }
     }
 }

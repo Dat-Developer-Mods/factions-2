@@ -25,6 +25,7 @@ public class BlockPosAdapter extends TypeAdapter<BlockPos> {
     @Override
     public BlockPos read(JsonReader jsonReader) throws IOException {
         if (jsonReader.peek() == JsonToken.NULL) {
+            jsonReader.nextNull();
             return null;
         }
 

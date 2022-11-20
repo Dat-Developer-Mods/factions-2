@@ -42,7 +42,7 @@ public class FactionsConfig {
     private static ConfigValue<Float> bonusPowerFlagMultiplier;
 
     // Misc
-    private static ConfigValue<Boolean> factionNameInChat;
+    private static ConfigValue<Boolean> useFactionChat;
     private static ConfigValue<Integer> teleportDelay;
     private static Map<EFactionFlags, ConfigValue<Boolean>> flagBlacklist = new HashMap<>();
 
@@ -139,9 +139,9 @@ public class FactionsConfig {
 
         builder.push("Miscellaneous");
         {
-            factionNameInChat = builder
-                    .comment("Whether to include the players faction as a part of their chat messages")
-                    .define("FactionNameInChat", true);
+            useFactionChat = builder
+                    .comment("Allow Enable the faction chat system, allows players to talk with just their faction")
+                    .define("UseFactionChat", true);
 
             teleportDelay = builder
                     .comment("The amount of time a player must stand still before they teleport to home")
@@ -250,8 +250,8 @@ public class FactionsConfig {
         return bonusPowerFlagMultiplier.get();
     }
 
-    public static boolean getFactionNameInChat() {
-        return factionNameInChat.get();
+    public static boolean getUseFactionChat() {
+        return useFactionChat.get();
     }
 
     public static int getTeleportDelay() {

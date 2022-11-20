@@ -6,9 +6,23 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
+/**
+ * A role inside the faction, representing the permissions a player has in the faction
+ */
 public class FactionRole extends DatabaseEntity {
+    /**
+     * The role's ID
+     */
     UUID id;
+
+    /**
+     * The name of the role
+     */
     String name;
+
+    /**
+     * If the role has total permissions on the faction
+     */
     boolean administrator;
     Set<ERolePermissions> permissions;
 

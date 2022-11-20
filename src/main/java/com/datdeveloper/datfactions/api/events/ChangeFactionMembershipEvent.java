@@ -11,15 +11,9 @@ import java.util.stream.Stream;
 
 /**
  * Fired when a player changes faction
- * Can only be cancelled if the reason isn't CREATE, DISBAND, NEWPLAYER, or ADMIN
- * Changes to oldFaction and newFaction will be reflected
+ * Changes to newFaction and newRole will only be reflected, and the event can only be cancelled, if the reason isn't CREATE, DISBAND, NEWPLAYER, or ADMIN
  */
 public class ChangeFactionMembershipEvent extends FactionPlayerEvent {
-    /**
-     * The faction that the player is leaving
-     */
-    @Nullable
-    Faction oldFaction;
 
     /**
      * The faction that the player is joining
@@ -36,18 +30,13 @@ public class ChangeFactionMembershipEvent extends FactionPlayerEvent {
     /**
      * The reason the player changed factions
      */
-    EChangeFactionReason reason;
+    final EChangeFactionReason reason;
 
-    public ChangeFactionMembershipEvent(@Nullable CommandSource instigator, @NotNull FactionPlayer player, @Nullable Faction oldFaction, @Nullable Faction newFaction, FactionRole newRole, EChangeFactionReason reason) {
+    public ChangeFactionMembershipEvent(@Nullable CommandSource instigator, @NotNull FactionPlayer player, @Nullable Faction newFaction, @Nullable FactionRole newRole, EChangeFactionReason reason) {
         super(instigator, player);
-        this.oldFaction = oldFaction;
         this.newFaction = newFaction;
         this.newRole = newRole;
         this.reason = reason;
-    }
-
-    public @Nullable Faction getOldFaction() {
-        return oldFaction;
     }
 
     public @Nullable Faction getNewFaction() {

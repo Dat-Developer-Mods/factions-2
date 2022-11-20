@@ -25,6 +25,7 @@ public class ResourceKeyAdapter extends TypeAdapter<ResourceKey<?>> {
     @Override
     public ResourceKey<?> read(JsonReader jsonReader) throws IOException {
         if (jsonReader.peek() == JsonToken.NULL) {
+            jsonReader.nextNull();
             return null;
         }
 

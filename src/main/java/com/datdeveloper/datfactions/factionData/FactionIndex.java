@@ -2,9 +2,14 @@ package com.datdeveloper.datfactions.factionData;
 
 import java.util.*;
 
+/**
+ * A useful mapping of factions to players and players to factions
+ */
 public class FactionIndex {
     Map<UUID, Faction> playerToFactionMap = new HashMap<>();
     Map<UUID, Set<FactionPlayer>> factionToPlayerMap = new WeakHashMap<>();
+
+    boolean initialised = false;
 
 
     private final static FactionIndex instance = new FactionIndex();
@@ -26,12 +31,13 @@ public class FactionIndex {
      * @param player the player to update
      */
     public void updatePlayer(FactionPlayer player) {
+        if (!initialised) return;
         Faction previousFaction = playerToFactionMap.get(player.getId());
 
         if (previousFaction != null) factionToPlayerMap.get(previousFaction.getId()).remove(player);
         if (player.getFactionId() != null) factionToPlayerMap.get(player.getFactionId()).add(player);
 
-        playerToFactionMap.put(player.getId(), player.getFactionId() != null ? FactionCollection.getInstance().getByID(player.getFactionId()) : null);
+        playerToFactionMap.put(player.getId(), player.getFactionId() != null ? FactionCollection.getInstance().getByKey(player.getFactionId()) : null);
     }
 
     /**

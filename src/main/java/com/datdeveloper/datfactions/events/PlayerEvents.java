@@ -16,6 +16,10 @@ import org.slf4j.Logger;
 @Mod.EventBusSubscriber(modid = Datfactions.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class PlayerEvents {
     private static final Logger logger = LogUtils.getLogger();
+
+    /**
+     * Setup player if they're new, register power gain event
+     */
     @SubscribeEvent
     public static void playerJoin(PlayerEvent.PlayerLoggedInEvent event) {
         if (!(event.getEntity() instanceof ServerPlayer)) {
@@ -30,11 +34,17 @@ public class PlayerEvents {
         playerCollection.registerNewPlayer(player);
     }
 
+    /**
+     * Force save player data, deregister power gain event
+     */
     @SubscribeEvent
     public static void playerLeave(PlayerEvent.PlayerLoggedOutEvent event) {
 
     }
 
+    /**
+     * Block damage if the player shares a faction or alliance
+     */
     @SubscribeEvent
     public static void playerDamaged(LivingDamageEvent event) {
         if (!(event.getEntity() instanceof ServerPlayer)) {
@@ -46,6 +56,9 @@ public class PlayerEvents {
         ServerPlayer source = (ServerPlayer) event.getSource().getEntity();
     }
 
+    /**
+     * Remove Power
+     */
     @SubscribeEvent
     public static void playerKilled(LivingDeathEvent event) {
         if (!(event.getEntity() instanceof ServerPlayer)) {
@@ -57,6 +70,9 @@ public class PlayerEvents {
         ServerPlayer source = (ServerPlayer) event.getSource().getEntity();
     }
 
+    /**
+     * Send enter border message
+     */
     @SubscribeEvent
     public static void enterChunk(EntityEvent.EnteringSection event) {
         if (!(event.getEntity() instanceof ServerPlayer)) return;
@@ -66,6 +82,9 @@ public class PlayerEvents {
 
     }
 
+    /**
+     * Handle faction chat
+     */
     @SubscribeEvent
     public static void playerChat(ServerChatEvent.Submitted event) {
         logger.info(event.getMessage().toString());

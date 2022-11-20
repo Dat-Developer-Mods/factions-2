@@ -1,16 +1,17 @@
 package com.datdeveloper.datfactions.factionData;
 
 import com.datdeveloper.datfactions.api.events.ChangeFactionMembershipEvent;
+import com.datdeveloper.datfactions.database.Database;
 import com.datdeveloper.datfactions.factionData.permissions.FactionRole;
 import net.minecraftforge.common.MinecraftForge;
 
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
-public class FactionCollection extends BaseCollection<Faction>{
+public class FactionCollection extends BaseCollection<UUID, Faction>{
 
     Faction template;
-
     Faction WILDERNESS;
     Faction SAFEZONE;
 
@@ -34,7 +35,7 @@ public class FactionCollection extends BaseCollection<Faction>{
         FactionIndex.getInstance().deleteFaction(factionId);
 
         for (FactionPlayer player : players) {
-            ChangeFactionMembershipEvent event = new ChangeFactionMembershipEvent(null, player, faction, null, null, ChangeFactionMembershipEvent.EChangeFactionReason.DISBAND);
+            ChangeFactionMembershipEvent event = new ChangeFactionMembershipEvent(null, player, null, null, ChangeFactionMembershipEvent.EChangeFactionReason.DISBAND);
             MinecraftForge.EVENT_BUS.post(event);
 
             Faction newFaction = event.getNewFaction();
@@ -44,7 +45,13 @@ public class FactionCollection extends BaseCollection<Faction>{
     }
 
     @Override
-    void initialise() {
-
+    public void initialise() {
+        List<UUID> storedFactions = Database.instance.getAllStoredFactions();
+        for (UUID factionId : storedFactions) {
+            Faction faction = Database.instance.loadFaction(factionId);
+            if (faction != null) {
+                map.put(factionId, faction);
+            }
+        }
     }
 }

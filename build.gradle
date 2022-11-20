@@ -6,7 +6,7 @@ plugins {
 
 
 group = 'com.datdeveloper'
-version = "${minecraftVersion}-1.0.0"
+version = "${minecraftVersion}-1.1.0"
 
 java {
     archivesBaseName = 'datfactions'
@@ -103,6 +103,7 @@ sourceSets.main.resources { srcDir 'src/generated/resources' }
 repositories {
     maven { url "https://libraries.minecraft.net" }
     maven { url "https://maven.datdeveloper.com/releases" }
+    maven { url "https://cubicinterpolation.net/maven/" }
 }
 
 dependencies {
@@ -112,6 +113,8 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.10'
 
     implementation "com.datdeveloper:datmoddingapi:${datModdingAPIVersion}"
+
+    implementation fg.deobf("commoble.infiniverse:infiniverse-1.19:${infiniverseVersion}")
 }
 
 // Example for how to get properties into the manifest for reading at runtime.
