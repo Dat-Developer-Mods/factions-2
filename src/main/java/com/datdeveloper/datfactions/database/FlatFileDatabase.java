@@ -20,6 +20,7 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Reader;
 import java.lang.reflect.Modifier;
@@ -46,7 +47,6 @@ public class FlatDatabase extends Database {
     private Gson buildGson() {
         return new GsonBuilder().setPrettyPrinting()
                 .excludeFieldsWithModifiers(Modifier.TRANSIENT)
-                .serializeNulls()
                 .enableComplexMapKeySerialization()
 
                 .registerTypeAdapter(BlockPos.class, new BlockPosAdapter())
@@ -55,12 +55,33 @@ public class FlatDatabase extends Database {
                 .create();
     }
 
+    public FlatDatabase(Path savePath) {
+        this.savePath = savePath;
+        gson = buildGson();
+
+        setupPaths();
+    }
+
+    /**
+     * Get the path to the Faction data
+     * @return the path to the Faction data
+     */
     private Path getFactionsPath() {
         return savePath.resolve("factions");
     }
+
+    /**
+     * Get the path to the FactionPlayer data
+     * @return the path to the FactionPlayer data
+     */
     private Path getPlayersPath() {
         return savePath.resolve("players");
     }
+
+    /**
+     * Get the path to the FactionLevel data
+     * @return the path to the FactionLevel data
+     */
     private Path getLevelsPath() {
         return savePath.resolve("levels");
     }
@@ -80,6 +101,9 @@ public class FlatDatabase extends Database {
         }
     }
 
+    /**
+     * Ensure all the paths exist
+     */
     private void setupPaths() {
         if(!Files.exists(savePath)) {
             try {
@@ -93,29 +117,34 @@ public class FlatDatabase extends Database {
         }
     }
 
-    public FlatDatabase(Path savePath) {
-        this.savePath = savePath;
-        gson = buildGson();
-
-        setupPaths();
-    }
-
-    private void writeEntity() {
-
-    }
-
-    public void saveFaction(Faction faction) {
-
+    @Override
+    public void nukeDatabase() {
+        try {
+            Files.deleteIfExists(savePath);
+        } catch (IOException e) {
+            logger.warn("Failed to nuke Flatfile database");
+        }
     }
 
     @Override
     public void storeFaction(Faction faction) {
+        Path filePath = getFactionsPath().resolve(faction.getId() + ".json");
 
+        try (FileWriter writer = new FileWriter(filePath.toFile())) {
+            gson.toJson(faction, writer);
+        } catch (IOException e) {
+            logger.error("Failed to write faction " + faction.getName() + " (" + faction.getId() + ") to disk, the latest changes will disappear after a server reload");
+        }
     }
 
     @Override
     public void deleteFaction(Faction faction) {
-
+        Path filePath = getFactionsPath().resolve(faction.getId() + ".json");
+        try {
+            Files.deleteIfExists(filePath);
+        } catch (IOException e) {
+            logger.error("Failed to delete faction " + faction.getName() + " (" + faction.getId() + ") from the disk, they may still be loaded next server restart");
+        }
     }
 
     @Override
@@ -152,7 +181,13 @@ public class FlatDatabase extends Database {
 
     @Override
     public void storeFactionTemplate(Faction template) {
+        Path filePath = getFactionsPath().resolve("faction-template.json");
 
+        try (FileWriter writer = new FileWriter(filePath.toFile())) {
+            gson.toJson(template, writer);
+        } catch (IOException e) {
+            logger.error("Failed to write faction template to disk");
+        }
     }
 
 
@@ -163,12 +198,23 @@ public class FlatDatabase extends Database {
 
     @Override
     public void storePlayer(FactionPlayer player) {
+        Path filePath = getPlayersPath().resolve(player.getId() + ".json");
 
+        try (FileWriter writer = new FileWriter(filePath.toFile())) {
+            gson.toJson(player, writer);
+        } catch (IOException e) {
+            logger.error("Failed to write player " + player.getLastName() + " (" + player.getId() + ") to disk, the latest changes will disappear after a server reload");
+        }
     }
 
     @Override
     public void deletePlayer(FactionPlayer player) {
-
+        Path filePath = getPlayersPath().resolve(player.getId() + ".json");
+        try {
+            Files.deleteIfExists(filePath);
+        } catch (IOException e) {
+            logger.error("Failed to delete player " + player.getLastName() + " (" + player.getId() + ") from the disk, they may still be loaded next server restart");
+        }
     }
 
     @Override
@@ -194,12 +240,23 @@ public class FlatDatabase extends Database {
 
     @Override
     public void storeLevel(FactionLevel level) {
+        Path filePath = getPlayersPath().resolve(level.getId() + ".json");
 
+        try (FileWriter writer = new FileWriter(filePath.toFile())) {
+            gson.toJson(level, writer);
+        } catch (IOException e) {
+            logger.error("Failed to write level " + level.getId() + " to disk, the latest changes will disappear after a server reload");
+        }
     }
 
     @Override
     public void deleteLevel(FactionLevel level) {
-
+        Path filePath = getLevelsPath().resolve(level.getId() + ".json");
+        try {
+            Files.deleteIfExists(filePath);
+        } catch (IOException e) {
+            logger.error("Failed to delete level data for " + level.getId());
+        }
     }
 
     @Override
@@ -246,13 +303,19 @@ public class FlatDatabase extends Database {
             return gson.fromJson(reader, FactionLevelSettings.class);
         } catch (JsonSyntaxException e) {
             logger.warn("Failed to parse " + filePath + " assuming corrupt and discarding");
-        } catch (IOException e) {}
+        } catch (IOException ignored) {}
 
         return null;
     }
 
     @Override
     public void storeDefaultSettings(FactionLevelSettings defaultSettings) {
+        Path filePath = getPlayersPath().resolve("default-level-settings.json");
 
+        try (FileWriter writer = new FileWriter(filePath.toFile())) {
+            gson.toJson(defaultSettings, writer);
+        } catch (IOException e) {
+            logger.error("Failed to write default level settings to disk, the latest changes will disappear after a server reload");
+        }
     }
 }
