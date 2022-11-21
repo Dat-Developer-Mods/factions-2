@@ -1,6 +1,5 @@
 package com.datdeveloper.datfactions.factionData;
 
-import com.datdeveloper.datfactions.FactionsConfig;
 import com.datdeveloper.datfactions.Util.RelationUtil;
 import com.datdeveloper.datfactions.database.DatabaseEntity;
 import com.datdeveloper.datfactions.factionData.permissions.FactionRole;
@@ -83,7 +82,7 @@ public class Faction extends DatabaseEntity {
         this.description = "";
         this.motd = null;
 
-        this.factionPower = FactionsConfig.getDefaultFactionBasePower();
+        this.factionPower = 0;
 
         this.creationTime = System.currentTimeMillis();
 

@@ -21,10 +21,8 @@ public class FactionsConfig {
     private static ConfigValue<Boolean> removePlayerOnBan;
 
     // Power
-    private static ConfigValue<Integer> playerStartingPower;
     private static ConfigValue<Integer> playerMaxPower;
     private static ConfigValue<Integer> playerMinPower;
-    private static ConfigValue<Integer> defaultFactionBasePower;
     private static ConfigValue<Integer> factionMaxPower;
 
     private static ConfigValue<Float> powerLandMultiplier;
@@ -44,7 +42,7 @@ public class FactionsConfig {
     // Misc
     private static ConfigValue<Boolean> useFactionChat;
     private static ConfigValue<Integer> teleportDelay;
-    private static Map<EFactionFlags, ConfigValue<Boolean>> flagBlacklist = new HashMap<>();
+    private static final Map<EFactionFlags, ConfigValue<Boolean>> flagBlacklist = new HashMap<>();
 
 
     FactionsConfig(ForgeConfigSpec.Builder builder) {
@@ -77,18 +75,12 @@ public class FactionsConfig {
 
         builder.push("Power");
         {
-            playerStartingPower = builder
-                    .comment("The amount of power a player starts with")
-                    .defineInRange("PlayerStartingPower", 20, 0, Integer.MAX_VALUE);
             playerMaxPower = builder
                     .comment("The maximum amount of power a player can have")
                     .defineInRange("PlayerMaxPower", 200, 0, Integer.MAX_VALUE);
             playerMinPower = builder
                     .comment("The minimum amount of power a player can have")
                     .define("PlayerMaxPower", 0);
-            defaultFactionBasePower = builder
-                    .comment("The default amount of power a faction has on top of it's players collective power")
-                    .defineInRange("DefaultFactionBasePower", 0, 0, Integer.MAX_VALUE);
             factionMaxPower = builder
                     .comment("The maximum amount of power a faction can have")
                     .defineInRange("FactionMaxPower", 0, 0, Integer.MAX_VALUE);
@@ -191,19 +183,11 @@ public class FactionsConfig {
         return removePlayerOnBan.get();
     }
 
-    public static int getPlayerStartingPower() {
-        return playerStartingPower.get();
-    }
-
     public static int getPlayerMaxPower() {
         return playerMaxPower.get();
     }
     public static int getPlayerMinPower() {
         return playerMinPower.get();
-    }
-
-    public static int getDefaultFactionBasePower() {
-        return defaultFactionBasePower.get();
     }
 
     public static int getFactionMaxPower() {

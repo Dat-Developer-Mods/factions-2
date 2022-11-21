@@ -1,6 +1,5 @@
 package com.datdeveloper.datfactions.factionData;
 
-import com.datdeveloper.datfactions.FactionsConfig;
 import com.datdeveloper.datfactions.database.DatabaseEntity;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.server.ServerLifecycleHooks;
@@ -62,7 +61,7 @@ public class FactionPlayer extends DatabaseEntity {
         this.lastName = lastName;
         this.lastActiveTime = System.currentTimeMillis();
 
-        this.maxPower = FactionsConfig.getPlayerStartingPower();
+        this.maxPower = 20;
         this.power = this.maxPower;
         this.factionId = null;
         this.role = null;
