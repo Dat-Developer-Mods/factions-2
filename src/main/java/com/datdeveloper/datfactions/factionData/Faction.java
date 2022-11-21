@@ -90,8 +90,35 @@ public class Faction extends DatabaseEntity {
         this.homeLevel = null;
 
         this.playerInvites = new ArrayList<>();
-        this.roles = new ArrayList<>();
+        this.roles = FactionRole.getDefaultRoles();
         this.flags = new HashSet<>();
+        this.relations = new HashMap<>();
+    }
+
+    public Faction(UUID id, String name, Faction template) {
+        this.id = id;
+        this.name = name;
+        this.description = "";
+        this.motd = null;
+
+        this.factionPower = template.factionPower;
+
+        this.creationTime = System.currentTimeMillis();
+
+        this.homeLocation = template.homeLocation;
+        this.homeLevel = template.homeLevel;
+
+        this.playerInvites = new ArrayList<>();
+
+        // Deep Copy roles
+        this.roles = new ArrayList<>();
+        for (FactionRole role : template.roles) {
+            this.roles.add(new FactionRole(role));
+        }
+
+        this.flags = new HashSet<>(template.flags);
+
+        // Don't copy relations
         this.relations = new HashMap<>();
     }
 

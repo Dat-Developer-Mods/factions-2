@@ -48,7 +48,7 @@ public enum ERolePermissions {
     HOME("Allows the player to go to the faction's home"),
     SETHOME("Allows the player to set the faction's home");
 
-    String description;
+    public final String description;
 
     ERolePermissions(String description) {
         this.description = description;

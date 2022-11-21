@@ -29,6 +29,12 @@ public abstract class Database {
         else throw new NotImplementedException();
     }
 
+    /**
+     * Delete all data in the database
+     * Mainly for testing
+     */
+    public abstract void nukeDatabase();
+
     /* ========================================= */
     /* Factions
     /* ========================================= */
@@ -95,6 +101,19 @@ public abstract class Database {
      */
     @Nullable
     public abstract FactionPlayer loadPlayer(UUID playerId);
+
+    /**
+     * Load the player template
+     * @return the player template
+     */
+    @Nullable
+    public abstract FactionPlayer loadPlayerTemplate();
+
+    /**
+     * Store the player template
+     * @param template the template to store
+     */
+    public abstract void storePlayerTemplate(FactionPlayer template);
 
     /**
      * Get a list of all the players in the store

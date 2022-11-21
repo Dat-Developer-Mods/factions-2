@@ -5,7 +5,6 @@ import com.datdeveloper.datfactions.database.Database;
 import com.datdeveloper.datfactions.factionData.permissions.FactionRole;
 import net.minecraftforge.common.MinecraftForge;
 
-import javax.xml.crypto.Data;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -22,7 +21,7 @@ public class FactionCollection extends BaseCollection<UUID, Faction>{
 
     public Faction createFaction(String name) {
         UUID factionId = UUID.randomUUID();
-        Faction newFaction = new Faction(factionId, name);
+        Faction newFaction = new Faction(factionId, name, template);
 
         FactionIndex.getInstance().addFaction(newFaction);
 
@@ -83,10 +82,5 @@ public class FactionCollection extends BaseCollection<UUID, Faction>{
             Database.instance.storeFaction(WILDERNESS);
             map.put(WildernessId, WILDERNESS);
         }
-    }
-
-    @Override
-    public void uninitialise() {
-
     }
 }

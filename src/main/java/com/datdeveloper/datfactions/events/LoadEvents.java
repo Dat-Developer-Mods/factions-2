@@ -2,7 +2,7 @@ package com.datdeveloper.datfactions.events;
 
 import com.datdeveloper.datfactions.Datfactions;
 import com.datdeveloper.datfactions.database.Database;
-import com.datdeveloper.datfactions.database.FlatDatabase;
+import com.datdeveloper.datfactions.database.FlatFileDatabase;
 import com.datdeveloper.datfactions.factionData.FLevelCollection;
 import com.datdeveloper.datfactions.factionData.FPlayerCollection;
 import com.datdeveloper.datfactions.factionData.FactionCollection;
@@ -31,7 +31,7 @@ public class LoadEvents {
     public static void serverStart(ServerAboutToStartEvent event) {
         logger.info("Factions loading factions and players");
         Path worldPath = event.getServer().getWorldPath(new LevelResource("datfactions"));
-        Database.instance = new FlatDatabase(worldPath);
+        Database.instance = new FlatFileDatabase(worldPath);
         FactionCollection.getInstance().initialise();
         FPlayerCollection.getInstance().initialise();
         FLevelCollection.getInstance().initialise();

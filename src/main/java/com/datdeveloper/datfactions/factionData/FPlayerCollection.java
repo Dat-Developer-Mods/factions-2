@@ -60,10 +60,14 @@ public class FPlayerCollection extends BaseCollection<UUID, FactionPlayer> {
 
             map.put(playerId, player);
         }
-    }
 
-    @Override
-    public void uninitialise() {
+        // Load Template player
+        template = Database.instance.loadPlayerTemplate();
+        if (template == null) {
+            template = new FactionPlayer((UUID) null, null);
+            Database.instance.storePlayerTemplate(template);
+        }
 
+        // TODO: Check for pending invites
     }
 }

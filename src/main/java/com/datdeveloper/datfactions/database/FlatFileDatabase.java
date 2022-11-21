@@ -19,10 +19,7 @@ import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.Reader;
+import java.io.*;
 import java.lang.reflect.Modifier;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
@@ -30,13 +27,14 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class FlatDatabase extends Database {
-    private static Logger logger = LogUtils.getLogger();
+public class FlatFileDatabase extends Database {
+    private static final Logger logger = LogUtils.getLogger();
     Path savePath;
     Gson gson;
 
@@ -55,7 +53,7 @@ public class FlatDatabase extends Database {
                 .create();
     }
 
-    public FlatDatabase(Path savePath) {
+    public FlatFileDatabase(Path savePath) {
         this.savePath = savePath;
         gson = buildGson();
 
@@ -86,6 +84,11 @@ public class FlatDatabase extends Database {
         return savePath.resolve("levels");
     }
 
+    /**
+     * Get a list of all the files in the given directory with the names transformed into their UUID
+     * @param path the path to get all the files from
+     * @return a list of UUIDs
+     */
     private List<UUID> getAllFilesInPathAsUUID(Path path) {
         try (Stream<Path> files = Files.list(path)) {
             return files.filter(dir -> dir.toFile().isFile())
@@ -119,12 +122,20 @@ public class FlatDatabase extends Database {
 
     @Override
     public void nukeDatabase() {
-        try {
-            Files.deleteIfExists(savePath);
+        try (Stream<Path> fileStream = Files.walk(savePath)) {
+            fileStream
+                    .sorted(Comparator.reverseOrder())
+                    .map(Path::toFile)
+                    .forEach(File::delete);
         } catch (IOException e) {
             logger.warn("Failed to nuke Flatfile database");
         }
+        setupPaths();
     }
+
+    /* ========================================= */
+    /* Factions
+    /* ========================================= */
 
     @Override
     public void storeFaction(Faction faction) {
@@ -181,7 +192,7 @@ public class FlatDatabase extends Database {
 
     @Override
     public void storeFactionTemplate(Faction template) {
-        Path filePath = getFactionsPath().resolve("faction-template.json");
+        Path filePath = getFactionsPath().resolve("template.json");
 
         try (FileWriter writer = new FileWriter(filePath.toFile())) {
             gson.toJson(template, writer);
@@ -195,6 +206,10 @@ public class FlatDatabase extends Database {
     public List<UUID> getAllStoredFactions() {
         return getAllFilesInPathAsUUID(getFactionsPath());
     }
+
+    /* ========================================= */
+    /* Players
+    /* ========================================= */
 
     @Override
     public void storePlayer(FactionPlayer player) {
@@ -234,13 +249,44 @@ public class FlatDatabase extends Database {
     }
 
     @Override
+    @Nullable
+    public FactionPlayer loadPlayerTemplate() {
+        Path filePath = getPlayersPath().resolve("template.json");
+        if (!(Files.exists(filePath) && Files.isRegularFile(filePath))) return null;
+
+        try (Reader reader = new FileReader(filePath.toFile())) {
+            return gson.fromJson(reader, FactionPlayer.class);
+        } catch (JsonSyntaxException e) {
+            logger.warn("Failed to load player template, assuming corrupt and discarding");
+        } catch (IOException ignored) {
+        }
+
+        return null;
+    }
+
+    @Override
+    public void storePlayerTemplate(FactionPlayer template) {
+        Path filePath = getPlayersPath().resolve("template.json");
+
+        try (FileWriter writer = new FileWriter(filePath.toFile())) {
+            gson.toJson(template, writer);
+        } catch (IOException e) {
+            logger.error("Failed to write player template to disk");
+        }
+    }
+
+    @Override
     public List<UUID> getAllStoredPlayers() {
         return getAllFilesInPathAsUUID(getPlayersPath());
     }
 
+    /* ========================================= */
+    /* Levels
+    /* ========================================= */
+
     @Override
     public void storeLevel(FactionLevel level) {
-        Path filePath = getPlayersPath().resolve(level.getId() + ".json");
+        Path filePath = getPlayersPath().resolve(URLEncoder.encode(level.getId().location().toString(), StandardCharsets.UTF_8) + ".json");
 
         try (FileWriter writer = new FileWriter(filePath.toFile())) {
             gson.toJson(level, writer);
@@ -251,7 +297,7 @@ public class FlatDatabase extends Database {
 
     @Override
     public void deleteLevel(FactionLevel level) {
-        Path filePath = getLevelsPath().resolve(level.getId() + ".json");
+        Path filePath = getLevelsPath().resolve(URLEncoder.encode(level.getId().location().toString(), StandardCharsets.UTF_8) + ".json");
         try {
             Files.deleteIfExists(filePath);
         } catch (IOException e) {
@@ -284,9 +330,7 @@ public class FlatDatabase extends Database {
                         int index = name.lastIndexOf('.');
                         return index != -1 ? name.substring(0, index) : name;
                     })
-                    .map(name -> {
-                        return ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation(URLDecoder.decode(name, Charset.defaultCharset())));
-                    })
+                    .map(name -> ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation(URLDecoder.decode(name, Charset.defaultCharset()))))
                     .collect(Collectors.toList());
         } catch (IOException e) {
             throw new RuntimeException("Failed to get files in " + getLevelsPath(), e);
