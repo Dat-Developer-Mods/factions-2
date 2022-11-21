@@ -7,17 +7,25 @@ import com.datdeveloper.datfactions.factionData.FactionLevel;
 import com.datdeveloper.datfactions.factionData.FactionPlayer;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonSyntaxException;
+import com.mojang.logging.LogUtils;
 import com.mojang.util.UUIDTypeAdapter;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
+import org.slf4j.Logger;
 
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
+import java.io.Reader;
 import java.lang.reflect.Modifier;
 import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
@@ -26,6 +34,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class FlatDatabase extends Database {
+    private static Logger logger = LogUtils.getLogger();
     Path savePath;
     Gson gson;
 
@@ -84,7 +93,7 @@ public class FlatDatabase extends Database {
     }
 
     public FlatDatabase(Path savePath) {
-        this.savePath = savePath.resolve("datfactions");
+        this.savePath = savePath;
         gson = buildGson();
 
         setupPaths();
@@ -110,6 +119,16 @@ public class FlatDatabase extends Database {
 
     @Override
     public Faction loadFaction(UUID factionId) {
+        Path filePath = getFactionsPath().resolve(factionId.toString() + ".json");
+        if (!(Files.exists(filePath) && Files.isRegularFile(filePath))) return null;
+
+        try (Reader reader = new FileReader(filePath.toFile())) {
+            return gson.fromJson(reader, Faction.class);
+        } catch (JsonSyntaxException e) {
+            logger.warn("Failed to load faction " + factionId + ", discarding");
+        } catch (IOException ignored) {
+        }
+
         return null;
     }
 
@@ -130,6 +149,16 @@ public class FlatDatabase extends Database {
 
     @Override
     public FactionPlayer loadPlayer(UUID playerId) {
+        Path filePath = getPlayersPath().resolve(playerId.toString() + ".json");
+        if (!(Files.exists(filePath) && Files.isRegularFile(filePath))) return null;
+
+        try (Reader reader = new FileReader(filePath.toFile())) {
+            return gson.fromJson(reader, FactionPlayer.class);
+        } catch (JsonSyntaxException e) {
+            logger.warn("Failed to load player " + playerId + ", discarding");
+        } catch (IOException ignored) {
+        }
+
         return null;
     }
 
@@ -150,6 +179,16 @@ public class FlatDatabase extends Database {
 
     @Override
     public FactionLevel loadLevel(ResourceKey<Level> levelId) {
+        Path filePath = getPlayersPath().resolve(URLEncoder.encode(levelId.location().toString(), StandardCharsets.UTF_8) + ".json");
+        if (!(Files.exists(filePath) && Files.isRegularFile(filePath))) return null;
+
+        try (Reader reader = new FileReader(filePath.toFile())) {
+            return gson.fromJson(reader, FactionLevel.class);
+        } catch (JsonSyntaxException e) {
+            logger.warn("Failed to load player " + levelId.location() + ", discarding");
+        } catch (IOException ignored) {
+        }
+
         return null;
     }
 

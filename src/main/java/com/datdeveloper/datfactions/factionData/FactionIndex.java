@@ -70,4 +70,7 @@ public class FactionIndex {
             playerToFactionMap.put(player.getId(), null);
         }
     }
+
+    public void iniitialise() {
+    }
 }

@@ -1,11 +1,13 @@
 package com.datdeveloper.datfactions.factionData;
 
+import com.datdeveloper.datfactions.database.DatabaseEntity;
+
 import java.util.UUID;
 
 /**
  * A store of a levels settings
  */
-public class FactionLevelSettings {
+public class FactionLevelSettings extends DatabaseEntity {
     /**
      * The default faction that owns all the chunks
      */
@@ -60,7 +62,7 @@ public class FactionLevelSettings {
     float passivePowerGainMultiplier;
 
     public FactionLevelSettings() {
-        this.defaultOwner = FactionCollection.getInstance().SAFEZONE.getId();
+        this.defaultOwner = FactionCollection.getInstance().WILDERNESS.getId();
 
         this.allowClaiming = true;
         this.requireConnect = true;
@@ -75,83 +77,117 @@ public class FactionLevelSettings {
         this.passivePowerGainMultiplier = 1.f;
     }
 
-    public UUID getDefaultOwner() {
-        return defaultOwner;
+    public FactionLevelSettings(FactionLevelSettings template) {
+        this.defaultOwner = template.defaultOwner;
+
+        this.allowClaiming = template.allowClaiming;
+        this.requireConnect = template.requireConnect;
+        this.maxLand = template.maxLand;
+        this.landWorth = template.landWorth;
+        this.maxClaimRadius = template.maxClaimRadius;
+
+        this.allowLandSteal = template.allowLandSteal;
+        this.requireLandStealConnect = template.requireLandStealConnect;
+
+        this.teleportDelay = template.teleportDelay;
+        this.passivePowerGainMultiplier = template.passivePowerGainMultiplier;
     }
 
-    public void setDefaultOwner(UUID defaultOwner) {
-        this.defaultOwner = defaultOwner;
+    /* ========================================= */
+    /* Getters
+    /* ========================================= */
+
+    public UUID getDefaultOwner() {
+        return defaultOwner;
     }
 
     public boolean isAllowClaiming() {
         return allowClaiming;
     }
 
-    public void setAllowClaiming(boolean allowClaiming) {
-        this.allowClaiming = allowClaiming;
-    }
-
     public boolean isRequireConnect() {
         return requireConnect;
-    }
-
-    public void setRequireConnect(boolean requireConnect) {
-        this.requireConnect = requireConnect;
     }
 
     public int getMaxLand() {
         return maxLand;
     }
 
-    public void setMaxLand(int maxLand) {
-        this.maxLand = maxLand;
-    }
-
     public int getLandWorth() {
         return landWorth;
-    }
-
-    public void setLandWorth(int landWorth) {
-        this.landWorth = landWorth;
     }
 
     public int getMaxClaimRadius() {
         return maxClaimRadius;
     }
 
-    public void setMaxClaimRadius(int maxClaimRadius) {
-        this.maxClaimRadius = maxClaimRadius;
-    }
-
     public boolean isAllowLandSteal() {
         return allowLandSteal;
-    }
-
-    public void setAllowLandSteal(boolean allowLandSteal) {
-        this.allowLandSteal = allowLandSteal;
     }
 
     public boolean isRequireLandStealConnect() {
         return requireLandStealConnect;
     }
 
-    public void setRequireLandStealConnect(boolean requireLandStealConnect) {
-        this.requireLandStealConnect = requireLandStealConnect;
-    }
-
     public int getTeleportDelay() {
         return teleportDelay;
-    }
-
-    public void setTeleportDelay(int teleportDelay) {
-        this.teleportDelay = teleportDelay;
     }
 
     public float getPassivePowerGainMultiplier() {
         return passivePowerGainMultiplier;
     }
 
+    /* ========================================= */
+    /* Setters
+    /* ========================================= */
+
+    public void setDefaultOwner(UUID defaultOwner) {
+        this.defaultOwner = defaultOwner;
+        markDirty();
+    }
+
+    public void setAllowClaiming(boolean allowClaiming) {
+        this.allowClaiming = allowClaiming;
+        markDirty();
+    }
+
+    public void setRequireConnect(boolean requireConnect) {
+        this.requireConnect = requireConnect;
+        markDirty();
+    }
+
+    public void setMaxLand(int maxLand) {
+        this.maxLand = maxLand;
+        markDirty();
+    }
+
+    public void setLandWorth(int landWorth) {
+        this.landWorth = landWorth;
+        markDirty();
+    }
+
+    public void setMaxClaimRadius(int maxClaimRadius) {
+        this.maxClaimRadius = maxClaimRadius;
+        markDirty();
+    }
+
+    public void setAllowLandSteal(boolean allowLandSteal) {
+        this.allowLandSteal = allowLandSteal;
+        markDirty();
+    }
+
+    public void setRequireLandStealConnect(boolean requireLandStealConnect) {
+        this.requireLandStealConnect = requireLandStealConnect;
+        markDirty();
+    }
+
+    public void setTeleportDelay(int teleportDelay) {
+        this.teleportDelay = teleportDelay;
+        markDirty();
+    }
+
     public void setPassivePowerGainMultiplier(float passivePowerGainMultiplier) {
         this.passivePowerGainMultiplier = passivePowerGainMultiplier;
+        markDirty();
     }
 }

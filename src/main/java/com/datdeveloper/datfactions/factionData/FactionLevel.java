@@ -38,16 +38,21 @@ public class FactionLevel extends DatabaseEntity {
         this.settings = settings;
     }
 
+    /* ========================================= */
+    /* Getters
+    /* ========================================= */
     public ResourceKey<Level> getId() {
         return id;
     }
-
-
 
     public Map<ChunkPos, ChunkClaim> getClaims() {
         return claims;
     }
 
+
+    /* ========================================= */
+    /* Claims
+    /* ========================================= */
     public int countClaims(@NotNull UUID factionId) {
         if (factionId.equals(settings.defaultOwner)) return Integer.MAX_VALUE;
         return (int) claims.values().stream()
@@ -72,5 +77,46 @@ public class FactionLevel extends DatabaseEntity {
         }
 
         claims.put(pos, new ChunkClaim(faction.getId()));
+    }
+
+    /* ========================================= */
+    /* Settings
+    /* ========================================= */
+
+    /**
+     * Get the settings object used by the level
+     * If the level doesn't have its own settings, then this will return the default settings
+     * Do not modify this object
+     * @see #getSettingsToChange()
+     * @return The level settings
+     */
+    public FactionLevelSettings getSettings() {
+        return settings != null ? settings : FLevelCollection.getInstance().defaultSettings;
+    }
+
+    /**
+     * Gets the level specific settings, creating them if they don't yet exist
+     * @see #getSettings()
+     * @return the level specific changes
+     */
+    public FactionLevelSettings getSettingsToChange() {
+        if (settings == null) settings = new FactionLevelSettings(FLevelCollection.getInstance().defaultSettings);
+
+        return settings;
+    }
+    
+    /* ========================================= */
+    /* Database Stuff
+    /* ========================================= */
+
+    @Override
+    public void markClean() {
+        super.markClean();
+        if (settings != null) settings.markClean();
+    }
+
+    @Override
+    public boolean isDirty() {
+        return super.isDirty() || (settings != null && settings.isDirty());
     }
 }

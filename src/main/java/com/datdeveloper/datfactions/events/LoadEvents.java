@@ -5,6 +5,7 @@ import com.datdeveloper.datfactions.database.Database;
 import com.datdeveloper.datfactions.database.FlatDatabase;
 import com.datdeveloper.datfactions.factionData.FPlayerCollection;
 import com.datdeveloper.datfactions.factionData.FactionCollection;
+import com.datdeveloper.datfactions.factionData.FactionIndex;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.storage.LevelResource;
 import net.minecraftforge.event.level.LevelEvent;
@@ -22,10 +23,11 @@ public class LoadEvents {
      */
     @SubscribeEvent
     public static void serverStart(ServerAboutToStartEvent event) {
-        Path worldPath = event.getServer().getWorldPath(new LevelResource("factions"));
+        Path worldPath = event.getServer().getWorldPath(new LevelResource("datfactions"));
         Database.instance = new FlatDatabase(worldPath);
         FactionCollection.getInstance().initialise();
         FPlayerCollection.getInstance().initialise();
+        FactionIndex.getInstance().iniitialise();
     }
 
     /**
@@ -44,6 +46,7 @@ public class LoadEvents {
     @SubscribeEvent
     public static void worldLoad(LevelEvent.Load event) {
         if (event.getLevel().isClientSide()) return;
+        System.out.println("Test");
         // TODO: Create a new level
     }
 

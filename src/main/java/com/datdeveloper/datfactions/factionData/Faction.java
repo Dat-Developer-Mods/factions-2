@@ -543,6 +543,12 @@ public class Faction extends DatabaseEntity {
     /* ========================================= */
 
     @Override
+    public void markClean() {
+        super.markClean();
+        roles.forEach(DatabaseEntity::markClean);
+    }
+
+    @Override
     public boolean isDirty() {
         // Account for dirty roles
         return super.isDirty() || roles.stream()
