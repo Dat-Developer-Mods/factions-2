@@ -44,11 +44,12 @@ public class LoadEvents {
     @SubscribeEvent
     public static void onServerStopping(ServerStoppedEvent event) {
         logger.info("Factions system unloading");
-        Database.instance = null;
         FactionIndex.getInstance().uninitialise();
         FLevelCollection.getInstance().uninitialise();
         FPlayerCollection.getInstance().uninitialise();
         FactionCollection.getInstance().uninitialise();
+        Database.instance.close();
+        Database.instance = null;
     }
 
     /**

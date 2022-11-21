@@ -362,4 +362,9 @@ public class FlatFileDatabase extends Database {
             logger.error("Failed to write default level settings to disk, the latest changes will disappear after a server reload");
         }
     }
+
+    @Override
+    public void close() {
+        // Don't need to do anything
+    }
 }

@@ -2,7 +2,6 @@ package com.datdeveloper.datfactions.factionData;
 
 import com.datdeveloper.datfactions.database.Database;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.world.level.Level;
 
 public class FLevelCollection extends BaseCollection<ResourceKey<Level>, FactionLevel>{

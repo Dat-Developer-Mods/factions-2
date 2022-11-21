@@ -164,4 +164,6 @@ public abstract class Database {
      * @param defaultSettings the default settings to store
      */
     public abstract void storeDefaultSettings(FactionLevelSettings defaultSettings);
+
+    public abstract void close();
 }
