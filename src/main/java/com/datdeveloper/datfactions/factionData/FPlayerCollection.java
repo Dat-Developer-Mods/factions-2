@@ -42,6 +42,10 @@ public class FPlayerCollection extends BaseCollection<UUID, FactionPlayer> {
         return this.getByKey(player.getUUID());
     }
 
+    /* ========================================= */
+    /* Setup and teardown
+    /* ========================================= */
+
     @Override
     public void initialise() {
         List<UUID> storedPlayers = Database.instance.getAllStoredPlayers();
@@ -56,5 +60,10 @@ public class FPlayerCollection extends BaseCollection<UUID, FactionPlayer> {
 
             map.put(playerId, player);
         }
+    }
+
+    @Override
+    public void uninitialise() {
+
     }
 }

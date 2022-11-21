@@ -1,6 +1,8 @@
 package com.datdeveloper.datfactions.factionData;
 
+import com.datdeveloper.datfactions.database.Database;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.world.level.Level;
 
 public class FLevelCollection extends BaseCollection<ResourceKey<Level>, FactionLevel>{
@@ -15,8 +17,26 @@ public class FLevelCollection extends BaseCollection<ResourceKey<Level>, Faction
         return instance;
     }
 
-    @Override
-    void initialise() {
+    public FactionLevel loadOrCreate(ResourceKey<Level> levelId) {
+        FactionLevel level = Database.instance.loadLevel(levelId);
 
+        if (level == null) {
+            level = new FactionLevel(levelId, defaultSettings);
+        }
+
+        return map.put(levelId, level);
+    }
+
+    /* ========================================= */
+    /* Setup and teardown
+    /* ========================================= */
+
+    @Override
+    public void initialise() {
+        defaultSettings = Database.instance.loadLevelDefaultSettings();
+        if (defaultSettings == null) {
+            defaultSettings = new FactionLevelSettings();
+            Database.instance.storeDefaultSettings(defaultSettings);
+        }
     }
 }

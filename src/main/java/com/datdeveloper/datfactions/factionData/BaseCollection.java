@@ -1,6 +1,7 @@
 package com.datdeveloper.datfactions.factionData;
 
 
+import com.datdeveloper.datfactions.database.Database;
 import com.datdeveloper.datfactions.database.DatabaseEntity;
 
 import java.util.HashMap;
@@ -13,7 +14,6 @@ import java.util.Map;
  */
 public abstract class BaseCollection<Key, CollectionObject extends DatabaseEntity> {
     Map<Key, CollectionObject> map = new HashMap<>();
-    boolean setup = false;
 
     public Map<Key, CollectionObject> getAll() {
         return map;
@@ -24,12 +24,36 @@ public abstract class BaseCollection<Key, CollectionObject extends DatabaseEntit
      * @param key the key of the CollectionObject
      * @return the object in the collection
      */
-    CollectionObject getByKey(Key key) {
+    public CollectionObject getByKey(Key key) {
         return map.get(key);
     }
 
     /**
-     * Initialise the collection
+     * Save all the dirty CollectionObjects to the database
      */
-    abstract void initialise();
+    public void saveDirty() {
+        for (Key key : map.keySet()) {
+            CollectionObject object = map.get(key);
+
+            if (object.isDirty()) {
+                Database.instance.storeEntity(object);
+                object.markClean();
+            }
+        }
+    }
+
+    /**
+     * Initialise the collection
+     * Loads the collection content from the database and sets up
+     */
+    public abstract void initialise();
+
+    /**
+     * Uninitialise the collection
+     * Saves all to the database and clears stores
+     */
+    public void uninitialise() {
+        saveDirty();
+        map.clear();
+    }
 }

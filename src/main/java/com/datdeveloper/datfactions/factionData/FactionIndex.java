@@ -16,6 +16,9 @@ public class FactionIndex {
     public static FactionIndex getInstance() {
         return instance;
     }
+    public boolean isInitialised() {
+        return initialised;
+    }
 
     /**
      * Get all the players in a faction
@@ -71,6 +74,29 @@ public class FactionIndex {
         }
     }
 
-    public void iniitialise() {
+    /* ========================================= */
+    /* Setup and teardown
+    /* ========================================= */
+
+    public void initialise() {
+        // Add factions
+        for (UUID factionId : FactionCollection.getInstance().getAll().keySet()) {
+            factionToPlayerMap.put(factionId, new HashSet<>());
+        }
+
+        // Add players
+        for (FactionPlayer player : FPlayerCollection.getInstance().getAll().values()) {
+            playerToFactionMap.put(player.getId(), player.getFaction());
+            if (player.hasFaction()) {
+                factionToPlayerMap.get(player.getFactionId()).add(player);
+            }
+        }
+        initialised = true;
+    }
+
+    public void uninitialise() {
+        factionToPlayerMap.clear();
+        playerToFactionMap.clear();
+        initialised = false;
     }
 }
