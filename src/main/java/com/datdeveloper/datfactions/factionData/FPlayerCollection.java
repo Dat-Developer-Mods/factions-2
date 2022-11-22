@@ -23,19 +23,33 @@ public class FPlayerCollection extends BaseCollection<UUID, FactionPlayer> {
         template = new FactionPlayer(UUID.randomUUID(), "null");
     }
 
-    public boolean isPlayerRegistered(UUID player) {
-        return map.containsKey(player);
+    public boolean isPlayerRegistered(UUID id) {
+        return map.containsKey(id);
     }
 
     public boolean isPlayerRegistered(ServerPlayer player) {
         return isPlayerRegistered(player.getUUID());
     }
 
+    /**
+     * Register a new player to the factions system
+     * @param player the player to register
+     */
     public void registerNewPlayer(ServerPlayer player) {
         FactionPlayer newPlayer = new FactionPlayer(player, template);
         map.put(player.getUUID(), newPlayer);
         FactionIndex.getInstance().updatePlayer(newPlayer);
         logger.info("Registered new factions player: " + player.getName().getString());
+    }
+
+    /**
+     * Delete a player from the faction's system
+     * @param id The id of the player to deregister
+     */
+    public void deregisterPlayer(UUID id) {
+        FactionPlayer player = map.remove(id);
+        player.setFaction(null, null);
+        Database.instance.deletePlayer(player);
     }
 
     public FactionPlayer getPlayer(ServerPlayer player) {

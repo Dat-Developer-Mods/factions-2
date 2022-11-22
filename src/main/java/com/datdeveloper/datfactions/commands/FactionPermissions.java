@@ -15,14 +15,18 @@ import java.util.function.Predicate;
 
 @Mod.EventBusSubscriber(modid = Datfactions.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class FactionPermissions {
-    // Resolvers
+    /* ========================================= */
+    /* Resolvers
+    /* ========================================= */
     public static final PermissionResolver<Boolean> PLAYEROWNER = ((player, playerUUID, context) -> player != null && player.hasPermissions(Commands.LEVEL_OWNERS));
     public static final PermissionResolver<Boolean> PLAYERADMIN = ((player, playerUUID, context) -> player != null && player.hasPermissions(Commands.LEVEL_ADMINS));
     public static final PermissionResolver<Boolean> PLAYEROP = ((player, playerUUID, context) -> player != null && player.hasPermissions(Commands.LEVEL_GAMEMASTERS));
     public static final PermissionResolver<Boolean> PLAYERMOD = ((player, playerUUID, context) -> player != null && player.hasPermissions(Commands.LEVEL_MODERATORS));
     public static final PermissionResolver<Boolean> PLAYERALL = ((player, playerUUID, context) -> player != null && player.hasPermissions(Commands.LEVEL_ALL));
 
-    // Permission Nodes
+    /* ========================================= */
+    /* Permission Nodes
+    /* ========================================= */
     // General
     public static final PermissionNode<Boolean> FACTIONLIST = createNode("datfactions.list");
     public static final PermissionNode<Boolean> FACTIONINFO = createNode("datfactions.info");
@@ -62,7 +66,10 @@ public class FactionPermissions {
     public static final PermissionNode<Boolean> FACTIONUNCLAIMSQUARE = createNode("datfactions.faction.unclaim.square");
     public static final PermissionNode<Boolean> FACTIONUNCLAIMSALL = createNode("datfactions.faction.unclaim.all");
 
-    // Permission Builders
+    /* ========================================= */
+    /* Permission Builders
+    /* ========================================= */
+
     private static PermissionNode<Boolean> createNode(String node) {
         return nodeBuilder(node, PLAYERALL);
     }

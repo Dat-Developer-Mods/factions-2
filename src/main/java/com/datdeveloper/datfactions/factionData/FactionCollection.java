@@ -43,6 +43,16 @@ public class FactionCollection extends BaseCollection<UUID, Faction>{
         }
     }
 
+    /**
+     * Check if a faction exists with the given name
+     * @param name The name to check for
+     * @return true if the name is taken
+     */
+    public boolean isNameTaken(String name) {
+        return map.values().stream()
+                .anyMatch(faction -> faction.getName().equals(name));
+    }
+
     /* ========================================= */
     /* Setup and teardown
     /* ========================================= */
@@ -82,5 +92,12 @@ public class FactionCollection extends BaseCollection<UUID, Faction>{
             Database.instance.storeFaction(WILDERNESS);
             map.put(WildernessId, WILDERNESS);
         }
+    }
+
+    public Faction getByName(String name) {
+        return map.values().stream()
+                .filter(faction -> faction.getName().equals(name))
+                .findFirst()
+                .orElse(null);
     }
 }

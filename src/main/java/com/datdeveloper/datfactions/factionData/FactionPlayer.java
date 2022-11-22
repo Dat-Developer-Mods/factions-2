@@ -1,10 +1,15 @@
 package com.datdeveloper.datfactions.factionData;
 
+import com.datdeveloper.datfactions.Util.RelationUtil;
 import com.datdeveloper.datfactions.database.DatabaseEntity;
+import com.datdeveloper.datfactions.factionData.permissions.FactionRole;
+import com.datdeveloper.datmoddingapi.util.DatChatFormatting;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.server.ServerLifecycleHooks;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -114,8 +119,13 @@ public class FactionPlayer extends DatabaseEntity {
         return FactionCollection.getInstance().getByKey(factionId);
     }
 
-    public UUID getRole() {
+    public UUID getRoleId() {
         return role;
+    }
+
+    public FactionRole getRole() {
+        UUID roleId = getRoleId();
+        return roleId != null ? getFaction().getRole(roleId) : null;
     }
 
     public boolean isAutoClaim() {
@@ -151,8 +161,16 @@ public class FactionPlayer extends DatabaseEntity {
     }
 
     public void setFaction(UUID factionId, UUID roleId) {
+        if (Objects.equals(this.factionId, factionId)) return;
+
+        Faction oldFaction = getFaction();
+
         this.factionId = factionId;
         this.role = roleId;
+
+        if (oldFaction != null) oldFaction.sendFactionWideMessage(RelationUtil.wrapPlayerName(oldFaction, this).append(DatChatFormatting.TextColour.INFO + " has left the faction"));
+
+        if (this.factionId != null) getFaction().sendFactionWideMessage(RelationUtil.wrapPlayerName(getFaction(), this).append(DatChatFormatting.TextColour.INFO + " has Joined the faction"));
 
         FactionIndex.getInstance().updatePlayer(this);
 

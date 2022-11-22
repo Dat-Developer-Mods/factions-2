@@ -36,6 +36,17 @@ public class RelationUtil {
     }
 
     /**
+     * Get the relation between a faction and a player
+     * @param from the faction the relation is being tested for
+     * @param to the player the relation is to
+     * @return The relation between the faction and the player
+     */
+    public static EFactionRelation getRelation(Faction from, FactionPlayer to) {
+        if (to.hasFaction()) return getRelation(from, to.getFaction());
+        return EFactionRelation.NEUTRAL;
+    }
+
+    /**
      * Get the relation between 2 factions
      * @param from the faction the relation is being tested for
      * @param to the faction the relation is to
@@ -56,10 +67,10 @@ public class RelationUtil {
      * @param to The faction the relation is to (and whose name to display)
      * @return a chat component with the to faction name and the applied formatting
      */
-    public static Component wrapFactionName(Faction from, Faction to) {
+    public static MutableComponent wrapFactionName(Faction from, Faction to) {
         return MutableComponent.create(Component.literal(to.getName()).getContents())
                 .withStyle(getRelation(from, to).formatting)
-                .withStyle(Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/faction info " + to.getName())));
+                .withStyle(Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/factions info " + to.getName())));
     }
 
     /**
@@ -68,22 +79,35 @@ public class RelationUtil {
      * @param to The faction the relation is to (and whose name to display)
      * @return a chat component with the to faction name and the applied formatting
      */
-    public static Component wrapFactionName(FactionPlayer from, Faction to) {
+    public static MutableComponent wrapFactionName(FactionPlayer from, Faction to) {
         return MutableComponent.create(Component.literal(to.getName()).getContents())
                 .withStyle(getRelation(from, to).formatting)
-                .withStyle(Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/faction info " + to.getName())));
+                .withStyle(Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/factions info " + to.getName())));
     }
 
     /**
-     * Wrap a faction name with chat formatting for the relation and a click event for getting info about the player
+     * Wrap a player name with chat formatting for the relation and a click event for getting info about the player
      * @param from The player the relation is from
      * @param to The player the relation is to (and whose name to display)
      * @return a chat component with the to player name and the applied formatting
      */
-    public static Component wrapPlayerName(FactionPlayer from, FactionPlayer to) {
+    public static MutableComponent wrapPlayerName(FactionPlayer from, FactionPlayer to) {
 
         return MutableComponent.create(Component.literal(to.getLastName()).getContents())
                 .withStyle(getRelation(from, to).formatting)
-                .withStyle(Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/faction pinfo " + to.getLastName())));
+                .withStyle(Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/factions pinfo " + to.getLastName())));
+    }
+
+    /**
+     * Wrap a player name with chat formatting for the relation and a click event for getting info about the player
+     * @param from The faction the relation is from
+     * @param to The player the relation is to (and whose name to display)
+     * @return a chat component with the to player name and the applied formatting
+     */
+    public static MutableComponent wrapPlayerName(Faction from, FactionPlayer to) {
+
+        return MutableComponent.create(Component.literal(to.getLastName()).getContents())
+                .withStyle(getRelation(from, to).formatting)
+                .withStyle(Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/factions pinfo " + to.getLastName())));
     }
 }

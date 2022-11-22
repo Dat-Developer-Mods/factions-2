@@ -25,6 +25,7 @@ public enum ERolePermissions {
 
     // Faction Management
     SETNAME("Allows the player to set the faction's name"),
+    SETDESC("Allows the player to set the faction's description"),
     SETMOTD("Allows the player to set the Faction's MOTD"),
     DISBAND("Allows the player to disband the faction"),
 

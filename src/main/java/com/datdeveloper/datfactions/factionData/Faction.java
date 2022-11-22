@@ -99,7 +99,7 @@ public class Faction extends DatabaseEntity {
         this.id = id;
         this.name = name;
         this.description = "";
-        this.motd = null;
+        this.motd = "";
 
         this.factionPower = template.factionPower;
 
@@ -170,14 +170,14 @@ public class Faction extends DatabaseEntity {
     }
 
     public void setDescription(String newDescription) {
-        if (newDescription.equals(description) || newDescription.isEmpty()) return;
-
+        if (newDescription.equals(description)) return;
+        
         this.description = newDescription;
         markDirty();
     }
 
     public void setMotd(String newMotd) {
-        if (newMotd.equals(motd) || newMotd.isEmpty()) return;
+        if (newMotd.equals(motd)) return;
 
         this.description = newMotd;
         markDirty();

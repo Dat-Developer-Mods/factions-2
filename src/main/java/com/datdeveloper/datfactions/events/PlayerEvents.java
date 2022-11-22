@@ -18,20 +18,11 @@ public class PlayerEvents {
     private static final Logger logger = LogUtils.getLogger();
 
     /**
-     * Setup player if they're new, register power gain event
+     * Register power gain event
      */
     @SubscribeEvent
     public static void playerJoin(PlayerEvent.PlayerLoggedInEvent event) {
-        if (!(event.getEntity() instanceof ServerPlayer)) {
-            return;
-        }
 
-        ServerPlayer player = (ServerPlayer) event.getEntity();
-        FPlayerCollection playerCollection = FPlayerCollection.getInstance();
-
-        if (playerCollection.isPlayerRegistered(player)) return;
-
-        playerCollection.registerNewPlayer(player);
     }
 
     /**
