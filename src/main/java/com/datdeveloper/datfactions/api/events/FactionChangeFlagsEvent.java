@@ -17,7 +17,7 @@ import java.util.Set;
 public class FactionChangeFlagsEvent extends FactionEvent {
     Set<EFactionFlags> newFlags;
 
-    public FactionChangeFlagsEvent(@Nullable CommandSource instigator, @NotNull Faction faction, Set<EFactionFlags> newFlags) {
+    public FactionChangeFlagsEvent(@Nullable final CommandSource instigator, @NotNull final Faction faction, final Set<EFactionFlags> newFlags) {
         super(instigator, faction);
         this.newFlags = newFlags;
     }
@@ -26,7 +26,7 @@ public class FactionChangeFlagsEvent extends FactionEvent {
         return newFlags;
     }
 
-    public void setNewFlags(Set<EFactionFlags> newFlags) {
+    public void setNewFlags(final Set<EFactionFlags> newFlags) {
         this.newFlags = newFlags;
     }
 }

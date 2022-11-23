@@ -51,7 +51,7 @@ public enum ERolePermissions {
 
     public final String description;
 
-    ERolePermissions(String description) {
+    ERolePermissions(final String description) {
         this.description = description;
     }
 }

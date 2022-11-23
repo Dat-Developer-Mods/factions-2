@@ -45,7 +45,7 @@ public class FactionsConfig {
     private static final Map<EFactionFlags, ConfigValue<Boolean>> flagBlacklist = new HashMap<>();
 
 
-    FactionsConfig(ForgeConfigSpec.Builder builder) {
+    FactionsConfig(final ForgeConfigSpec.Builder builder) {
         builder.push("Faction Management");
         {
             maxFactionNameLength = builder
@@ -142,7 +142,7 @@ public class FactionsConfig {
             builder
                     .comment("Allow/Disallow players setting specific faction flags")
                     .push("Allowed Faction Flags");
-            for (EFactionFlags factionFlag : EFactionFlags.values()) {
+            for (final EFactionFlags factionFlag : EFactionFlags.values()) {
                 if (factionFlag.admin) continue;
 
                 flagBlacklist.put(
@@ -242,7 +242,7 @@ public class FactionsConfig {
         return teleportDelay.get();
     }
 
-    public static boolean getFlagBlacklisted(EFactionFlags flag) {
+    public static boolean getFlagBlacklisted(final EFactionFlags flag) {
         return flagBlacklist.get(flag).get();
     }
 }

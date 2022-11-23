@@ -22,7 +22,7 @@ public abstract class Database {
      * This bullshit was brought to you by trying to avoid some other object orientated bullshit.
      * @param entity a DatabaseEntity to store
      */
-    public void storeEntity(DatabaseEntity entity) {
+    public void storeEntity(final DatabaseEntity entity) {
         if (entity instanceof Faction) storeFaction((Faction) entity);
         else if (entity instanceof FactionPlayer) storePlayer((FactionPlayer) entity);
         else if (entity instanceof FactionLevel) storeLevel((FactionLevel) entity);

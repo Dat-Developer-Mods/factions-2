@@ -11,7 +11,7 @@ import java.io.IOException;
 
 public class ResourceKeyAdapter extends TypeAdapter<ResourceKey<?>> {
     @Override
-    public void write(JsonWriter jsonWriter, ResourceKey resourceKey) throws IOException {
+    public void write(final JsonWriter jsonWriter, final ResourceKey resourceKey) throws IOException {
         if (resourceKey == null) {
             jsonWriter.nullValue();
         } else {
@@ -23,7 +23,7 @@ public class ResourceKeyAdapter extends TypeAdapter<ResourceKey<?>> {
     }
 
     @Override
-    public ResourceKey<?> read(JsonReader jsonReader) throws IOException {
+    public ResourceKey<?> read(final JsonReader jsonReader) throws IOException {
         if (jsonReader.peek() == JsonToken.NULL) {
             jsonReader.nextNull();
             return null;

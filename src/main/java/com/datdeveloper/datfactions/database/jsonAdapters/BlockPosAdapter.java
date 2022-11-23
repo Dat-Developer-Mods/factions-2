@@ -10,7 +10,7 @@ import java.io.IOException;
 
 public class BlockPosAdapter extends TypeAdapter<BlockPos> {
     @Override
-    public void write(JsonWriter jsonWriter, BlockPos blockPos) throws IOException {
+    public void write(final JsonWriter jsonWriter, final BlockPos blockPos) throws IOException {
         if (blockPos == null) {
             jsonWriter.nullValue();
         } else {
@@ -23,7 +23,7 @@ public class BlockPosAdapter extends TypeAdapter<BlockPos> {
     }
 
     @Override
-    public BlockPos read(JsonReader jsonReader) throws IOException {
+    public BlockPos read(final JsonReader jsonReader) throws IOException {
         if (jsonReader.peek() == JsonToken.NULL) {
             jsonReader.nextNull();
             return null;

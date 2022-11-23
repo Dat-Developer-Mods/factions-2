@@ -13,7 +13,7 @@ public class InfiniverseEvents {
      * Fired when a level is deleted
      */
     @SubscribeEvent
-    public static void levelDeleted(UnregisterDimensionEvent event) {
+    public static void levelDeleted(final UnregisterDimensionEvent event) {
         System.out.println("Deleted " + event.getLevel().getLevel().dimension().location().getPath());
 
         // TODO: Delete level

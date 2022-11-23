@@ -1,4 +1,4 @@
-package com.datdeveloper.datfactions.Util;
+package com.datdeveloper.datfactions.util;
 
 import com.datdeveloper.datfactions.factionData.EFactionRelation;
 import com.datdeveloper.datfactions.factionData.Faction;
@@ -19,7 +19,7 @@ public class RelationUtil {
      * @param to the player the relation is to
      * @return The relation between the two players
      */
-    public static EFactionRelation getRelation(FactionPlayer from, FactionPlayer to) {
+    public static EFactionRelation getRelation(final FactionPlayer from, final FactionPlayer to) {
         if (from.hasFaction() && to.hasFaction()) return getRelation(from.getFaction(), to.getFaction());
         return EFactionRelation.NEUTRAL;
     }
@@ -30,7 +30,7 @@ public class RelationUtil {
      * @param to the faction the relation is to
      * @return The relation between the player and the faction
      */
-    public static EFactionRelation getRelation(FactionPlayer from, Faction to) {
+    public static EFactionRelation getRelation(final FactionPlayer from, final Faction to) {
         if (from.hasFaction()) return getRelation(from.getFaction(), to);
         return EFactionRelation.NEUTRAL;
     }
@@ -41,7 +41,7 @@ public class RelationUtil {
      * @param to the player the relation is to
      * @return The relation between the faction and the player
      */
-    public static EFactionRelation getRelation(Faction from, FactionPlayer to) {
+    public static EFactionRelation getRelation(final Faction from, final FactionPlayer to) {
         if (to.hasFaction()) return getRelation(from, to.getFaction());
         return EFactionRelation.NEUTRAL;
     }
@@ -52,10 +52,10 @@ public class RelationUtil {
      * @param to the faction the relation is to
      * @return The relation between the two factions
      */
-    public static EFactionRelation getRelation(Faction from, Faction to) {
+    public static EFactionRelation getRelation(final Faction from, final Faction to) {
         if (from.getId().equals(to.getId())) return EFactionRelation.SELF;
 
-        FactionRelation relation = from.getRelation(to);
+        final FactionRelation relation = from.getRelation(to);
         if (relation != null) return relation.getRelation();
 
         return EFactionRelation.NEUTRAL;
@@ -67,7 +67,7 @@ public class RelationUtil {
      * @param to The faction the relation is to (and whose name to display)
      * @return a chat component with the to faction name and the applied formatting
      */
-    public static MutableComponent wrapFactionName(Faction from, Faction to) {
+    public static MutableComponent wrapFactionName(final Faction from, final Faction to) {
         return MutableComponent.create(Component.literal(to.getName()).getContents())
                 .withStyle(getRelation(from, to).formatting)
                 .withStyle(Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/factions info " + to.getName())));
@@ -79,7 +79,7 @@ public class RelationUtil {
      * @param to The faction the relation is to (and whose name to display)
      * @return a chat component with the to faction name and the applied formatting
      */
-    public static MutableComponent wrapFactionName(FactionPlayer from, Faction to) {
+    public static MutableComponent wrapFactionName(final FactionPlayer from, final Faction to) {
         return MutableComponent.create(Component.literal(to.getName()).getContents())
                 .withStyle(getRelation(from, to).formatting)
                 .withStyle(Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/factions info " + to.getName())));
@@ -91,7 +91,7 @@ public class RelationUtil {
      * @param to The player the relation is to (and whose name to display)
      * @return a chat component with the to player name and the applied formatting
      */
-    public static MutableComponent wrapPlayerName(FactionPlayer from, FactionPlayer to) {
+    public static MutableComponent wrapPlayerName(final FactionPlayer from, final FactionPlayer to) {
 
         return MutableComponent.create(Component.literal(to.getLastName()).getContents())
                 .withStyle(getRelation(from, to).formatting)
@@ -104,7 +104,7 @@ public class RelationUtil {
      * @param to The player the relation is to (and whose name to display)
      * @return a chat component with the to player name and the applied formatting
      */
-    public static MutableComponent wrapPlayerName(Faction from, FactionPlayer to) {
+    public static MutableComponent wrapPlayerName(final Faction from, final FactionPlayer to) {
 
         return MutableComponent.create(Component.literal(to.getLastName()).getContents())
                 .withStyle(getRelation(from, to).formatting)

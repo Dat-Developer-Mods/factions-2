@@ -77,7 +77,7 @@ public class FactionLevelSettings extends DatabaseEntity {
         this.passivePowerGainMultiplier = 1.f;
     }
 
-    public FactionLevelSettings(FactionLevelSettings template) {
+    public FactionLevelSettings(final FactionLevelSettings template) {
         this.defaultOwner = template.defaultOwner;
 
         this.allowClaiming = template.allowClaiming;
@@ -141,52 +141,52 @@ public class FactionLevelSettings extends DatabaseEntity {
     /* Setters
     /* ========================================= */
 
-    public void setDefaultOwner(UUID defaultOwner) {
+    public void setDefaultOwner(final UUID defaultOwner) {
         this.defaultOwner = defaultOwner;
         markDirty();
     }
 
-    public void setAllowClaiming(boolean allowClaiming) {
+    public void setAllowClaiming(final boolean allowClaiming) {
         this.allowClaiming = allowClaiming;
         markDirty();
     }
 
-    public void setRequireConnect(boolean requireConnect) {
+    public void setRequireConnect(final boolean requireConnect) {
         this.requireConnect = requireConnect;
         markDirty();
     }
 
-    public void setMaxLand(int maxLand) {
+    public void setMaxLand(final int maxLand) {
         this.maxLand = maxLand;
         markDirty();
     }
 
-    public void setLandWorth(int landWorth) {
+    public void setLandWorth(final int landWorth) {
         this.landWorth = landWorth;
         markDirty();
     }
 
-    public void setMaxClaimRadius(int maxClaimRadius) {
+    public void setMaxClaimRadius(final int maxClaimRadius) {
         this.maxClaimRadius = maxClaimRadius;
         markDirty();
     }
 
-    public void setAllowLandSteal(boolean allowLandSteal) {
+    public void setAllowLandSteal(final boolean allowLandSteal) {
         this.allowLandSteal = allowLandSteal;
         markDirty();
     }
 
-    public void setRequireLandStealConnect(boolean requireLandStealConnect) {
+    public void setRequireLandStealConnect(final boolean requireLandStealConnect) {
         this.requireLandStealConnect = requireLandStealConnect;
         markDirty();
     }
 
-    public void setTeleportDelay(int teleportDelay) {
+    public void setTeleportDelay(final int teleportDelay) {
         this.teleportDelay = teleportDelay;
         markDirty();
     }
 
-    public void setPassivePowerGainMultiplier(float passivePowerGainMultiplier) {
+    public void setPassivePowerGainMultiplier(final float passivePowerGainMultiplier) {
         this.passivePowerGainMultiplier = passivePowerGainMultiplier;
         markDirty();
     }

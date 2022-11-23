@@ -15,20 +15,20 @@ import net.minecraftforge.gametest.PrefixGameTestTemplate;
 public class FactionTests extends BaseTest {
     @GameTest(template = "empty")
     @PrefixGameTestTemplate(false)
-    public static void testSetup(GameTestHelper helper) {
+    public static void testSetup(final GameTestHelper helper) {
 
     }
     
     @GameTest(template = "empty")
     @PrefixGameTestTemplate(false)
-    public static void testCommands(GameTestHelper helper) {
-        Player player = helper.makeMockPlayer();
+    public static void testCommands(final GameTestHelper helper) {
+        final Player player = helper.makeMockPlayer();
 
-        ServerPlayer serverPlayer = makeMockServerPlayer(player);
-        CommandSourceStack commandSourceStack = serverPlayer.createCommandSourceStack();
-        Commands commands = player.getServer().getCommands();
-        ParseResults<CommandSourceStack> command = commands.getDispatcher().parse("factions create test", commandSourceStack);
-        int result = commands.performCommand(command, "factions create test");
+        final ServerPlayer serverPlayer = makeMockServerPlayer(player);
+        final CommandSourceStack commandSourceStack = serverPlayer.createCommandSourceStack();
+        final Commands commands = player.getServer().getCommands();
+        final ParseResults<CommandSourceStack> command = commands.getDispatcher().parse("factions create test", commandSourceStack);
+        final int result = commands.performCommand(command, "factions create test");
         assert (result == 1);
     }
 }

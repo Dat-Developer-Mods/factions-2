@@ -16,7 +16,7 @@ public class FLevelCollection extends BaseCollection<ResourceKey<Level>, Faction
         return instance;
     }
 
-    public FactionLevel loadOrCreate(ResourceKey<Level> levelId) {
+    public FactionLevel loadOrCreate(final ResourceKey<Level> levelId) {
         FactionLevel level = Database.instance.loadLevel(levelId);
 
         if (level == null) {

@@ -21,7 +21,7 @@ public class FactionRoleChangePermissionsEvent extends FactionRoleEvent {
      */
     Set<ERolePermissions> newPermissions;
 
-    public FactionRoleChangePermissionsEvent(@Nullable CommandSource instigator, @NotNull Faction faction, @NotNull FactionRole role, Set<ERolePermissions> newPermissions) {
+    public FactionRoleChangePermissionsEvent(@Nullable final CommandSource instigator, @NotNull final Faction faction, @NotNull final FactionRole role, final Set<ERolePermissions> newPermissions) {
         super(instigator, faction, role);
         this.newPermissions = newPermissions;
     }
@@ -30,7 +30,7 @@ public class FactionRoleChangePermissionsEvent extends FactionRoleEvent {
         return newPermissions;
     }
 
-    public void setNewPermissions(Set<ERolePermissions> newPermissions) {
+    public void setNewPermissions(final Set<ERolePermissions> newPermissions) {
         this.newPermissions = newPermissions;
     }
 }

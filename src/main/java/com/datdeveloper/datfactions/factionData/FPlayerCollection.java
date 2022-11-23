@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.UUID;
 
 public class FPlayerCollection extends BaseCollection<UUID, FactionPlayer> {
-    Logger logger = LogUtils.getLogger();
+    final Logger logger = LogUtils.getLogger();
 
     FactionPlayer template;
 
@@ -23,11 +23,11 @@ public class FPlayerCollection extends BaseCollection<UUID, FactionPlayer> {
         template = new FactionPlayer(UUID.randomUUID(), "null");
     }
 
-    public boolean isPlayerRegistered(UUID id) {
+    public boolean isPlayerRegistered(final UUID id) {
         return map.containsKey(id);
     }
 
-    public boolean isPlayerRegistered(ServerPlayer player) {
+    public boolean isPlayerRegistered(final ServerPlayer player) {
         return isPlayerRegistered(player.getUUID());
     }
 
@@ -35,8 +35,8 @@ public class FPlayerCollection extends BaseCollection<UUID, FactionPlayer> {
      * Register a new player to the factions system
      * @param player the player to register
      */
-    public void registerNewPlayer(ServerPlayer player) {
-        FactionPlayer newPlayer = new FactionPlayer(player, template);
+    public void registerNewPlayer(final ServerPlayer player) {
+        final FactionPlayer newPlayer = new FactionPlayer(player, template);
         map.put(player.getUUID(), newPlayer);
         FactionIndex.getInstance().updatePlayer(newPlayer);
         logger.info("Registered new factions player: " + player.getName().getString());
@@ -46,13 +46,13 @@ public class FPlayerCollection extends BaseCollection<UUID, FactionPlayer> {
      * Delete a player from the faction's system
      * @param id The id of the player to deregister
      */
-    public void deregisterPlayer(UUID id) {
-        FactionPlayer player = map.remove(id);
+    public void deregisterPlayer(final UUID id) {
+        final FactionPlayer player = map.remove(id);
         player.setFaction(null, null);
         Database.instance.deletePlayer(player);
     }
 
-    public FactionPlayer getPlayer(ServerPlayer player) {
+    public FactionPlayer getPlayer(final ServerPlayer player) {
         return this.getByKey(player.getUUID());
     }
 
@@ -62,9 +62,9 @@ public class FPlayerCollection extends BaseCollection<UUID, FactionPlayer> {
 
     @Override
     public void initialise() {
-        List<UUID> storedPlayers = Database.instance.getAllStoredPlayers();
-        for (UUID playerId : storedPlayers) {
-            FactionPlayer player = Database.instance.loadPlayer(playerId);
+        final List<UUID> storedPlayers = Database.instance.getAllStoredPlayers();
+        for (final UUID playerId : storedPlayers) {
+            final FactionPlayer player = Database.instance.loadPlayer(playerId);
             if (player == null) continue;
 
             if (player.hasFaction() && FactionCollection.getInstance().getByKey(player.factionId) == null) {

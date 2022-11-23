@@ -13,7 +13,7 @@ import org.jetbrains.annotations.Nullable;
 @Cancelable
 public class FactionChangeDescriptionEvent extends FactionEvent {
     String newDescription;
-    public FactionChangeDescriptionEvent(@Nullable CommandSource instigator, @NotNull Faction faction, String newDescription) {
+    public FactionChangeDescriptionEvent(@Nullable final CommandSource instigator, @NotNull final Faction faction, final String newDescription) {
         super(instigator, faction);
         this.newDescription = newDescription;
     }
@@ -22,7 +22,7 @@ public class FactionChangeDescriptionEvent extends FactionEvent {
         return newDescription;
     }
 
-    public void setNewDescription(String newDescription) {
+    public void setNewDescription(final String newDescription) {
         this.newDescription = newDescription;
     }
 }

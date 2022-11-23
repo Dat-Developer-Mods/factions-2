@@ -1,10 +1,9 @@
 package com.datdeveloper.datfactions.factionData;
 
-import com.datdeveloper.datfactions.Util.RelationUtil;
+import com.datdeveloper.datfactions.util.RelationUtil;
 import com.datdeveloper.datfactions.database.DatabaseEntity;
 import com.datdeveloper.datfactions.factionData.permissions.FactionRole;
 import com.datdeveloper.datmoddingapi.util.DatChatFormatting;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.server.ServerLifecycleHooks;
 import org.jetbrains.annotations.Nullable;
@@ -19,7 +18,7 @@ public class FactionPlayer extends DatabaseEntity {
     /**
      * The id of the player
      */
-    UUID id;
+    final UUID id;
 
     /**
      * The name of the player the last time they logged in
@@ -61,7 +60,7 @@ public class FactionPlayer extends DatabaseEntity {
      */
     transient EFPlayerChatMode chatMode = EFPlayerChatMode.PUBLIC;
 
-    public FactionPlayer(UUID id, String lastName) {
+    public FactionPlayer(final UUID id, final String lastName) {
         this.id = id;
         this.lastName = lastName;
         this.lastActiveTime = System.currentTimeMillis();
@@ -72,7 +71,7 @@ public class FactionPlayer extends DatabaseEntity {
         this.role = null;
     }
 
-    public FactionPlayer(ServerPlayer player, FactionPlayer template) {
+    public FactionPlayer(final ServerPlayer player, final FactionPlayer template) {
         this.id = player.getUUID();
         this.lastName = player.getDisplayName().getString();
         this.lastActiveTime = System.currentTimeMillis();
@@ -124,7 +123,7 @@ public class FactionPlayer extends DatabaseEntity {
     }
 
     public FactionRole getRole() {
-        UUID roleId = getRoleId();
+        final UUID roleId = getRoleId();
         return roleId != null ? getFaction().getRole(roleId) : null;
     }
 
@@ -136,34 +135,34 @@ public class FactionPlayer extends DatabaseEntity {
     /* Setters
     /* ========================================= */
 
-    public void setLastName(String lastName) {
+    public void setLastName(final String lastName) {
         this.lastName = lastName;
         this.markDirty();
     }
 
-    public void setLastActiveTime(long lastActiveTime) {
+    public void setLastActiveTime(final long lastActiveTime) {
         this.lastActiveTime = lastActiveTime;
         this.markDirty();
     }
 
-    public void setAutoClaim(boolean autoClaim) {
+    public void setAutoClaim(final boolean autoClaim) {
         this.autoClaim = autoClaim;
     }
 
-    public void setPower(int power) {
+    public void setPower(final int power) {
         this.power = power;
         this.markDirty();
     }
 
-    public void setMaxPower(int maxPower) {
+    public void setMaxPower(final int maxPower) {
         this.maxPower = maxPower;
         this.markDirty();
     }
 
-    public void setFaction(UUID factionId, UUID roleId) {
+    public void setFaction(final UUID factionId, final UUID roleId) {
         if (Objects.equals(this.factionId, factionId)) return;
 
-        Faction oldFaction = getFaction();
+        final Faction oldFaction = getFaction();
 
         this.factionId = factionId;
         this.role = roleId;
@@ -177,7 +176,7 @@ public class FactionPlayer extends DatabaseEntity {
         this.markDirty();
     }
 
-    public void setRole(UUID role) {
+    public void setRole(final UUID role) {
         this.role = role;
     }
 

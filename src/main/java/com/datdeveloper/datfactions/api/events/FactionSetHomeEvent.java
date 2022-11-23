@@ -23,7 +23,7 @@ public class FactionSetHomeEvent extends FactionEvent {
      */
     BlockPos newHomePos;
 
-    public FactionSetHomeEvent(@Nullable CommandSource instigator, @NotNull Faction faction, ResourceKey<Level> newHomeLevel, BlockPos newHomePos) {
+    public FactionSetHomeEvent(@Nullable final CommandSource instigator, @NotNull final Faction faction, final ResourceKey<Level> newHomeLevel, final BlockPos newHomePos) {
         super(instigator, faction);
         this.newHomeLevel = newHomeLevel;
         this.newHomePos = newHomePos;
@@ -33,7 +33,7 @@ public class FactionSetHomeEvent extends FactionEvent {
         return newHomeLevel;
     }
 
-    public void setNewHomeLevel(ResourceKey<Level> newHomeLevel) {
+    public void setNewHomeLevel(final ResourceKey<Level> newHomeLevel) {
         this.newHomeLevel = newHomeLevel;
     }
 
@@ -41,7 +41,7 @@ public class FactionSetHomeEvent extends FactionEvent {
         return newHomePos;
     }
 
-    public void setNewHomePos(BlockPos newHomePos) {
+    public void setNewHomePos(final BlockPos newHomePos) {
         this.newHomePos = newHomePos;
     }
 }

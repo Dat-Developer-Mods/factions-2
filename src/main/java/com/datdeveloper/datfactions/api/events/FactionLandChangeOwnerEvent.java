@@ -3,11 +3,8 @@ package com.datdeveloper.datfactions.api.events;
 import com.datdeveloper.datfactions.factionData.Faction;
 import com.datdeveloper.datfactions.factionData.FactionLevel;
 import net.minecraft.commands.CommandSource;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.ChunkPos;
-import net.minecraft.world.level.Level;
 import net.minecraftforge.eventbus.api.Cancelable;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -29,7 +26,7 @@ public class FactionLandChangeOwnerEvent extends BaseFactionEvent {
      * The previous owner of the chunk
      */
     @Nullable
-    Faction oldOwner;
+    final Faction oldOwner;
 
     /**
      * The new owner of the chunk
@@ -37,7 +34,7 @@ public class FactionLandChangeOwnerEvent extends BaseFactionEvent {
     @Nullable
     Faction newOwner;
 
-    public FactionLandChangeOwnerEvent(@Nullable CommandSource instigator, ChunkPos chunkPos, FactionLevel level, @Nullable Faction oldOwner, @Nullable Faction newOwner) {
+    public FactionLandChangeOwnerEvent(@Nullable final CommandSource instigator, final ChunkPos chunkPos, final FactionLevel level, @Nullable final Faction oldOwner, @Nullable final Faction newOwner) {
         super(instigator);
         this.chunkPos = chunkPos;
         this.level = level;
@@ -49,7 +46,7 @@ public class FactionLandChangeOwnerEvent extends BaseFactionEvent {
         return chunkPos;
     }
 
-    public void setChunkPos(ChunkPos chunkPos) {
+    public void setChunkPos(final ChunkPos chunkPos) {
         this.chunkPos = chunkPos;
     }
 
@@ -57,7 +54,7 @@ public class FactionLandChangeOwnerEvent extends BaseFactionEvent {
         return level;
     }
 
-    public void setLevel(FactionLevel level) {
+    public void setLevel(final FactionLevel level) {
         this.level = level;
     }
 
@@ -69,7 +66,7 @@ public class FactionLandChangeOwnerEvent extends BaseFactionEvent {
         return newOwner;
     }
 
-    public void setNewOwner(@Nullable Faction newOwner) {
+    public void setNewOwner(@Nullable final Faction newOwner) {
         this.newOwner = newOwner;
     }
 }

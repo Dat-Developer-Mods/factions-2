@@ -16,14 +16,14 @@ public class FactionPlayerPowerChangeEvent extends FactionPlayerEvent {
      * The other player involved (if there is one)
      */
     @Nullable
-    FactionPlayer otherPlayer;
+    final FactionPlayer otherPlayer;
 
     /**
      * The change in power
      */
     int powerChange;
 
-    public FactionPlayerPowerChangeEvent(@Nullable CommandSource instigator, @NotNull FactionPlayer player, @Nullable FactionPlayer otherPlayer, int powerChange) {
+    public FactionPlayerPowerChangeEvent(@Nullable final CommandSource instigator, @NotNull final FactionPlayer player, @Nullable final FactionPlayer otherPlayer, final int powerChange) {
         super(instigator, player);
         this.otherPlayer = otherPlayer;
         this.powerChange = powerChange;
@@ -37,7 +37,7 @@ public class FactionPlayerPowerChangeEvent extends FactionPlayerEvent {
         return powerChange;
     }
 
-    public void setPowerChange(int powerChange) {
+    public void setPowerChange(final int powerChange) {
         this.powerChange = powerChange;
     }
 

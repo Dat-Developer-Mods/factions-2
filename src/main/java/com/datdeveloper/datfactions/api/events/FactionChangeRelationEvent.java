@@ -15,20 +15,20 @@ public class FactionChangeRelationEvent extends FactionEvent {
      * The faction the relation is with
      */
     @NotNull
-    Faction otherFaction;
+    final Faction otherFaction;
 
     /**
      * The new relation with the other faction
      */
     EFactionRelation newRelation;
 
-    public FactionChangeRelationEvent(@Nullable CommandSource instigator, @NotNull Faction faction, @NotNull Faction otherFaction, EFactionRelation newRelation) {
+    public FactionChangeRelationEvent(@Nullable final CommandSource instigator, @NotNull final Faction faction, @NotNull final Faction otherFaction, final EFactionRelation newRelation) {
         super(instigator, faction);
         this.otherFaction = otherFaction;
         this.newRelation = newRelation;
     }
 
-    public Faction getOtherFaction() {
+    public @NotNull Faction getOtherFaction() {
         return otherFaction;
     }
 
@@ -36,7 +36,7 @@ public class FactionChangeRelationEvent extends FactionEvent {
         return newRelation;
     }
 
-    public void setNewRelation(EFactionRelation newRelation) {
+    public void setNewRelation(final EFactionRelation newRelation) {
         this.newRelation = newRelation;
     }
 }

@@ -14,7 +14,7 @@ public class ServerEvents {
      * Register permissions
      */
     @SubscribeEvent
-    public static void registerPermissionNodes(PermissionGatherEvent.Nodes event) {
+    public static void registerPermissionNodes(final PermissionGatherEvent.Nodes event) {
         FactionPermissions.registerPermissionNodes(event);
     }
 
@@ -22,7 +22,7 @@ public class ServerEvents {
      * Register commands
      */
     @SubscribeEvent
-    public static void registerCommands(RegisterCommandsEvent event) {
+    public static void registerCommands(final RegisterCommandsEvent event) {
         FactionsCommand.register(event.getDispatcher());
     }
 }

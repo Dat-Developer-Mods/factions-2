@@ -26,7 +26,7 @@ public enum EFactionFlags {
 
     public final boolean admin;
     public final String description;
-    EFactionFlags(boolean admin, String description) {
+    EFactionFlags(final boolean admin, final String description) {
         this.admin = admin;
         this.description = description;
     }

@@ -9,14 +9,14 @@ public class ChunkClaim {
     /**
      * The faction that claimed the chunk
      */
-    UUID factionId;
+    final UUID factionId;
 
     /**
      * The timestamp of when the chunk was claimed
      */
-    long claimTime;
+    final long claimTime;
 
-    public ChunkClaim(UUID factionId) {
+    public ChunkClaim(final UUID factionId) {
         this.factionId = factionId;
         claimTime = System.currentTimeMillis();
     }

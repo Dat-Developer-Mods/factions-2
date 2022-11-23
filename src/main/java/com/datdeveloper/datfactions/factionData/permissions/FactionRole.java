@@ -11,7 +11,7 @@ public class FactionRole extends DatabaseEntity {
     /**
      * The role's ID
      */
-    UUID id;
+    final UUID id;
 
     /**
      * The name of the role
@@ -28,7 +28,7 @@ public class FactionRole extends DatabaseEntity {
      */
     Set<ERolePermissions> permissions;
 
-    public FactionRole(String name) {
+    public FactionRole(final String name) {
         this.id = UUID.randomUUID();
         this.name = name;
         this.administrator = false;
@@ -39,7 +39,7 @@ public class FactionRole extends DatabaseEntity {
      * Copy Constructor
      * @param role The role to copy
      */
-    public FactionRole(FactionRole role) {
+    public FactionRole(final FactionRole role) {
         this.id = UUID.randomUUID();
         this.name = role.name;
         this.administrator = role.administrator;
@@ -71,11 +71,11 @@ public class FactionRole extends DatabaseEntity {
     /* Setters
     /* ========================================= */
 
-    public void setName(String name) {
+    public void setName(final String name) {
         this.name = name;
     }
 
-    public void setAdministrator(boolean administrator) {
+    public void setAdministrator(final boolean administrator) {
         this.administrator = administrator;
     }
 
@@ -83,15 +83,15 @@ public class FactionRole extends DatabaseEntity {
     /* Permission Management
     /* ========================================= */
 
-    public boolean hasPermission(ERolePermissions permission) {
+    public boolean hasPermission(final ERolePermissions permission) {
         return administrator || permissions.contains(permission);
     }
 
-    public void addPermission(ERolePermissions permission) {
+    public void addPermission(final ERolePermissions permission) {
         this.permissions.add(permission);
     }
 
-    public void removePermission(ERolePermissions permission) {
+    public void removePermission(final ERolePermissions permission) {
         this.permissions.remove(permission);
     }
 
@@ -100,7 +100,7 @@ public class FactionRole extends DatabaseEntity {
     /* ========================================= */
 
     public static List<FactionRole> getDefaultRoles() {
-        List<FactionRole> roles = new ArrayList<>();
+        final List<FactionRole> roles = new ArrayList<>();
         roles.add(defaultOwnerRole());
         roles.add(defaultOfficerRole());
         roles.add(defaultMemberRole());
@@ -110,7 +110,7 @@ public class FactionRole extends DatabaseEntity {
     }
 
     public static FactionRole defaultOwnerRole() {
-        FactionRole owner = new FactionRole("Owner");
+        final FactionRole owner = new FactionRole("Owner");
 
         owner.administrator = true;
 
@@ -118,7 +118,7 @@ public class FactionRole extends DatabaseEntity {
     }
 
     public static FactionRole defaultOfficerRole() {
-        FactionRole officer = new FactionRole("Officer");
+        final FactionRole officer = new FactionRole("Officer");
 
         officer.permissions = new HashSet<>(Arrays.asList(
                 ERolePermissions.INVITE,
@@ -161,7 +161,7 @@ public class FactionRole extends DatabaseEntity {
     }
 
     public static FactionRole defaultMemberRole() {
-        FactionRole member = new FactionRole("Member");
+        final FactionRole member = new FactionRole("Member");
 
         member.permissions = new HashSet<>(Arrays.asList(
                 // Land
@@ -184,7 +184,7 @@ public class FactionRole extends DatabaseEntity {
     }
 
     public static FactionRole defaultRecruitRole() {
-        FactionRole recruit = new FactionRole("Recruit");
+        final FactionRole recruit = new FactionRole("Recruit");
 
         recruit.permissions = new HashSet<>(Arrays.asList(
                 ERolePermissions.FACTIONCHAT,

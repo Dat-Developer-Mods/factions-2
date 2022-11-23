@@ -41,9 +41,9 @@ public class DataEvents {
      * Load faction data for world
      */
     @SubscribeEvent
-    public static void serverStart(ServerAboutToStartEvent event) {
+    public static void serverStart(final ServerAboutToStartEvent event) {
         logger.info("Factions loading factions and players");
-        Path worldPath = event.getServer().getWorldPath(new LevelResource("datfactions"));
+        final Path worldPath = event.getServer().getWorldPath(new LevelResource("datfactions"));
         Database.instance = new FlatFileDatabase(worldPath);
         FactionCollection.getInstance().initialise();
         FPlayerCollection.getInstance().initialise();
@@ -55,7 +55,7 @@ public class DataEvents {
      * Unload faction stuff
      */
     @SubscribeEvent
-    public static void onServerStopping(ServerStoppedEvent event) {
+    public static void onServerStopping(final ServerStoppedEvent event) {
         logger.info("Factions system unloading");
         FactionIndex.getInstance().uninitialise();
         FLevelCollection.getInstance().uninitialise();
@@ -74,7 +74,7 @@ public class DataEvents {
      * Save factions at the same time the world is saved
      */
     @SubscribeEvent
-    public static void LevelSave(LevelEvent.Save event) {
+    public static void LevelSave(final LevelEvent.Save event) {
         // This fires for all levels, we just want to save once, so only run on the overworld
         if (!ServerLevel.OVERWORLD.equals(((ServerLevel) event.getLevel()).dimension())) return;
 
@@ -94,10 +94,10 @@ public class DataEvents {
      * Or when a new level is created like by infiniverse or rftools
      */
     @SubscribeEvent
-    public static void worldLoad(LevelEvent.Load event) {
+    public static void worldLoad(final LevelEvent.Load event) {
         if (event.getLevel().isClientSide()) return;
 
-        ResourceKey<Level> levelId = ((ServerLevel) event.getLevel()).dimension();
+        final ResourceKey<Level> levelId = ((ServerLevel) event.getLevel()).dimension();
         logger.info("Factions loading level " + levelId);
         FLevelCollection.getInstance().loadOrCreate(levelId);
     }
@@ -111,9 +111,9 @@ public class DataEvents {
      * High priority to catch it before we handle the player again later in {@link PlayerEvents}
      */
     @SubscribeEvent(priority = EventPriority.HIGH)
-    public static void playerJoin(PlayerEvent.PlayerLoggedInEvent event) {
-        ServerPlayer player = (ServerPlayer) event.getEntity();
-        FPlayerCollection playerCollection = FPlayerCollection.getInstance();
+    public static void playerJoin(final PlayerEvent.PlayerLoggedInEvent event) {
+        final ServerPlayer player = (ServerPlayer) event.getEntity();
+        final FPlayerCollection playerCollection = FPlayerCollection.getInstance();
 
         if (playerCollection.isPlayerRegistered(player)) return;
 
@@ -124,11 +124,11 @@ public class DataEvents {
      * Remove a player from the database system if they're banned and the config says to
      */
     @SubscribeEvent
-    public static void playerLeave(PlayerEvent.PlayerLoggedOutEvent event) {
+    public static void playerLeave(final PlayerEvent.PlayerLoggedOutEvent event) {
         if (!FactionsConfig.getRemovePlayerOnBan()) return;
 
-        MinecraftServer server = event.getEntity().getServer();
-        ServerPlayer player = (ServerPlayer) event.getEntity();
+        final MinecraftServer server = event.getEntity().getServer();
+        final ServerPlayer player = (ServerPlayer) event.getEntity();
 
         if (!server.getPlayerList().getBans().isBanned(player.getGameProfile())) return;
 

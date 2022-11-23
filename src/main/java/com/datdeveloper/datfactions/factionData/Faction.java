@@ -1,6 +1,6 @@
 package com.datdeveloper.datfactions.factionData;
 
-import com.datdeveloper.datfactions.Util.RelationUtil;
+import com.datdeveloper.datfactions.util.RelationUtil;
 import com.datdeveloper.datfactions.database.DatabaseEntity;
 import com.datdeveloper.datfactions.factionData.permissions.FactionRole;
 import com.datdeveloper.datmoddingapi.util.DatChatFormatting;
@@ -20,7 +20,7 @@ public class Faction extends DatabaseEntity {
     /**
      * The faction's ID
      */
-    UUID id;
+    final UUID id;
 
     /**
      * The faction's name
@@ -35,12 +35,12 @@ public class Faction extends DatabaseEntity {
     /**
      * The faction's MOTD
      */
-    String motd;
+    final String motd;
 
     /**
      * The amount of bonus power that the faction has
      */
-    int factionPower;
+    final int factionPower;
 
     /**
      * The timestamp the faction was created
@@ -60,23 +60,23 @@ public class Faction extends DatabaseEntity {
     /**
      * The invites to players the faction has
      */
-    List<UUID> playerInvites;
+    final List<UUID> playerInvites;
 
     /**
      * The roles the faction has, in order from owner to recruit (owner at position 0, recruit in last place)
      */
-    List<FactionRole> roles;
+    final List<FactionRole> roles;
 
     /**
      * A set of flags the faction has
      */
-    Set<EFactionFlags> flags;
+    final Set<EFactionFlags> flags;
     /**
      * The relations the faction has
      */
-    Map<UUID, FactionRelation> relations;
+    final Map<UUID, FactionRelation> relations;
 
-    public Faction(UUID id, String name) {
+    public Faction(final UUID id, final String name) {
         this.id = id;
         this.name = name;
         this.description = "";
@@ -95,7 +95,7 @@ public class Faction extends DatabaseEntity {
         this.relations = new HashMap<>();
     }
 
-    public Faction(UUID id, String name, Faction template) {
+    public Faction(final UUID id, final String name, final Faction template) {
         this.id = id;
         this.name = name;
         this.description = "";
@@ -112,7 +112,7 @@ public class Faction extends DatabaseEntity {
 
         // Deep Copy roles
         this.roles = new ArrayList<>();
-        for (FactionRole role : template.roles) {
+        for (final FactionRole role : template.roles) {
             this.roles.add(new FactionRole(role));
         }
 
@@ -162,28 +162,28 @@ public class Faction extends DatabaseEntity {
     /* Setters
     /* ========================================= */
 
-    public void setName(String newName) {
+    public void setName(final String newName) {
         if (newName.equals(name) || newName.isEmpty()) return;
 
         this.name = newName;
         markDirty();
     }
 
-    public void setDescription(String newDescription) {
+    public void setDescription(final String newDescription) {
         if (newDescription.equals(description)) return;
         
         this.description = newDescription;
         markDirty();
     }
 
-    public void setMotd(String newMotd) {
+    public void setMotd(final String newMotd) {
         if (newMotd.equals(motd)) return;
 
         this.description = newMotd;
         markDirty();
     }
 
-    public void setFactionHome(ResourceKey<Level> newHomeLevel, BlockPos newHomeLocation) {
+    public void setFactionHome(final ResourceKey<Level> newHomeLevel, final BlockPos newHomeLocation) {
         this.homeLocation = newHomeLocation;
         this.homeLevel = newHomeLevel;
         markDirty();
@@ -211,7 +211,7 @@ public class Faction extends DatabaseEntity {
      * @param chunkPos The position of the chunk
      * @return True if the faction owns the chunk
      */
-    private boolean checkOwnsChunk(ResourceKey<Level> level, ChunkPos chunkPos) {
+    private boolean checkOwnsChunk(final ResourceKey<Level> level, final ChunkPos chunkPos) {
         return this.getId().equals(FLevelCollection.getInstance().getByKey(level).getChunkOwner(chunkPos));
     }
 
@@ -220,7 +220,7 @@ public class Faction extends DatabaseEntity {
      * @param level The level to check
      * @return the total worth of the chunks the faction owns in the specified level
      */
-    public int getLandWorthInLevel(FactionLevel level) {
+    public int getLandWorthInLevel(final FactionLevel level) {
         return level.getClaimsWorth(this.getId());
     }
 
@@ -262,7 +262,7 @@ public class Faction extends DatabaseEntity {
      * @param roleId the ID of the role
      * @return the role with the given ID, or null if it doesn't exist
      */
-    public FactionRole getRole(UUID roleId) {
+    public FactionRole getRole(final UUID roleId) {
         return roles.stream()
                 .filter(role -> roleId.equals(role.getId()))
                 .findFirst()
@@ -274,7 +274,7 @@ public class Faction extends DatabaseEntity {
      * @param roleName The name of the role
      * @return The role with the given name, or null if it doesn't exist
      */
-    public FactionRole getRoleByName(String roleName) {
+    public FactionRole getRoleByName(final String roleName) {
         return roles.stream()
                 .filter(role -> roleName.equals(role.getName()))
                 .findFirst()
@@ -286,7 +286,7 @@ public class Faction extends DatabaseEntity {
      * @param roleId The ID of the role
      * @return The index of the role with the given ID, or -1 if it doesn't exist
      */
-    public int getRoleIndex(UUID roleId) {
+    public int getRoleIndex(final UUID roleId) {
         return IntStream.range(0, roles.size())
                 .filter(i -> roleId.equals(roles.get(i).getId()))
                 .findFirst()
@@ -298,7 +298,7 @@ public class Faction extends DatabaseEntity {
      * @param roleName The name of the role
      * @return The index of the role with the given name, or -1 if it doesn't exist
      */
-    public int getRoleIndexByName(String roleName) {
+    public int getRoleIndexByName(final String roleName) {
         return IntStream.range(0, roles.size())
                 .filter(i -> roleName.equals(roles.get(i).getName()))
                 .findFirst()
@@ -311,17 +311,17 @@ public class Faction extends DatabaseEntity {
      * @param roleParent The parent of the new role
      * @return the new role
      */
-    public FactionRole createNewRole(String roleName, String roleParent) {
+    public FactionRole createNewRole(final String roleName, final String roleParent) {
         if (getRoleByName(roleName) != null) {
             return null;
         }
 
-        int parentIndex = getRoleIndexByName(roleParent);
+        final int parentIndex = getRoleIndexByName(roleParent);
         if (parentIndex == -1) {
             return null;
         }
 
-        FactionRole newRole = new FactionRole(roleName);
+        final FactionRole newRole = new FactionRole(roleName);
         this.roles.add(parentIndex, newRole);
 
         markDirty();
@@ -333,8 +333,8 @@ public class Faction extends DatabaseEntity {
      * @param roleId The id of the role to change
      * @param newParentId The new parent of the role
      */
-    public void setRoleParent(UUID roleId, UUID newParentId) {
-        FactionRole role = getRole(roleId);
+    public void setRoleParent(final UUID roleId, final UUID newParentId) {
+        final FactionRole role = getRole(roleId);
         if (role == null || roleId.equals(newParentId)) {
             return;
         }
@@ -343,7 +343,7 @@ public class Faction extends DatabaseEntity {
                 || role.getId().equals(getRecruitRole().getId())) {
             return;
         }
-        FactionRole newParentRole = getRole(newParentId);
+        final FactionRole newParentRole = getRole(newParentId);
         if (newParentRole == null) {
             return;
         }
@@ -353,7 +353,7 @@ public class Faction extends DatabaseEntity {
         }
 
         roles.remove(role);
-        int newIndex = roles.indexOf(newParentRole);
+        final int newIndex = roles.indexOf(newParentRole);
         roles.add(newIndex, role);
 
         markDirty();
@@ -363,8 +363,8 @@ public class Faction extends DatabaseEntity {
      * Remove the roll with the given ID
      * @param roleId the ID of the role to remove
      */
-    public void removeRole(UUID roleId) {
-        FactionRole role = getRole(roleId);
+    public void removeRole(final UUID roleId) {
+        final FactionRole role = getRole(roleId);
         if (role == null) {
             return;
         }
@@ -389,7 +389,7 @@ public class Faction extends DatabaseEntity {
         return flags;
     }
 
-    public boolean hasFlag(EFactionFlags flag) {
+    public boolean hasFlag(final EFactionFlags flag) {
         return flags.contains(flag);
     }
 
@@ -397,7 +397,7 @@ public class Faction extends DatabaseEntity {
      * Add a flag to the faction
      * @param flag The flag to add
      */
-    public void addFlag(EFactionFlags flag) {
+    public void addFlag(final EFactionFlags flag) {
         if (flags.contains(flag)) return;
 
         flags.add(flag);
@@ -408,7 +408,7 @@ public class Faction extends DatabaseEntity {
      * Remove a flag from the faction
      * @param flag The flag to remove
      */
-    public void removeFlag(EFactionFlags flag) {
+    public void removeFlag(final EFactionFlags flag) {
         if (!flags.contains(flag)) return;
 
         flags.remove(flag);
@@ -424,11 +424,11 @@ public class Faction extends DatabaseEntity {
         return relations;
     }
 
-    public FactionRelation getRelation(UUID otherFaction) {
+    public FactionRelation getRelation(final UUID otherFaction) {
         return relations.get(otherFaction);
     }
 
-    public FactionRelation getRelation(Faction otherFaction) {
+    public FactionRelation getRelation(final Faction otherFaction) {
         return getRelation(otherFaction.id);
     }
 
@@ -438,8 +438,8 @@ public class Faction extends DatabaseEntity {
      * @param newRelation The relation to have with the faction
      * @return the faction relation
      */
-    public FactionRelation setRelation(@NotNull Faction otherFaction, EFactionRelation newRelation) {
-        FactionRelation relation = getRelation(otherFaction);
+    public FactionRelation setRelation(@NotNull final Faction otherFaction, final EFactionRelation newRelation) {
+        final FactionRelation relation = getRelation(otherFaction);
         if ((relation == null && newRelation == EFactionRelation.NEUTRAL)
                 || (relation != null && relation.relation == newRelation)) return relation;
 
@@ -448,7 +448,7 @@ public class Faction extends DatabaseEntity {
             return null;
         }
 
-        FactionRelation factionRelation = new FactionRelation(newRelation);
+        final FactionRelation factionRelation = new FactionRelation(newRelation);
         relations.put(otherFaction.getId(), factionRelation);
 
         return factionRelation;
@@ -463,10 +463,10 @@ public class Faction extends DatabaseEntity {
      * @param otherFaction The faction that created the relation
      * @param fromRelation The relation that's been created
      */
-    public void informRelation(Faction otherFaction, EFactionRelation fromRelation) {
-        FactionRelation toRelation = getRelation(otherFaction);
-        EFactionRelation toRelationType = toRelation != null ? toRelation.relation : EFactionRelation.NEUTRAL;
-        MutableComponent message = MutableComponent.create(RelationUtil.wrapFactionName(this, otherFaction).getContents());
+    public void informRelation(final Faction otherFaction, final EFactionRelation fromRelation) {
+        final FactionRelation toRelation = getRelation(otherFaction);
+        final EFactionRelation toRelationType = toRelation != null ? toRelation.relation : EFactionRelation.NEUTRAL;
+        final MutableComponent message = MutableComponent.create(RelationUtil.wrapFactionName(this, otherFaction).getContents());
         message.append(DatChatFormatting.TextColour.INFO.toString());
         switch (fromRelation){
             case ALLY -> {
@@ -491,21 +491,14 @@ public class Faction extends DatabaseEntity {
             case TRUCE -> {
                 message.append(" has declared a truce with you, ");
                 switch (toRelationType) {
-                    case ALLY:
-                        message.append("you still regard them as allies");
-                        break;
-                    case TRUCE:
-                        message.append("you are now both at truce and are prevented from dealing pvp damage with each other, ");
-                        break;
-                    case NEUTRAL:
-                        message.append("you can also declare a truce with them with ")
-                                .append(DatChatFormatting.TextColour.COMMAND.toString())
-                                .append("/faction truce ")
-                                .append(RelationUtil.wrapFactionName(this, otherFaction));
-                        break;
-                    case ENEMY:
-                        message.append("but you still regard them as an enemy");
-                        break;
+                    case ALLY -> message.append("you still regard them as allies");
+                    case TRUCE ->
+                            message.append("you are now both at truce and are prevented from dealing pvp damage with each other, ");
+                    case NEUTRAL -> message.append("you can also declare a truce with them with ")
+                            .append(DatChatFormatting.TextColour.COMMAND.toString())
+                            .append("/faction truce ")
+                            .append(RelationUtil.wrapFactionName(this, otherFaction));
+                    case ENEMY -> message.append("but you still regard them as an enemy");
                 }
             }
             case ENEMY -> {
@@ -547,9 +540,9 @@ public class Faction extends DatabaseEntity {
      * Send a message to every member in the faction
      * @param message The message to send
      */
-    public void sendFactionWideMessage(Component message) {
+    public void sendFactionWideMessage(final Component message) {
         getPlayers().forEach(player -> {
-            ServerPlayer serverPlayer = player.getServerPlayer();
+            final ServerPlayer serverPlayer = player.getServerPlayer();
             if (serverPlayer != null) serverPlayer.sendSystemMessage(message);
         });
     }
@@ -559,7 +552,9 @@ public class Faction extends DatabaseEntity {
      * @return A chat component with the message
      */
     public Component getChatSummary() {
-        StringBuilder message = new StringBuilder();
+        final StringBuilder message = new StringBuilder();
+
+
 
         return Component.literal("");
     }

@@ -14,7 +14,7 @@ public class CreateFactionEvent extends BaseFactionEvent {
      * The name of the faction
      */
     String name;
-    public CreateFactionEvent(@Nullable CommandSource instigator, String name) {
+    public CreateFactionEvent(@Nullable final CommandSource instigator, final String name) {
         super(instigator);
         this.name = name;
     }
@@ -23,7 +23,7 @@ public class CreateFactionEvent extends BaseFactionEvent {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(final String name) {
         this.name = name;
     }
 }

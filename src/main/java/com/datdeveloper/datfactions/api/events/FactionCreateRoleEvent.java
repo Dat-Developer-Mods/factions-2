@@ -22,7 +22,7 @@ public class FactionCreateRoleEvent extends FactionEvent {
      */
     String newRoleParent;
 
-    public FactionCreateRoleEvent(@Nullable CommandSource instigator, @NotNull Faction faction, String newRoleName, String newRoleParent) {
+    public FactionCreateRoleEvent(@Nullable final CommandSource instigator, @NotNull final Faction faction, final String newRoleName, final String newRoleParent) {
         super(instigator, faction);
         this.newRoleName = newRoleName;
         this.newRoleParent = newRoleParent;
@@ -32,7 +32,7 @@ public class FactionCreateRoleEvent extends FactionEvent {
         return newRoleName;
     }
 
-    public void setNewRoleName(String newRoleName) {
+    public void setNewRoleName(final String newRoleName) {
         this.newRoleName = newRoleName;
     }
 
@@ -40,7 +40,7 @@ public class FactionCreateRoleEvent extends FactionEvent {
         return newRoleParent;
     }
 
-    public void setNewRoleParent(String newRoleParent) {
+    public void setNewRoleParent(final String newRoleParent) {
         this.newRoleParent = newRoleParent;
     }
 }

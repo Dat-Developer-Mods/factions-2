@@ -12,8 +12,8 @@ public class FactionEvent extends BaseFactionEvent {
     /**
      * The faction the player is currently in
      */
-    Faction playerFaction;
-    FactionEvent(@Nullable CommandSource instigator, @NotNull Faction faction) {
+    final Faction playerFaction;
+    FactionEvent(@Nullable final CommandSource instigator, @NotNull final Faction faction) {
         super(instigator);
         this.playerFaction = faction;
     }

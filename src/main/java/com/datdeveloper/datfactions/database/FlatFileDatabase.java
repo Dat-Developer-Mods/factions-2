@@ -35,8 +35,8 @@ import java.util.stream.Stream;
 
 public class FlatFileDatabase extends Database {
     private static final Logger logger = LogUtils.getLogger();
-    Path savePath;
-    Gson gson;
+    final Path savePath;
+    final Gson gson;
 
     /**
      * Build a Gson instance with all the config we want
@@ -53,7 +53,7 @@ public class FlatFileDatabase extends Database {
                 .create();
     }
 
-    public FlatFileDatabase(Path savePath) {
+    public FlatFileDatabase(final Path savePath) {
         this.savePath = savePath;
         gson = buildGson();
 
@@ -89,17 +89,17 @@ public class FlatFileDatabase extends Database {
      * @param path the path to get all the files from
      * @return a list of UUIDs
      */
-    private List<UUID> getAllFilesInPathAsUUID(Path path) {
-        try (Stream<Path> files = Files.list(path)) {
+    private List<UUID> getAllFilesInPathAsUUID(final Path path) {
+        try (final Stream<Path> files = Files.list(path)) {
             return files.filter(dir -> dir.toFile().isFile())
                     .map(dir -> {
-                        String name = dir.getFileName().toString();
-                        int index = name.lastIndexOf('.');
+                        final String name = dir.getFileName().toString();
+                        final int index = name.lastIndexOf('.');
                         return index != -1 ? name.substring(0, index) : name;
                     })
                     .map(UUID::fromString)
                     .collect(Collectors.toList());
-        } catch (IOException e) {
+        } catch (final IOException e) {
             throw new RuntimeException("Failed to get files in " + path, e);
         }
     }
@@ -114,7 +114,7 @@ public class FlatFileDatabase extends Database {
                 Files.createDirectory(getFactionsPath());
                 Files.createDirectory(getPlayersPath());
                 Files.createDirectory(getLevelsPath());
-            } catch (IOException e) {
+            } catch (final IOException e) {
                 throw new RuntimeException("Unable to create faction data in the world directory, can we access it?", e);
             }
         }
@@ -122,12 +122,13 @@ public class FlatFileDatabase extends Database {
 
     @Override
     public void nukeDatabase() {
-        try (Stream<Path> fileStream = Files.walk(savePath)) {
+        try (final Stream<Path> fileStream = Files.walk(savePath)) {
+            //noinspection ResultOfMethodCallIgnored
             fileStream
                     .sorted(Comparator.reverseOrder())
                     .map(Path::toFile)
                     .forEach(File::delete);
-        } catch (IOException e) {
+        } catch (final IOException e) {
             logger.warn("Failed to nuke Flatfile database");
         }
         setupPaths();
@@ -138,37 +139,37 @@ public class FlatFileDatabase extends Database {
     /* ========================================= */
 
     @Override
-    public void storeFaction(Faction faction) {
-        Path filePath = getFactionsPath().resolve(faction.getId() + ".json");
+    public void storeFaction(final Faction faction) {
+        final Path filePath = getFactionsPath().resolve(faction.getId() + ".json");
 
-        try (FileWriter writer = new FileWriter(filePath.toFile())) {
+        try (final FileWriter writer = new FileWriter(filePath.toFile())) {
             gson.toJson(faction, writer);
-        } catch (IOException e) {
+        } catch (final IOException e) {
             logger.error("Failed to write faction " + faction.getName() + " (" + faction.getId() + ") to disk, the latest changes will disappear after a server reload");
         }
     }
 
     @Override
-    public void deleteFaction(Faction faction) {
-        Path filePath = getFactionsPath().resolve(faction.getId() + ".json");
+    public void deleteFaction(final Faction faction) {
+        final Path filePath = getFactionsPath().resolve(faction.getId() + ".json");
         try {
             Files.deleteIfExists(filePath);
-        } catch (IOException e) {
+        } catch (final IOException e) {
             logger.error("Failed to delete faction " + faction.getName() + " (" + faction.getId() + ") from the disk, they may still be loaded next server restart");
         }
     }
 
     @Override
     @Nullable
-    public Faction loadFaction(UUID factionId) {
-        Path filePath = getFactionsPath().resolve(factionId.toString() + ".json");
+    public Faction loadFaction(final UUID factionId) {
+        final Path filePath = getFactionsPath().resolve(factionId.toString() + ".json");
         if (!(Files.exists(filePath) && Files.isRegularFile(filePath))) return null;
 
-        try (Reader reader = new FileReader(filePath.toFile())) {
+        try (final Reader reader = new FileReader(filePath.toFile())) {
             return gson.fromJson(reader, Faction.class);
-        } catch (JsonSyntaxException e) {
+        } catch (final JsonSyntaxException e) {
             logger.warn("Failed to load faction " + factionId + ", assuming corrupt and discarding");
-        } catch (IOException ignored) {
+        } catch (final IOException ignored) {
         }
 
         return null;
@@ -177,26 +178,26 @@ public class FlatFileDatabase extends Database {
     @Override
     @Nullable
     public Faction loadFactionTemplate() {
-        Path filePath = getFactionsPath().resolve("template.json");
+        final Path filePath = getFactionsPath().resolve("template.json");
         if (!(Files.exists(filePath) && Files.isRegularFile(filePath))) return null;
 
-        try (Reader reader = new FileReader(filePath.toFile())) {
+        try (final Reader reader = new FileReader(filePath.toFile())) {
             return gson.fromJson(reader, Faction.class);
-        } catch (JsonSyntaxException e) {
+        } catch (final JsonSyntaxException e) {
             logger.warn("Failed to load faction template, assuming corrupt and discarding");
-        } catch (IOException ignored) {
+        } catch (final IOException ignored) {
         }
 
         return null;
     }
 
     @Override
-    public void storeFactionTemplate(Faction template) {
-        Path filePath = getFactionsPath().resolve("template.json");
+    public void storeFactionTemplate(final Faction template) {
+        final Path filePath = getFactionsPath().resolve("template.json");
 
-        try (FileWriter writer = new FileWriter(filePath.toFile())) {
+        try (final FileWriter writer = new FileWriter(filePath.toFile())) {
             gson.toJson(template, writer);
-        } catch (IOException e) {
+        } catch (final IOException e) {
             logger.error("Failed to write faction template to disk");
         }
     }
@@ -212,37 +213,37 @@ public class FlatFileDatabase extends Database {
     /* ========================================= */
 
     @Override
-    public void storePlayer(FactionPlayer player) {
-        Path filePath = getPlayersPath().resolve(player.getId() + ".json");
+    public void storePlayer(final FactionPlayer player) {
+        final Path filePath = getPlayersPath().resolve(player.getId() + ".json");
 
-        try (FileWriter writer = new FileWriter(filePath.toFile())) {
+        try (final FileWriter writer = new FileWriter(filePath.toFile())) {
             gson.toJson(player, writer);
-        } catch (IOException e) {
+        } catch (final IOException e) {
             logger.error("Failed to write player " + player.getLastName() + " (" + player.getId() + ") to disk, the latest changes will disappear after a server reload");
         }
     }
 
     @Override
-    public void deletePlayer(FactionPlayer player) {
-        Path filePath = getPlayersPath().resolve(player.getId() + ".json");
+    public void deletePlayer(final FactionPlayer player) {
+        final Path filePath = getPlayersPath().resolve(player.getId() + ".json");
         try {
             Files.deleteIfExists(filePath);
-        } catch (IOException e) {
+        } catch (final IOException e) {
             logger.error("Failed to delete player " + player.getLastName() + " (" + player.getId() + ") from the disk, they may still be loaded next server restart");
         }
     }
 
     @Override
     @Nullable
-    public FactionPlayer loadPlayer(UUID playerId) {
-        Path filePath = getPlayersPath().resolve(playerId.toString() + ".json");
+    public FactionPlayer loadPlayer(final UUID playerId) {
+        final Path filePath = getPlayersPath().resolve(playerId.toString() + ".json");
         if (!(Files.exists(filePath) && Files.isRegularFile(filePath))) return null;
 
-        try (Reader reader = new FileReader(filePath.toFile())) {
+        try (final Reader reader = new FileReader(filePath.toFile())) {
             return gson.fromJson(reader, FactionPlayer.class);
-        } catch (JsonSyntaxException e) {
+        } catch (final JsonSyntaxException e) {
             logger.warn("Failed to load player " + playerId + ", assuming corrupt and discarding");
-        } catch (IOException ignored) {
+        } catch (final IOException ignored) {
         }
 
         return null;
@@ -251,26 +252,26 @@ public class FlatFileDatabase extends Database {
     @Override
     @Nullable
     public FactionPlayer loadPlayerTemplate() {
-        Path filePath = getPlayersPath().resolve("template.json");
+        final Path filePath = getPlayersPath().resolve("template.json");
         if (!(Files.exists(filePath) && Files.isRegularFile(filePath))) return null;
 
-        try (Reader reader = new FileReader(filePath.toFile())) {
+        try (final Reader reader = new FileReader(filePath.toFile())) {
             return gson.fromJson(reader, FactionPlayer.class);
-        } catch (JsonSyntaxException e) {
+        } catch (final JsonSyntaxException e) {
             logger.warn("Failed to load player template, assuming corrupt and discarding");
-        } catch (IOException ignored) {
+        } catch (final IOException ignored) {
         }
 
         return null;
     }
 
     @Override
-    public void storePlayerTemplate(FactionPlayer template) {
-        Path filePath = getPlayersPath().resolve("template.json");
+    public void storePlayerTemplate(final FactionPlayer template) {
+        final Path filePath = getPlayersPath().resolve("template.json");
 
-        try (FileWriter writer = new FileWriter(filePath.toFile())) {
+        try (final FileWriter writer = new FileWriter(filePath.toFile())) {
             gson.toJson(template, writer);
-        } catch (IOException e) {
+        } catch (final IOException e) {
             logger.error("Failed to write player template to disk");
         }
     }
@@ -285,37 +286,37 @@ public class FlatFileDatabase extends Database {
     /* ========================================= */
 
     @Override
-    public void storeLevel(FactionLevel level) {
-        Path filePath = getPlayersPath().resolve(URLEncoder.encode(level.getId().location().toString(), StandardCharsets.UTF_8) + ".json");
+    public void storeLevel(final FactionLevel level) {
+        final Path filePath = getPlayersPath().resolve(URLEncoder.encode(level.getId().location().toString(), StandardCharsets.UTF_8) + ".json");
 
-        try (FileWriter writer = new FileWriter(filePath.toFile())) {
+        try (final FileWriter writer = new FileWriter(filePath.toFile())) {
             gson.toJson(level, writer);
-        } catch (IOException e) {
+        } catch (final IOException e) {
             logger.error("Failed to write level " + level.getId() + " to disk, the latest changes will disappear after a server reload");
         }
     }
 
     @Override
-    public void deleteLevel(FactionLevel level) {
-        Path filePath = getLevelsPath().resolve(URLEncoder.encode(level.getId().location().toString(), StandardCharsets.UTF_8) + ".json");
+    public void deleteLevel(final FactionLevel level) {
+        final Path filePath = getLevelsPath().resolve(URLEncoder.encode(level.getId().location().toString(), StandardCharsets.UTF_8) + ".json");
         try {
             Files.deleteIfExists(filePath);
-        } catch (IOException e) {
+        } catch (final IOException e) {
             logger.error("Failed to delete level data for " + level.getId());
         }
     }
 
     @Override
     @Nullable
-    public FactionLevel loadLevel(ResourceKey<Level> levelId) {
-        Path filePath = getPlayersPath().resolve(URLEncoder.encode(levelId.location().toString(), StandardCharsets.UTF_8) + ".json");
+    public FactionLevel loadLevel(final ResourceKey<Level> levelId) {
+        final Path filePath = getPlayersPath().resolve(URLEncoder.encode(levelId.location().toString(), StandardCharsets.UTF_8) + ".json");
         if (!(Files.exists(filePath) && Files.isRegularFile(filePath))) return null;
 
-        try (Reader reader = new FileReader(filePath.toFile())) {
+        try (final Reader reader = new FileReader(filePath.toFile())) {
             return gson.fromJson(reader, FactionLevel.class);
-        } catch (JsonSyntaxException e) {
+        } catch (final JsonSyntaxException e) {
             logger.warn("Failed to load level " + levelId.location() + ", assuming corrupt and discarding");
-        } catch (IOException ignored) {
+        } catch (final IOException ignored) {
         }
 
         return null;
@@ -323,16 +324,16 @@ public class FlatFileDatabase extends Database {
 
     @Override
     public List<ResourceKey<Level>> getAllStoredLevels() {
-        try (Stream<Path> files = Files.list(getLevelsPath())) {
+        try (final Stream<Path> files = Files.list(getLevelsPath())) {
             return files.filter(dir -> dir.toFile().isFile())
                     .map(dir -> {
-                        String name = dir.getFileName().toString();
-                        int index = name.lastIndexOf('.');
+                        final String name = dir.getFileName().toString();
+                        final int index = name.lastIndexOf('.');
                         return index != -1 ? name.substring(0, index) : name;
                     })
                     .map(name -> ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation(URLDecoder.decode(name, Charset.defaultCharset()))))
                     .collect(Collectors.toList());
-        } catch (IOException e) {
+        } catch (final IOException e) {
             throw new RuntimeException("Failed to get files in " + getLevelsPath(), e);
         }
     }
@@ -340,25 +341,25 @@ public class FlatFileDatabase extends Database {
     @Override
     @Nullable
     public FactionLevelSettings loadLevelDefaultSettings() {
-        Path filePath = getLevelsPath().resolve("defaultSettings.json");
+        final Path filePath = getLevelsPath().resolve("defaultSettings.json");
         if (!(Files.exists(filePath) && Files.isRegularFile(filePath))) return null;
 
-        try (Reader reader = new FileReader(filePath.toFile())) {
+        try (final Reader reader = new FileReader(filePath.toFile())) {
             return gson.fromJson(reader, FactionLevelSettings.class);
-        } catch (JsonSyntaxException e) {
+        } catch (final JsonSyntaxException e) {
             logger.warn("Failed to parse " + filePath + " assuming corrupt and discarding");
-        } catch (IOException ignored) {}
+        } catch (final IOException ignored) {}
 
         return null;
     }
 
     @Override
-    public void storeDefaultSettings(FactionLevelSettings defaultSettings) {
-        Path filePath = getPlayersPath().resolve("default-level-settings.json");
+    public void storeDefaultSettings(final FactionLevelSettings defaultSettings) {
+        final Path filePath = getPlayersPath().resolve("default-level-settings.json");
 
-        try (FileWriter writer = new FileWriter(filePath.toFile())) {
+        try (final FileWriter writer = new FileWriter(filePath.toFile())) {
             gson.toJson(defaultSettings, writer);
-        } catch (IOException e) {
+        } catch (final IOException e) {
             logger.error("Failed to write default level settings to disk, the latest changes will disappear after a server reload");
         }
     }

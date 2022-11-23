@@ -14,7 +14,7 @@ public class FactionRelation {
      */
     long relationCreation;
 
-    public FactionRelation(EFactionRelation relation) {
+    public FactionRelation(final EFactionRelation relation) {
         this.relation = relation;
         this.relationCreation = System.currentTimeMillis();
     }
@@ -27,11 +27,11 @@ public class FactionRelation {
         return relationCreation;
     }
 
-    public void setRelation(EFactionRelation relation) {
+    public void setRelation(final EFactionRelation relation) {
         this.relation = relation;
     }
 
-    public void setRelationCreation(long relationCreation) {
+    public void setRelationCreation(final long relationCreation) {
         this.relationCreation = relationCreation;
     }
 }

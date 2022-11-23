@@ -19,7 +19,7 @@ public class FactionRoleChangeOrderEvent extends FactionRoleEvent {
     @NotNull
     FactionRole newParent;
 
-    public FactionRoleChangeOrderEvent(@Nullable CommandSource instigator, @NotNull Faction faction, @NotNull FactionRole role, @NotNull FactionRole newParent) {
+    public FactionRoleChangeOrderEvent(@Nullable final CommandSource instigator, @NotNull final Faction faction, @NotNull final FactionRole role, @NotNull final FactionRole newParent) {
         super(instigator, faction, role);
         this.newParent = newParent;
     }
@@ -28,7 +28,7 @@ public class FactionRoleChangeOrderEvent extends FactionRoleEvent {
         return newParent;
     }
 
-    public void setNewParent(@NotNull FactionRole newParent) {
+    public void setNewParent(@NotNull final FactionRole newParent) {
         this.newParent = newParent;
     }
 }

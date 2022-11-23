@@ -33,7 +33,7 @@ public enum EFactionRelation {
      */
     public final ChatFormatting formatting;
 
-    EFactionRelation(ChatFormatting formatting) {
+    EFactionRelation(final ChatFormatting formatting) {
         this.formatting = formatting;
     }
 }

@@ -14,31 +14,31 @@ public class FactionCollection extends BaseCollection<UUID, Faction>{
     Faction template;
     Faction WILDERNESS;
 
-    static FactionCollection instance = new FactionCollection();
+    static final FactionCollection instance = new FactionCollection();
     public static FactionCollection getInstance() {
         return instance;
     }
 
-    public Faction createFaction(String name) {
-        UUID factionId = UUID.randomUUID();
-        Faction newFaction = new Faction(factionId, name, template);
+    public Faction createFaction(final String name) {
+        final UUID factionId = UUID.randomUUID();
+        final Faction newFaction = new Faction(factionId, name, template);
 
         FactionIndex.getInstance().addFaction(newFaction);
 
         return newFaction;
     }
 
-    public void disbandFaction(UUID factionId) {
-        Faction faction = map.remove(factionId);
-        Set<FactionPlayer> players = faction.getPlayers();
+    public void disbandFaction(final UUID factionId) {
+        final Faction faction = map.remove(factionId);
+        final Set<FactionPlayer> players = faction.getPlayers();
         FactionIndex.getInstance().deleteFaction(factionId);
 
-        for (FactionPlayer player : players) {
-            ChangeFactionMembershipEvent event = new ChangeFactionMembershipEvent(null, player, null, null, ChangeFactionMembershipEvent.EChangeFactionReason.DISBAND);
+        for (final FactionPlayer player : players) {
+            final ChangeFactionMembershipEvent event = new ChangeFactionMembershipEvent(null, player, null, null, ChangeFactionMembershipEvent.EChangeFactionReason.DISBAND);
             MinecraftForge.EVENT_BUS.post(event);
 
-            Faction newFaction = event.getNewFaction();
-            FactionRole newRole = event.getNewRole();
+            final Faction newFaction = event.getNewFaction();
+            final FactionRole newRole = event.getNewRole();
             player.setFaction(newFaction != null ? newFaction.getId() : null, newRole != null ? newRole.getId() : null);
         }
     }
@@ -48,7 +48,7 @@ public class FactionCollection extends BaseCollection<UUID, Faction>{
      * @param name The name to check for
      * @return true if the name is taken
      */
-    public boolean isNameTaken(String name) {
+    public boolean isNameTaken(final String name) {
         return map.values().stream()
                 .anyMatch(faction -> faction.getName().equals(name));
     }
@@ -60,9 +60,9 @@ public class FactionCollection extends BaseCollection<UUID, Faction>{
     @Override
     public void initialise() {
         // Load All Factions
-        List<UUID> storedFactions = Database.instance.getAllStoredFactions();
-        for (UUID factionId : storedFactions) {
-            Faction faction = Database.instance.loadFaction(factionId);
+        final List<UUID> storedFactions = Database.instance.getAllStoredFactions();
+        for (final UUID factionId : storedFactions) {
+            final Faction faction = Database.instance.loadFaction(factionId);
             if (faction != null) {
                 map.put(factionId, faction);
             }
@@ -76,7 +76,7 @@ public class FactionCollection extends BaseCollection<UUID, Faction>{
         }
 
         // Create wilderness if it doesn't exist
-        UUID WildernessId = new UUID(0, 1);
+        final UUID WildernessId = new UUID(0, 1);
         WILDERNESS = getByKey(WildernessId);
         if (WILDERNESS == null) {
             WILDERNESS = new Faction(WildernessId, "Wilderness");
@@ -94,7 +94,7 @@ public class FactionCollection extends BaseCollection<UUID, Faction>{
         }
     }
 
-    public Faction getByName(String name) {
+    public Faction getByName(final String name) {
         return map.values().stream()
                 .filter(faction -> faction.getName().equals(name))
                 .findFirst()

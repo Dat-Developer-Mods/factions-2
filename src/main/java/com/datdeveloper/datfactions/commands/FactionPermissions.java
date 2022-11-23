@@ -70,22 +70,22 @@ public class FactionPermissions {
     /* Permission Builders
     /* ========================================= */
 
-    private static PermissionNode<Boolean> createNode(String node) {
+    private static PermissionNode<Boolean> createNode(final String node) {
         return nodeBuilder(node, PLAYERALL);
     }
-    private static PermissionNode<Boolean> createOpNode(String node) {
+    private static PermissionNode<Boolean> createOpNode(final String node) {
         return nodeBuilder(node, PLAYEROP);
     }
 
-    private static PermissionNode<Boolean> nodeBuilder(String node, PermissionResolver<Boolean> resolver) {
+    private static PermissionNode<Boolean> nodeBuilder(final String node, final PermissionResolver<Boolean> resolver) {
         return new PermissionNode<>(Datfactions.MODID, node, PermissionTypes.BOOLEAN, resolver);
     }
 
-    public static Predicate<CommandSourceStack> hasPermission(PermissionNode<Boolean> node) {
+    public static Predicate<CommandSourceStack> hasPermission(final PermissionNode<Boolean> node) {
         return (source) -> DatPermissions.hasPermission((CommandSource) source, node);
     }
 
-    public static void registerPermissionNodes(PermissionGatherEvent.Nodes event) {
+    public static void registerPermissionNodes(final PermissionGatherEvent.Nodes event) {
         event.addNodes(
             FACTIONLIST,
             FACTIONINFO,

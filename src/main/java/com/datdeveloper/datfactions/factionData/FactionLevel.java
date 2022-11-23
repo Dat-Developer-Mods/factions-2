@@ -28,12 +28,12 @@ public class FactionLevel extends DatabaseEntity {
      */
     Map<ChunkPos, ChunkClaim> claims;
 
-    public FactionLevel(ResourceKey<Level> id) {
+    public FactionLevel(final ResourceKey<Level> id) {
         this.id = id;
         settings = new FactionLevelSettings();
     }
 
-    public FactionLevel(ResourceKey<Level> id, FactionLevelSettings settings) {
+    public FactionLevel(final ResourceKey<Level> id, final FactionLevelSettings settings) {
         this.id = id;
         this.settings = settings;
     }
@@ -53,24 +53,24 @@ public class FactionLevel extends DatabaseEntity {
     /* ========================================= */
     /* Claims
     /* ========================================= */
-    public int countClaims(@NotNull UUID factionId) {
+    public int countClaims(@NotNull final UUID factionId) {
         if (factionId.equals(settings.defaultOwner)) return Integer.MAX_VALUE;
         return (int) claims.values().stream()
                 .filter(claim -> claim.getFactionId() == factionId)
                 .count();
     }
 
-    public int getClaimsWorth(@NotNull UUID factionId) {
+    public int getClaimsWorth(@NotNull final UUID factionId) {
         if (factionId.equals(settings.defaultOwner)) return 0;
         else return countClaims(factionId) * settings.landWorth;
     }
 
-    public UUID getChunkOwner(ChunkPos pos) {
-        ChunkClaim claim = claims.get(pos);
+    public UUID getChunkOwner(final ChunkPos pos) {
+        final ChunkClaim claim = claims.get(pos);
         return claim != null ? claim.getFactionId() : settings.defaultOwner;
     }
 
-    public void setChunkOwner(ChunkPos pos, Faction faction) {
+    public void setChunkOwner(final ChunkPos pos, final Faction faction) {
         if (faction == null || faction.getId().equals(settings.defaultOwner)) {
             claims.remove(pos);
             return;

@@ -32,7 +32,7 @@ public class ChangeFactionMembershipEvent extends FactionPlayerEvent {
      */
     final EChangeFactionReason reason;
 
-    public ChangeFactionMembershipEvent(@Nullable CommandSource instigator, @NotNull FactionPlayer player, @Nullable Faction newFaction, @Nullable FactionRole newRole, EChangeFactionReason reason) {
+    public ChangeFactionMembershipEvent(@Nullable final CommandSource instigator, @NotNull final FactionPlayer player, @Nullable final Faction newFaction, @Nullable final FactionRole newRole, final EChangeFactionReason reason) {
         super(instigator, player);
         this.newFaction = newFaction;
         this.newRole = newRole;
@@ -43,7 +43,7 @@ public class ChangeFactionMembershipEvent extends FactionPlayerEvent {
         return newFaction;
     }
 
-    public void setNewFaction(@Nullable Faction newFaction) {
+    public void setNewFaction(@Nullable final Faction newFaction) {
         this.newFaction = newFaction;
     }
 
@@ -51,7 +51,7 @@ public class ChangeFactionMembershipEvent extends FactionPlayerEvent {
         return newRole;
     }
 
-    public void setNewRole(@Nullable FactionRole newRole) {
+    public void setNewRole(@Nullable final FactionRole newRole) {
         this.newRole = newRole;
     }
 

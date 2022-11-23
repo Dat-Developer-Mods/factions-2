@@ -11,11 +11,17 @@ import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import net.minecraft.network.chat.Component;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
+/**
+ * An argument representing a potential faction name<br>
+ * Only allows names upto the configured maximum name length, containing permitted characters (a-z, A-Z, 0-9, -, and _),
+ * and names that don't yet belong to a faction
+ */
 public class NewFactionNameArgument implements ArgumentType<String> {
     private static final Set<Character> allowedCharacters = new HashSet<>(List.of(
             'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm',
@@ -28,25 +34,24 @@ public class NewFactionNameArgument implements ArgumentType<String> {
     public static final SimpleCommandExceptionType ERROR_FACTION_EXISTS = new SimpleCommandExceptionType(Component.literal("A faction already exists with that name"));
 
     @Override
-    public String parse(StringReader reader) throws CommandSyntaxException {
-        StringBuilder name = new StringBuilder();
+    public String parse(final StringReader reader) throws CommandSyntaxException {
+        final StringBuilder name = new StringBuilder();
         while (reader.canRead() && reader.peek() != ' ') {
-            char nextChar = reader.read();
+            final char nextChar = reader.read();
             if (allowedCharacters.contains(nextChar)) name.append(nextChar);
             else throw ERROR_ILLEGAL_CHARACTER.createWithContext(reader);
         }
 
         if (name.length() > FactionsConfig.getMaxFactionNameLength()) throw ERROR_FACTION_TOO_LONG.createWithContext(reader);
 
-
-        String nameString = name.toString();
+        final String nameString = name.toString();
         if (FactionCollection.getInstance().isNameTaken(nameString)) throw ERROR_FACTION_EXISTS.createWithContext(reader);
 
         return nameString;
     }
 
     @Override
-    public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
+    public <S> CompletableFuture<Suggestions> listSuggestions(final CommandContext<S> context, final SuggestionsBuilder builder) {
         return Suggestions.empty();
     }
 

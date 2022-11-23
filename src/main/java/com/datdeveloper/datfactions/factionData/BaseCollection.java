@@ -13,7 +13,7 @@ import java.util.Map;
  * @param <CollectionObject> The object being stored in the database
  */
 public abstract class BaseCollection<Key, CollectionObject extends DatabaseEntity> {
-    Map<Key, CollectionObject> map = new HashMap<>();
+    final Map<Key, CollectionObject> map = new HashMap<>();
 
     public Map<Key, CollectionObject> getAll() {
         return map;
@@ -24,7 +24,7 @@ public abstract class BaseCollection<Key, CollectionObject extends DatabaseEntit
      * @param key the key of the CollectionObject
      * @return the object in the collection
      */
-    public CollectionObject getByKey(Key key) {
+    public CollectionObject getByKey(final Key key) {
         return map.get(key);
     }
 
@@ -32,8 +32,8 @@ public abstract class BaseCollection<Key, CollectionObject extends DatabaseEntit
      * Save all the dirty CollectionObjects to the database
      */
     public void saveDirty() {
-        for (Key key : map.keySet()) {
-            CollectionObject object = map.get(key);
+        for (final Key key : map.keySet()) {
+            final CollectionObject object = map.get(key);
 
             if (object.isDirty()) {
                 Database.instance.storeEntity(object);

@@ -9,16 +9,16 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 public class FactionsCommand {
     @SubscribeEvent
-    public void registerCommands(RegisterCommandsEvent event) {
+    public void registerCommands(final RegisterCommandsEvent event) {
         register(event.getDispatcher());
     }
 
-    public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
-        LiteralArgumentBuilder<CommandSourceStack> command = LiteralArgumentBuilder.<CommandSourceStack>literal("factions");
+    public static void register(final CommandDispatcher<CommandSourceStack> dispatcher) {
+        final LiteralArgumentBuilder<CommandSourceStack> command = LiteralArgumentBuilder.literal("factions");
         FactionCreateCommand.register(command);
         FactionDescriptionCommand.register(command);
 
-        CommandNode<CommandSourceStack> mainCommand = dispatcher.register(command);
+        final CommandNode<CommandSourceStack> mainCommand = dispatcher.register(command);
         dispatcher.register(LiteralArgumentBuilder.<CommandSourceStack>literal("f").redirect(mainCommand));
         dispatcher.register(LiteralArgumentBuilder.<CommandSourceStack>literal("datfactions").redirect(mainCommand));
     }

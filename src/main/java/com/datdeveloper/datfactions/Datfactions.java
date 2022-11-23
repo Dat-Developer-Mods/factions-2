@@ -23,7 +23,7 @@ public class Datfactions {
     private static final Logger LOGGER = LogUtils.getLogger();
 
     public Datfactions() {
-        IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
+        final IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
 
         // Register the commonSetup method for modloading
         modEventBus.addListener(this::commonSetup);
@@ -36,8 +36,9 @@ public class Datfactions {
         // Register ourselves for server and other game events we are interested in
         MinecraftForge.EVENT_BUS.register(this);
 
-        ForgeConfigSpec.Builder builder = new ForgeConfigSpec.Builder();
-        FactionsConfig config = new FactionsConfig(builder);
+        final ForgeConfigSpec.Builder builder = new ForgeConfigSpec.Builder();
+        //noinspection InstantiationOfUtilityClass
+        final FactionsConfig config = new FactionsConfig(builder);
         ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, builder.build());
     }
 

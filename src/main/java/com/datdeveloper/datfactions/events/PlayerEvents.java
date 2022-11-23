@@ -1,7 +1,6 @@
 package com.datdeveloper.datfactions.events;
 
 import com.datdeveloper.datfactions.Datfactions;
-import com.datdeveloper.datfactions.factionData.FPlayerCollection;
 import com.mojang.logging.LogUtils;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.event.ServerChatEvent;
@@ -21,7 +20,7 @@ public class PlayerEvents {
      * Register power gain event
      */
     @SubscribeEvent
-    public static void playerJoin(PlayerEvent.PlayerLoggedInEvent event) {
+    public static void playerJoin(final PlayerEvent.PlayerLoggedInEvent event) {
 
     }
 
@@ -29,7 +28,7 @@ public class PlayerEvents {
      * Force save player data, deregister power gain event
      */
     @SubscribeEvent
-    public static void playerLeave(PlayerEvent.PlayerLoggedOutEvent event) {
+    public static void playerLeave(final PlayerEvent.PlayerLoggedOutEvent event) {
 
     }
 
@@ -37,38 +36,34 @@ public class PlayerEvents {
      * Block damage if the player shares a faction or alliance
      */
     @SubscribeEvent
-    public static void playerDamaged(LivingDamageEvent event) {
-        if (!(event.getEntity() instanceof ServerPlayer)) {
+    public static void playerDamaged(final LivingDamageEvent event) {
+        if (!(event.getEntity() instanceof ServerPlayer target)) {
             return;
         }
-        if (!(event.getSource().getEntity() instanceof ServerPlayer)) return;
+        if (!(event.getSource().getEntity() instanceof ServerPlayer source)) return;
 
-        ServerPlayer target = (ServerPlayer) event.getEntity();
-        ServerPlayer source = (ServerPlayer) event.getSource().getEntity();
     }
 
     /**
      * Remove Power
      */
     @SubscribeEvent
-    public static void playerKilled(LivingDeathEvent event) {
-        if (!(event.getEntity() instanceof ServerPlayer)) {
+    public static void playerKilled(final LivingDeathEvent event) {
+        if (!(event.getEntity() instanceof ServerPlayer target)) {
             return;
         }
-        if (!(event.getSource().getEntity() instanceof ServerPlayer)) return;
+        if (!(event.getSource().getEntity() instanceof ServerPlayer source)) return;
 
-        ServerPlayer target = (ServerPlayer) event.getEntity();
-        ServerPlayer source = (ServerPlayer) event.getSource().getEntity();
     }
 
     /**
      * Send enter border message
      */
     @SubscribeEvent
-    public static void enterChunk(EntityEvent.EnteringSection event) {
-        if (!(event.getEntity() instanceof ServerPlayer)) return;
-        ServerPlayer player = (ServerPlayer) event.getEntity();
-        if (!event.didChunkChange()) return;
+    public static void enterChunk(final EntityEvent.EnteringSection event) {
+        if (!(event.getEntity() instanceof ServerPlayer player)) return;
+        if (!event.didChunkChange()) {
+        }
 
 
     }
@@ -77,7 +72,7 @@ public class PlayerEvents {
      * Handle faction chat
      */
     @SubscribeEvent
-    public static void playerChat(ServerChatEvent.Submitted event) {
+    public static void playerChat(final ServerChatEvent.Submitted event) {
         logger.info(event.getMessage().toString());
     }
 }

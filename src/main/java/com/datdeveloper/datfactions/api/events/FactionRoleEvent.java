@@ -13,9 +13,10 @@ public abstract class FactionRoleEvent extends FactionEvent {
     /**
      * The role the event is for
      */
-    @NotNull FactionRole role;
+    @NotNull
+    final FactionRole role;
 
-    public FactionRoleEvent(@Nullable CommandSource instigator, @NotNull Faction faction, @NotNull FactionRole role) {
+    public FactionRoleEvent(@Nullable final CommandSource instigator, @NotNull final Faction faction, @NotNull final FactionRole role) {
         super(instigator, faction);
         this.role = role;
     }

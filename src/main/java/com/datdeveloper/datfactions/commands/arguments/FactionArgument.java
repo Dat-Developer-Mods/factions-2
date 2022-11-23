@@ -16,20 +16,24 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
 
+/**
+ * An argument referring to a faction
+ * Supports referencing a faction by its name, or it's UUID
+ */
 public class FactionArgument implements ArgumentType<Faction> {
     public static final SimpleCommandExceptionType ERROR_UNKNOWN_FACTION = new SimpleCommandExceptionType(Component.literal("Cannot find a faction with that name"));
 
 
     @Override
-    public Faction parse(StringReader reader) throws CommandSyntaxException {
-        String identifier = reader.readUnquotedString();
+    public Faction parse(final StringReader reader) throws CommandSyntaxException {
+        final String identifier = reader.readUnquotedString();
 
         Faction faction;
         try {
-            UUID uuid = UUID.fromString(identifier);
+            final UUID uuid = UUID.fromString(identifier);
             faction = FactionCollection.getInstance().getByKey(uuid);
             if (faction != null) return faction;
-        } catch (IllegalArgumentException ignored) {}
+        } catch (final IllegalArgumentException ignored) {}
 
         faction = FactionCollection.getInstance().getByName(identifier);
 
@@ -39,11 +43,11 @@ public class FactionArgument implements ArgumentType<Faction> {
     }
 
     @Override
-    public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
+    public <S> CompletableFuture<Suggestions> listSuggestions(final CommandContext<S> context, final SuggestionsBuilder builder) {
         if (!(context.getSource() instanceof SharedSuggestionProvider suggestionProvider)) return Suggestions.empty();
 
-        Map<UUID, Faction> potentials = FactionCollection.getInstance().getAll();
-        Stream<String> strings = potentials.values().stream()
+        final Map<UUID, Faction> potentials = FactionCollection.getInstance().getAll();
+        final Stream<String> strings = potentials.values().stream()
                 .map(Faction::getName);
 
         return SharedSuggestionProvider.suggest(strings, builder);
