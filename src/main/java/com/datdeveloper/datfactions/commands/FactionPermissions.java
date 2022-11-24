@@ -2,7 +2,6 @@ package com.datdeveloper.datfactions.commands;
 
 import com.datdeveloper.datfactions.Datfactions;
 import com.datdeveloper.datmoddingapi.permissions.DatPermissions;
-import net.minecraft.commands.CommandSource;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraftforge.fml.common.Mod;
@@ -82,7 +81,7 @@ public class FactionPermissions {
     }
 
     public static Predicate<CommandSourceStack> hasPermission(final PermissionNode<Boolean> node) {
-        return (source) -> DatPermissions.hasPermission((CommandSource) source, node);
+        return (source) -> DatPermissions.hasPermission(source.source, node);
     }
 
     public static void registerPermissionNodes(final PermissionGatherEvent.Nodes event) {

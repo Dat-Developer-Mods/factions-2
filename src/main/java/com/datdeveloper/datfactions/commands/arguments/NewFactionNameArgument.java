@@ -29,9 +29,9 @@ public class NewFactionNameArgument implements ArgumentType<String> {
             '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '_'
     ));
 
-    public static final SimpleCommandExceptionType ERROR_ILLEGAL_CHARACTER = new SimpleCommandExceptionType(Component.literal("Faction name contains illegal character, a faction name can only contain, letters, numbers, underscore and dashes"));
-    public static final SimpleCommandExceptionType ERROR_FACTION_TOO_LONG = new SimpleCommandExceptionType(Component.literal("A faction name cannot be longer than " + FactionsConfig.getMaxFactionNameLength()));
-    public static final SimpleCommandExceptionType ERROR_FACTION_EXISTS = new SimpleCommandExceptionType(Component.literal("A faction already exists with that name"));
+    private static final SimpleCommandExceptionType ERROR_ILLEGAL_CHARACTER = new SimpleCommandExceptionType(Component.literal("Faction name contains illegal character, a faction name can only contain, letters, numbers, underscore and dashes"));
+    private static final SimpleCommandExceptionType ERROR_NAME_TOO_LONG = new SimpleCommandExceptionType(Component.literal("A faction name cannot be longer than " + FactionsConfig.getMaxFactionNameLength() + " characters"));
+    private static final SimpleCommandExceptionType ERROR_FACTION_EXISTS = new SimpleCommandExceptionType(Component.literal("A faction already exists with that name"));
 
     @Override
     public String parse(final StringReader reader) throws CommandSyntaxException {
@@ -42,10 +42,10 @@ public class NewFactionNameArgument implements ArgumentType<String> {
             else throw ERROR_ILLEGAL_CHARACTER.createWithContext(reader);
         }
 
-        if (name.length() > FactionsConfig.getMaxFactionNameLength()) throw ERROR_FACTION_TOO_LONG.createWithContext(reader);
+        if (name.length() > FactionsConfig.getMaxFactionNameLength()) throw ERROR_NAME_TOO_LONG.create();
 
         final String nameString = name.toString();
-        if (FactionCollection.getInstance().isNameTaken(nameString)) throw ERROR_FACTION_EXISTS.createWithContext(reader);
+        if (FactionCollection.getInstance().isNameTaken(nameString)) throw ERROR_FACTION_EXISTS.create();
 
         return nameString;
     }

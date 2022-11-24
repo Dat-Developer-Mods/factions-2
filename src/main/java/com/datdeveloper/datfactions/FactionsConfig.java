@@ -59,7 +59,7 @@ public class FactionsConfig {
                     .defineInRange("MaxFactionMotdLength", 120, 0, Integer.MAX_VALUE);
             maxFactionRanks = builder
                     .comment("The maximum amount of ranks a faction can have")
-                    .defineInRange("MaxFactionMotdLength", 10, 0, Integer.MAX_VALUE);
+                    .defineInRange("MaxFactionMotdLength", 120, 0, Integer.MAX_VALUE);
 
             globalMaxFactionLandWorth = builder
                     .comment("The total maximum amount of chunk worth a faction can have across all worlds")

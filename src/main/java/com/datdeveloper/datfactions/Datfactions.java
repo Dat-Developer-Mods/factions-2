@@ -1,5 +1,6 @@
 package com.datdeveloper.datfactions;
 
+import com.datdeveloper.datfactions.commands.arguments.DatFactionArguments;
 import com.datdeveloper.datfactions.events.InfiniverseEvents;
 import com.mojang.logging.LogUtils;
 import net.minecraftforge.common.ForgeConfigSpec;
@@ -28,6 +29,8 @@ public class Datfactions {
         // Register the commonSetup method for modloading
         modEventBus.addListener(this::commonSetup);
 
+        DatFactionArguments.COMMAND_ARGUMENT_TYPES.register(modEventBus);
+
         // Compat with Infiniverse
         if (ModList.get().isLoaded("infiniverse")) {
             MinecraftForge.EVENT_BUS.register(InfiniverseEvents.class);
@@ -39,7 +42,7 @@ public class Datfactions {
         final ForgeConfigSpec.Builder builder = new ForgeConfigSpec.Builder();
         //noinspection InstantiationOfUtilityClass
         final FactionsConfig config = new FactionsConfig(builder);
-        ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, builder.build());
+        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, builder.build());
     }
 
     private void commonSetup(final FMLCommonSetupEvent event) {

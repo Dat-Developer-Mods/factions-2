@@ -12,7 +12,10 @@ import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.network.chat.Component;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
 
@@ -22,7 +25,6 @@ import java.util.stream.Stream;
  */
 public class FactionArgument implements ArgumentType<Faction> {
     public static final SimpleCommandExceptionType ERROR_UNKNOWN_FACTION = new SimpleCommandExceptionType(Component.literal("Cannot find a faction with that name"));
-
 
     @Override
     public Faction parse(final StringReader reader) throws CommandSyntaxException {

@@ -6,6 +6,7 @@ import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
@@ -55,25 +56,25 @@ public class FactionLevel extends DatabaseEntity {
     /* ========================================= */
     /* Claims
     /* ========================================= */
-    public int countClaims(@NotNull final UUID factionId) {
-        if (factionId.equals(settings.defaultOwner)) return Integer.MAX_VALUE;
+    public int getClaimsCount(@NotNull final UUID factionId) {
+        if (factionId.equals(getSettings().defaultOwner)) return Integer.MAX_VALUE;
         return (int) claims.values().stream()
                 .filter(claim -> claim.getFactionId() == factionId)
                 .count();
     }
 
     public int getClaimsWorth(@NotNull final UUID factionId) {
-        if (factionId.equals(settings.defaultOwner)) return 0;
-        else return countClaims(factionId) * settings.landWorth;
+        if (factionId.equals(getSettings().defaultOwner)) return 0;
+        else return getClaimsCount(factionId) * getSettings().landWorth;
     }
 
     public UUID getChunkOwner(final ChunkPos pos) {
         final ChunkClaim claim = claims.get(pos);
-        return claim != null ? claim.getFactionId() : settings.defaultOwner;
+        return claim != null ? claim.getFactionId() : getSettings().defaultOwner;
     }
 
     public void setChunkOwner(final ChunkPos pos, final Faction faction) {
-        if (faction == null || faction.getId().equals(settings.defaultOwner)) {
+        if (faction == null || faction.getId().equals(getSettings().defaultOwner)) {
             claims.remove(pos);
             return;
         }

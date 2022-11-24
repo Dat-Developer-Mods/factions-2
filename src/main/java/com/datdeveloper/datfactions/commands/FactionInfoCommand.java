@@ -7,12 +7,15 @@ import com.mojang.brigadier.tree.LiteralCommandNode;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 
+import java.util.function.Predicate;
+
 import static com.datdeveloper.datfactions.commands.FactionPermissions.FACTIONINFO;
 
 public class FactionInfoCommand extends BaseFactionCommand {
     static void register(final LiteralArgumentBuilder<CommandSourceStack> command) {
+        final Predicate<CommandSourceStack> predicate = FactionPermissions.hasPermission(FACTIONINFO);
         final LiteralCommandNode<CommandSourceStack> subCommand = Commands.literal("info")
-                .requires(FactionPermissions.hasPermission(FACTIONINFO))
+                .requires(predicate)
                 .then(Commands.argument("targetFaction", new FactionArgument())
                         .executes(c -> {
                             final Faction target = c.getArgument("targetFaction", Faction.class);
@@ -23,8 +26,7 @@ public class FactionInfoCommand extends BaseFactionCommand {
                         })).build();
 
         command.then(subCommand);
-        command.then(Commands.literal("finfo").redirect(subCommand));
-        command.then(Commands.literal("faction").redirect(subCommand));
-        command.then(Commands.literal("show").redirect(subCommand));
+        command.then(Commands.literal("faction").requires(predicate).redirect(subCommand));
+        command.then(Commands.literal("show").requires(predicate).redirect(subCommand));
     }
 }

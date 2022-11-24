@@ -16,7 +16,10 @@ public class FactionsCommand {
     public static void register(final CommandDispatcher<CommandSourceStack> dispatcher) {
         final LiteralArgumentBuilder<CommandSourceStack> command = LiteralArgumentBuilder.literal("factions");
         FactionCreateCommand.register(command);
+        FactionNameCommand.register(command);
         FactionDescriptionCommand.register(command);
+        FactionMotdCommand.register(command);
+        FactionInfoCommand.register(command);
 
         final CommandNode<CommandSourceStack> mainCommand = dispatcher.register(command);
         dispatcher.register(LiteralArgumentBuilder.<CommandSourceStack>literal("f").redirect(mainCommand));

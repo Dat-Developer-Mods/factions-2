@@ -24,7 +24,7 @@ public class FactionCreateCommand extends BaseFactionCommand{
         command.then(Commands.literal("create")
                 .requires((commandSourceStack -> {
                     if (!(commandSourceStack.isPlayer() && DatPermissions.hasPermission(commandSourceStack.getPlayer(), FACTIONCREATE))) return false;
-                    final FactionPlayer fPlayer = FPlayerCollection.getInstance().getPlayer(commandSourceStack.getPlayer());
+                    final FactionPlayer fPlayer = getPlayerOrTemplate(commandSourceStack.getPlayer());
                     return !fPlayer.hasFaction();
                 }))
                 .then(Commands.argument("name", new NewFactionNameArgument())
@@ -47,10 +47,10 @@ public class FactionCreateCommand extends BaseFactionCommand{
 
                             c.getSource().sendSuccess(MutableComponent.create(ComponentContents.EMPTY)
                                     .append(DatChatFormatting.TextColour.INFO + "Successfully created faction ")
-                                    .append(RelationUtil.wrapFactionName(newFaction, newFaction))
-                                    .append(DatChatFormatting.TextColour.INFO + "\nAdd a description with ")
-                                    .append(wrapCommand("/f desc <description>", "/f desc "))
-                                    .append(DatChatFormatting.TextColour.INFO + "\nand invite people using ")
+                                    .append(RelationUtil.wrapFactionName(newFaction, newFaction)).append("\n")
+                                    .append(DatChatFormatting.TextColour.INFO + "Add a description with ")
+                                    .append(wrapCommand("/f desc <description>", "/f desc ")).append("\n")
+                                    .append(DatChatFormatting.TextColour.INFO + "and invite people using ")
                                     .append(wrapCommand("/f invite <player name>", "/f invite "))
                             , false);
 

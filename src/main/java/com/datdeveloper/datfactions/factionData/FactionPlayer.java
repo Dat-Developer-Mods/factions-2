@@ -1,9 +1,16 @@
 package com.datdeveloper.datfactions.factionData;
 
-import com.datdeveloper.datfactions.util.RelationUtil;
 import com.datdeveloper.datfactions.database.DatabaseEntity;
 import com.datdeveloper.datfactions.factionData.permissions.FactionRole;
+import com.datdeveloper.datfactions.util.AgeUtil;
+import com.datdeveloper.datfactions.util.RelationUtil;
 import com.datdeveloper.datmoddingapi.util.DatChatFormatting;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.ClickEvent;
+import net.minecraft.network.chat.HoverEvent;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.contents.LiteralContents;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.server.ServerLifecycleHooks;
 import org.jetbrains.annotations.Nullable;
@@ -171,6 +178,8 @@ public class FactionPlayer extends DatabaseEntity {
 
         if (this.factionId != null) getFaction().sendFactionWideMessage(RelationUtil.wrapPlayerName(getFaction(), this).append(DatChatFormatting.TextColour.INFO + " has Joined the faction"));
 
+        updateCommands();
+
         FactionIndex.getInstance().updatePlayer(this);
 
         this.markDirty();
@@ -178,6 +187,43 @@ public class FactionPlayer extends DatabaseEntity {
 
     public void setRole(final UUID role) {
         this.role = role;
+    }
+
+    /* ========================================= */
+    /* Chat Summaries
+    /* ========================================= */
+
+    public MutableComponent getNameWithDescription() {
+        final String name = isPlayerOnline() ? getServerPlayer().getName().getString() : getLastName();
+        final MutableComponent component = MutableComponent.create(new LiteralContents(name));
+        component.withStyle(Style.EMPTY.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, getShortDescription())).withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/factions pinfo " + name)));
+
+        updateCommands();
+
+        return component;
+    }
+
+    public MutableComponent getShortDescription() {
+        final ServerPlayer serverPlayer = getServerPlayer();
+
+        final MutableComponent component = MutableComponent.create(new LiteralContents(""));
+
+        if (hasFaction()) {
+            final Faction faction = getFaction();
+            if (!faction.hasFlag(EFactionFlags.ANONYMOUS)) {
+                component.append(DatChatFormatting.TextColour.INFO + "Faction: " + ChatFormatting.WHITE + faction.name + "\n");
+                component.append(DatChatFormatting.TextColour.INFO + "Role: " + ChatFormatting.WHITE + getRole().getName() + "\n");
+            }
+        }
+
+        component.append(DatChatFormatting.TextColour.INFO + "Power/Max: " + ChatFormatting.WHITE + "%d/%d".formatted(getPower(), getMaxPower()) + "\n");
+
+        // Last Online
+        if (serverPlayer == null) {
+            component.append(DatChatFormatting.TextColour.INFO + "Last Online: " + ChatFormatting.WHITE + AgeUtil.calculateAgeString(lastActiveTime) + " ago");
+        }
+
+        return component;
     }
 
     /* ========================================= */
@@ -190,5 +236,12 @@ public class FactionPlayer extends DatabaseEntity {
 
     public boolean isPlayerOnline() {
         return getServerPlayer() != null;
+    }
+
+    private void updateCommands() {
+        final ServerPlayer serverPlayer = getServerPlayer();
+        if (serverPlayer == null) return;
+
+        serverPlayer.getServer().getCommands().sendCommands(serverPlayer);
     }
 }
