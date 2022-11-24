@@ -1,7 +1,8 @@
 package com.datdeveloper.datfactions.database;
 
 import com.datdeveloper.datfactions.database.jsonAdapters.BlockPosAdapter;
-import com.datdeveloper.datfactions.database.jsonAdapters.ResourceKeyAdapter;
+import com.datdeveloper.datfactions.database.jsonAdapters.DatUUIDTypeAdapter;
+import com.datdeveloper.datfactions.database.jsonAdapters.ResourceKeyAdapterFactory;
 import com.datdeveloper.datfactions.factionData.Faction;
 import com.datdeveloper.datfactions.factionData.FactionLevel;
 import com.datdeveloper.datfactions.factionData.FactionLevelSettings;
@@ -10,7 +11,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
 import com.mojang.logging.LogUtils;
-import com.mojang.util.UUIDTypeAdapter;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
@@ -29,6 +29,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -48,8 +49,8 @@ public class FlatFileDatabase extends Database {
                 .enableComplexMapKeySerialization()
 
                 .registerTypeAdapter(BlockPos.class, new BlockPosAdapter())
-                .registerTypeAdapter(ResourceKey.class, new ResourceKeyAdapter())
-                .registerTypeAdapter(UUID.class, new UUIDTypeAdapter())
+                .registerTypeAdapterFactory(new ResourceKeyAdapterFactory())
+                .registerTypeAdapter(UUID.class, new DatUUIDTypeAdapter())
                 .create();
     }
 
@@ -97,7 +98,16 @@ public class FlatFileDatabase extends Database {
                         final int index = name.lastIndexOf('.');
                         return index != -1 ? name.substring(0, index) : name;
                     })
-                    .map(UUID::fromString)
+                    .filter(name -> !List.of("template", "default-level-settings").contains(name))
+                    .map(name -> {
+                        try {
+                            return UUID.fromString(name);
+                        } catch (final IllegalArgumentException ignored) {
+                            logger.warn("Found a file with a butchered name: " + name + ", ignoring");
+                            return null;
+                        }
+                    })
+                    .filter(Objects::nonNull)
                     .collect(Collectors.toList());
         } catch (final IOException e) {
             throw new RuntimeException("Failed to get files in " + path, e);
@@ -287,7 +297,7 @@ public class FlatFileDatabase extends Database {
 
     @Override
     public void storeLevel(final FactionLevel level) {
-        final Path filePath = getPlayersPath().resolve(URLEncoder.encode(level.getId().location().toString(), StandardCharsets.UTF_8) + ".json");
+        final Path filePath = getLevelsPath().resolve(URLEncoder.encode(level.getId().location().toString(), StandardCharsets.UTF_8) + ".json");
 
         try (final FileWriter writer = new FileWriter(filePath.toFile())) {
             gson.toJson(level, writer);
@@ -309,7 +319,7 @@ public class FlatFileDatabase extends Database {
     @Override
     @Nullable
     public FactionLevel loadLevel(final ResourceKey<Level> levelId) {
-        final Path filePath = getPlayersPath().resolve(URLEncoder.encode(levelId.location().toString(), StandardCharsets.UTF_8) + ".json");
+        final Path filePath = getLevelsPath().resolve(URLEncoder.encode(levelId.location().toString(), StandardCharsets.UTF_8) + ".json");
         if (!(Files.exists(filePath) && Files.isRegularFile(filePath))) return null;
 
         try (final Reader reader = new FileReader(filePath.toFile())) {
@@ -341,7 +351,7 @@ public class FlatFileDatabase extends Database {
     @Override
     @Nullable
     public FactionLevelSettings loadLevelDefaultSettings() {
-        final Path filePath = getLevelsPath().resolve("defaultSettings.json");
+        final Path filePath = getLevelsPath().resolve("default-level-settings.json");
         if (!(Files.exists(filePath) && Files.isRegularFile(filePath))) return null;
 
         try (final Reader reader = new FileReader(filePath.toFile())) {
@@ -355,7 +365,7 @@ public class FlatFileDatabase extends Database {
 
     @Override
     public void storeDefaultSettings(final FactionLevelSettings defaultSettings) {
-        final Path filePath = getPlayersPath().resolve("default-level-settings.json");
+        final Path filePath = getLevelsPath().resolve("default-level-settings.json");
 
         try (final FileWriter writer = new FileWriter(filePath.toFile())) {
             gson.toJson(defaultSettings, writer);
