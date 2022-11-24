@@ -11,6 +11,9 @@ version = "${minecraftVersion}-1.1.0"
 java {
     archivesBaseName = 'datfactions'
     toolchain.languageVersion = JavaLanguageVersion.of(17)
+
+    withJavadocJar()
+    withSourcesJar()
 }
 
 minecraft {
