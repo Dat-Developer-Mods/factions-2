@@ -20,6 +20,8 @@ public class FactionsCommand {
         FactionDescriptionCommand.register(command);
         FactionMotdCommand.register(command);
         FactionInfoCommand.register(command);
+        FactionSetHomeCommand.register(command);
+        FactionHomeCommand.register(command);
 
         final CommandNode<CommandSourceStack> mainCommand = dispatcher.register(command);
         dispatcher.register(LiteralArgumentBuilder.<CommandSourceStack>literal("f").redirect(mainCommand));

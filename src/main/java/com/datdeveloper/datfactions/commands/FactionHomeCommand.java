@@ -46,7 +46,7 @@ public class FactionHomeCommand extends BaseFactionCommand {
                     DelayedEventsHandler.addEvent(new DelayedTeleportEvent(faction.getHomeLocation(), faction.getHomeLevel(), player, FactionsConfig.getTeleportDelay()));
 
                     c.getSource().sendSuccess(MutableComponent.create(ComponentContents.EMPTY)
-                            .append(DatChatFormatting.TextColour.INFO + "Successfully set your faction's home pos")
+                            .append(DatChatFormatting.TextColour.INFO + "Teleporting to your factions home in " + FactionsConfig.getTeleportDelay() + " seconds")
                     ,false);
                     return 1;
                 }).build();

@@ -1,7 +1,9 @@
 package com.datdeveloper.datfactions.commands;
 
 import com.datdeveloper.datfactions.commands.arguments.FactionArgument;
+import com.datdeveloper.datfactions.factionData.FPlayerCollection;
 import com.datdeveloper.datfactions.factionData.Faction;
+import com.datdeveloper.datfactions.factionData.FactionPlayer;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import net.minecraft.commands.CommandSourceStack;
@@ -23,7 +25,17 @@ public class FactionInfoCommand extends BaseFactionCommand {
                             c.getSource().sendSystemMessage(target.getChatSummary());
 
                             return 1;
-                        })).build();
+                        }))
+                .executes(c -> {
+                    final FactionPlayer factionPlayer = FPlayerCollection.getInstance().getPlayer(c.getSource().getPlayer());
+
+                    if (factionPlayer == null || !factionPlayer.hasFaction()) return 2;
+
+                    c.getSource().sendSystemMessage(factionPlayer.getFaction().getChatSummary());
+
+                    return 1;
+                })
+                .build();
 
         command.then(subCommand);
         command.then(Commands.literal("faction").requires(predicate).redirect(subCommand));

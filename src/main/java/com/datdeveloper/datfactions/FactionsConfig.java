@@ -136,7 +136,7 @@ public class FactionsConfig {
                     .define("UseFactionChat", true);
 
             teleportDelay = builder
-                    .comment("The amount of time a player must stand still before they teleport to home")
+                    .comment("The amount of time a player must stand still in seconds before they teleport to home")
                     .defineInRange("TeleportDelay", 5, 0, Integer.MAX_VALUE);
 
             builder

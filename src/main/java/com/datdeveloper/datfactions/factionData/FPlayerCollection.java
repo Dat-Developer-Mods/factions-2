@@ -3,6 +3,7 @@ package com.datdeveloper.datfactions.factionData;
 import com.datdeveloper.datfactions.database.Database;
 import com.mojang.logging.LogUtils;
 import net.minecraft.server.level.ServerPlayer;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
 import java.util.List;
@@ -27,7 +28,8 @@ public class FPlayerCollection extends BaseCollection<UUID, FactionPlayer> {
         return template;
     }
 
-    public FactionPlayer getPlayer(final ServerPlayer player) {
+    public FactionPlayer getPlayer(@Nullable final ServerPlayer player) {
+        if (player == null) return null;
         return this.getByKey(player.getUUID());
     }
 

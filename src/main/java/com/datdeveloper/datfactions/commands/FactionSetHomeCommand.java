@@ -40,7 +40,7 @@ public class FactionSetHomeCommand extends BaseFactionCommand {
                     final Faction faction = fPlayer.getFaction();
 
                     final ResourceKey<Level> newHomeLevel = player.getLevel().dimension();
-                    final BlockPos newHomePos = player.getOnPos();
+                    final BlockPos newHomePos = player.getOnPos().above();
 
                     final FactionSetHomeEvent event = new FactionSetHomeEvent(c.getSource().source, faction, newHomeLevel, newHomePos);
                     MinecraftForge.EVENT_BUS.post(event);

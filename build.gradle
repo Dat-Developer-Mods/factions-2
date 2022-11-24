@@ -115,8 +115,8 @@ dependencies {
     implementation 'com.mojang:brigadier:1.0.18'
     implementation 'com.google.code.gson:gson:2.10'
 
-    implementation "com.datdeveloper:datmoddingapi:${datModdingAPIVersion}"
 
+    implementation fg.deobf("com.datdeveloper:datmoddingapi:${datModdingAPIVersion}")
     implementation fg.deobf("commoble.infiniverse:infiniverse-1.19:${infiniverseVersion}")
 }
 
@@ -166,6 +166,14 @@ publishing {
                     connection = 'scm:git:git://github.com.com/jtljac/factions-2.git'
                     developerConnection = 'scm:git:ssh://github.com/jtljac/factions-2.git'
                     url = 'https://datdeveloper.com/factions-2/'
+                }
+
+                withXml {
+                    asNode().dependencies.dependency.each { dep ->
+                        if(dep.artifactId.last().value().last() == "forge") {
+                            assert dep.parent().remove(dep)
+                        }
+                    }
                 }
             }
         }
