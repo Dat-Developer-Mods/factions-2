@@ -35,12 +35,12 @@ public class Faction extends DatabaseEntity {
     /**
      * The faction's MOTD
      */
-    final String motd;
+    String motd;
 
     /**
      * The amount of bonus power that the faction has
      */
-    final int factionPower;
+    int factionPower;
 
     /**
      * The timestamp the faction was created

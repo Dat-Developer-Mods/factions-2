@@ -44,7 +44,7 @@ public class FactionRole extends DatabaseEntity {
         this.name = role.name;
         this.administrator = role.administrator;
         // Enums are immutable, so we can reuse the enum, just not the set
-        permissions = new HashSet<>(permissions);
+        permissions = new HashSet<>(role.permissions);
     }
 
     /* ========================================= */

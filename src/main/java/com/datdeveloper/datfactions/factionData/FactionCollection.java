@@ -22,7 +22,8 @@ public class FactionCollection extends BaseCollection<UUID, Faction>{
     public Faction createFaction(final String name) {
         final UUID factionId = UUID.randomUUID();
         final Faction newFaction = new Faction(factionId, name, template);
-
+        map.put(factionId, newFaction);
+        Database.instance.storeFaction(newFaction);
         FactionIndex.getInstance().addFaction(newFaction);
 
         return newFaction;
@@ -89,6 +90,8 @@ public class FactionCollection extends BaseCollection<UUID, Faction>{
             WILDERNESS.addFlag(EFactionFlags.UNCHARTED);
             WILDERNESS.addFlag(EFactionFlags.UNLIMITEDLAND);
             WILDERNESS.addFlag(EFactionFlags.UNRELATEABLE);
+            WILDERNESS.addFlag(EFactionFlags.ANONYMOUS);
+            WILDERNESS.addFlag(EFactionFlags.OPENBUILD);
             Database.instance.storeFaction(WILDERNESS);
             map.put(WildernessId, WILDERNESS);
         }

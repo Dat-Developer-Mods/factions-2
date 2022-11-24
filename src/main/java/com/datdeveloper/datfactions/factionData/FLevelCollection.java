@@ -20,7 +20,8 @@ public class FLevelCollection extends BaseCollection<ResourceKey<Level>, Faction
         FactionLevel level = Database.instance.loadLevel(levelId);
 
         if (level == null) {
-            level = new FactionLevel(levelId, defaultSettings);
+            level = new FactionLevel(levelId);
+            Database.instance.storeLevel(level);
         }
 
         return map.put(levelId, level);

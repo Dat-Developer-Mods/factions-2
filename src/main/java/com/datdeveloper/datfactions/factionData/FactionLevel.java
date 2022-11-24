@@ -30,12 +30,14 @@ public class FactionLevel extends DatabaseEntity {
 
     public FactionLevel(final ResourceKey<Level> id) {
         this.id = id;
-        settings = new FactionLevelSettings();
+        settings = null;
+        claims = new HashMap<>();
     }
 
     public FactionLevel(final ResourceKey<Level> id, final FactionLevelSettings settings) {
         this.id = id;
         this.settings = settings;
+        claims = new HashMap<>();
     }
 
     /* ========================================= */

@@ -23,6 +23,14 @@ public class FPlayerCollection extends BaseCollection<UUID, FactionPlayer> {
         template = new FactionPlayer(UUID.randomUUID(), "null");
     }
 
+    public FactionPlayer getTemplate() {
+        return template;
+    }
+
+    public FactionPlayer getPlayer(final ServerPlayer player) {
+        return this.getByKey(player.getUUID());
+    }
+
     public boolean isPlayerRegistered(final UUID id) {
         return map.containsKey(id);
     }
@@ -38,6 +46,7 @@ public class FPlayerCollection extends BaseCollection<UUID, FactionPlayer> {
     public void registerNewPlayer(final ServerPlayer player) {
         final FactionPlayer newPlayer = new FactionPlayer(player, template);
         map.put(player.getUUID(), newPlayer);
+        Database.instance.storePlayer(newPlayer);
         FactionIndex.getInstance().updatePlayer(newPlayer);
         logger.info("Registered new factions player: " + player.getName().getString());
     }
@@ -50,10 +59,6 @@ public class FPlayerCollection extends BaseCollection<UUID, FactionPlayer> {
         final FactionPlayer player = map.remove(id);
         player.setFaction(null, null);
         Database.instance.deletePlayer(player);
-    }
-
-    public FactionPlayer getPlayer(final ServerPlayer player) {
-        return this.getByKey(player.getUUID());
     }
 
     /* ========================================= */
