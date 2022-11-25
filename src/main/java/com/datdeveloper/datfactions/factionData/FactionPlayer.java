@@ -6,10 +6,7 @@ import com.datdeveloper.datfactions.util.AgeUtil;
 import com.datdeveloper.datfactions.util.RelationUtil;
 import com.datdeveloper.datmoddingapi.util.DatChatFormatting;
 import net.minecraft.ChatFormatting;
-import net.minecraft.network.chat.ClickEvent;
-import net.minecraft.network.chat.HoverEvent;
-import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.*;
 import net.minecraft.network.chat.contents.LiteralContents;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.server.ServerLifecycleHooks;
@@ -125,6 +122,11 @@ public class FactionPlayer extends DatabaseEntity {
         return FactionCollection.getInstance().getByKey(factionId);
     }
 
+    public String getName() {
+        ServerPlayer player = getServerPlayer();
+        return player != null ? player.getName().getString() : getLastName();
+    }
+
     public UUID getRoleId() {
         return role;
     }
@@ -187,40 +189,89 @@ public class FactionPlayer extends DatabaseEntity {
 
     public void setRole(final UUID role) {
         this.role = role;
+        updateCommands();
     }
 
     /* ========================================= */
     /* Chat Summaries
     /* ========================================= */
 
-    public MutableComponent getNameWithDescription() {
-        final String name = isPlayerOnline() ? getServerPlayer().getName().getString() : getLastName();
-        final MutableComponent component = MutableComponent.create(new LiteralContents(name));
-        component.withStyle(Style.EMPTY.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, getShortDescription())).withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/factions pinfo " + name)));
+    /**
+     * Get a description of the player for chat
+     * @param from The faction querying the relation
+     * @return a description of the player for chat
+     */
+    public Component getChatDescription(@Nullable Faction from) {
+        // Title
+        final MutableComponent message = MutableComponent.create(new LiteralContents(DatChatFormatting.TextColour.HEADER + "____===="))
+                .append(RelationUtil.wrapPlayerName(from, this))
+                .append(DatChatFormatting.TextColour.HEADER +"====____");
 
-        updateCommands();
-
-        return component;
-    }
-
-    public MutableComponent getShortDescription() {
-        final ServerPlayer serverPlayer = getServerPlayer();
-
-        final MutableComponent component = MutableComponent.create(new LiteralContents(""));
 
         if (hasFaction()) {
             final Faction faction = getFaction();
             if (!faction.hasFlag(EFactionFlags.ANONYMOUS)) {
-                component.append(DatChatFormatting.TextColour.INFO + "Faction: " + ChatFormatting.WHITE + faction.name + "\n");
-                component.append(DatChatFormatting.TextColour.INFO + "Role: " + ChatFormatting.WHITE + getRole().getName() + "\n");
+                message.append("\n")
+                        .append(DatChatFormatting.TextColour.INFO + "Faction: " + faction.getNameWithDescription(from))
+                        .append(DatChatFormatting.TextColour.INFO + "Role: " + ChatFormatting.WHITE + getRole().getName());
             }
         }
 
-        component.append(DatChatFormatting.TextColour.INFO + "Power/Max: " + ChatFormatting.WHITE + "%d/%d".formatted(getPower(), getMaxPower()) + "\n");
+        message.append("\n")
+                .append(DatChatFormatting.TextColour.INFO + "Power/Max: " + ChatFormatting.WHITE + "%d/%d".formatted(getPower(), getMaxPower()));
 
         // Last Online
-        if (serverPlayer == null) {
-            component.append(DatChatFormatting.TextColour.INFO + "Last Online: " + ChatFormatting.WHITE + AgeUtil.calculateAgeString(lastActiveTime) + " ago");
+        if (!isPlayerOnline()) {
+            message.append("\n")
+                    .append(DatChatFormatting.TextColour.INFO + "Last Online: " + ChatFormatting.WHITE + AgeUtil.calculateAgeString(lastActiveTime) + " ago");
+        }
+
+        return message;
+    }
+
+    /**
+     * Get a component containing the player's name with a hover event for showing player info and a click event for getting more player info
+     * @param from the faction asking for the description
+     * @return the player's name, ready for chat
+     */
+    public MutableComponent getNameWithDescription(@Nullable Faction from) {
+        final String name = getName();
+        final MutableComponent component = MutableComponent.create(new LiteralContents(name));
+        component.withStyle(Style.EMPTY.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, getShortDescription(from))).withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/factions player " + name)));
+
+        return component;
+    }
+
+    /**
+     * Get a short version of the players' description for hover events
+     * @param from The faction asking for the description
+     * @return A short version of the player's description for hover
+     */
+    public MutableComponent getShortDescription(@Nullable Faction from) {
+        final MutableComponent component = MutableComponent.create(new LiteralContents(""));
+
+        EFactionRelation relation = RelationUtil.getRelation(from, this);
+        if (relation != EFactionRelation.SELF) {
+            component.append(relation.formatting + relation.name())
+                    .append("\n");
+        }
+
+        component.append(DatChatFormatting.TextColour.INFO + "Power/Max: " + ChatFormatting.WHITE + "%d/%d".formatted(getPower(), getMaxPower()));
+
+
+        if (hasFaction()) {
+            final Faction faction = getFaction();
+            if (!faction.hasFlag(EFactionFlags.ANONYMOUS)) {
+                component.append("\n")
+                        .append(DatChatFormatting.TextColour.INFO + "Faction: " + RelationUtil.getRelation(from, faction) + faction.getName()).append("\n")
+                        .append(DatChatFormatting.TextColour.INFO + "Role: " + ChatFormatting.WHITE + getRole().getName());
+            }
+        }
+
+        // Last Online
+        if (!isPlayerOnline()) {
+            component.append("\n")
+                    .append(DatChatFormatting.TextColour.INFO + "Last Online: " + ChatFormatting.WHITE + AgeUtil.calculateAgeString(lastActiveTime) + " ago");
         }
 
         return component;
@@ -238,6 +289,9 @@ public class FactionPlayer extends DatabaseEntity {
         return getServerPlayer() != null;
     }
 
+    /**
+     * Update the commands that the player has available to them
+     */
     private void updateCommands() {
         final ServerPlayer serverPlayer = getServerPlayer();
         if (serverPlayer == null) return;

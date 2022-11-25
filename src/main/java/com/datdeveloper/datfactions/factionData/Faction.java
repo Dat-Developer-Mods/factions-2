@@ -8,14 +8,14 @@ import com.datdeveloper.datmoddingapi.collections.Pair;
 import com.datdeveloper.datmoddingapi.util.DatChatFormatting;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.*;
 import net.minecraft.network.chat.contents.LiteralContents;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -456,10 +456,174 @@ public class Faction extends DatabaseEntity {
             return null;
         }
 
-        final FactionRelation factionRelation = new FactionRelation(newRelation);
+        final FactionRelation factionRelation = new FactionRelation(otherFaction.getId(), newRelation);
         relations.put(otherFaction.getId(), factionRelation);
 
         return factionRelation;
+    }
+
+    /* ========================================= */
+    /* Chat Summaries
+    /* ========================================= */
+
+    /**
+     * Get a summary of the faction for chat
+     * @return A chat component with the message
+     */
+    public Component getChatSummary(@Nullable Faction from) {
+        // Title
+        final MutableComponent message = MutableComponent.create(new LiteralContents(DatChatFormatting.TextColour.HEADER + "____===="))
+                .append(RelationUtil.wrapFactionName(from, this))
+                .append(DatChatFormatting.TextColour.HEADER +"====____");
+
+        // Description
+        message.append("\n")
+                .append(DatChatFormatting.TextColour.INFO + "Description: " + ChatFormatting.WHITE + description);
+
+        // Age
+        if (!hasFlag(EFactionFlags.DEFAULT)) {
+            message.append("\n")
+                    .append(DatChatFormatting.TextColour.INFO + "Age: " + ChatFormatting.WHITE + AgeUtil.calculateAgeString(creationTime));
+        }
+
+        // Power
+        {
+            final boolean infinitePower = hasFlag(EFactionFlags.INFINITEPOWER);
+            final String power = infinitePower ? "∞" : String.valueOf(getTotalPower());
+            final String maxPower = infinitePower ? "∞" : String.valueOf(getTotalMaxPower());
+            message.append("\n")
+                    .append(DatChatFormatting.TextColour.INFO + "Power/Max: " + ChatFormatting.WHITE + "%s/%s".formatted(power, maxPower));
+        }
+
+        // Land
+        if (!hasFlag(EFactionFlags.UNCHARTED)) {
+            final Pair<Integer, Integer> total = new Pair<>(0, 0);
+            final Map<String, Pair<Integer, Integer>> landCount = FLevelCollection.getInstance().getAll().values().stream()
+                    .collect(Collectors.toMap(
+                            level -> level.getId().location().getPath(),
+                            level -> {
+                                final int landAmount = level.getClaimsCount(id);
+                                final int landWorth = landAmount * level.getSettings().landWorth;
+                                total.setLeftHand(total.getLeftHand() + landAmount);
+                                total.setRightHand(total.getRightHand() + landWorth);
+                                return new Pair<>(landAmount, landWorth);
+                            }
+                    ));
+            message.append("\n");
+            message.append(DatChatFormatting.TextColour.INFO + "Land count/worth: " + "%d/%d".formatted(total.getLeftHand(), total.getRightHand()));
+            for (final String key : landCount.keySet()) {
+                final Pair<Integer, Integer> value = landCount.get(key);
+                if (value.getLeftHand() == 0) continue;
+                message.append("\n")
+                        .append("    " + ChatFormatting.DARK_GREEN + key + ": " + ChatFormatting.WHITE + "%d/%d".formatted(value.getLeftHand(), value.getRightHand()));
+            }
+        }
+
+        // Members
+        if (!hasFlag(EFactionFlags.ANONYMOUS)) {
+            final Set<FactionPlayer> players = getPlayers();
+            final MutableComponent playersComponent = players.stream()
+                    .map(player -> {
+                        final MutableComponent component = MutableComponent.create(new LiteralContents((player != players.iterator().next() ? ChatFormatting.WHITE + ", " : "")));
+                        component
+                                .append(player.isPlayerOnline() ? DatChatFormatting.PlayerColour.ONLINE.toString() : DatChatFormatting.PlayerColour.OFFLINE.toString())
+                                .append(player.getNameWithDescription(from));
+
+                        return component;
+                    })
+                    .reduce(MutableComponent.create(new LiteralContents(DatChatFormatting.TextColour.INFO + "Players: ")), MutableComponent::append);
+            message.append("\n")
+                    .append(playersComponent);
+        }
+
+        // Relations
+        if (!hasFlag(EFactionFlags.UNRELATEABLE)) {
+            Collection<FactionRelation> relationList = getRelations().values();
+            final MutableComponent relationsComponent = relationList.stream()
+                    .sorted(Comparator.comparingInt(relation -> relation.getRelation().ordinal()))
+                    .map(relation -> {
+                        Faction otherFaction = relation.getFaction();
+                        final MutableComponent component = MutableComponent.create(new LiteralContents((relation != relationList.iterator().next() ? ChatFormatting.WHITE + ", " : "")));
+                        component
+                                .append(relation.getRelation().formatting.toString())
+                                .append(otherFaction.getNameWithDescription(this));
+                        return component;
+                    })
+                    .reduce(MutableComponent.create(new LiteralContents(DatChatFormatting.TextColour.INFO + "Relations: ")), MutableComponent::append);
+
+            message.append("\n")
+                    .append(relationsComponent);
+        }
+
+        // Flags
+        if (!flags.isEmpty()) {
+            final Component flagComponent = flags.stream()
+                    .map(flag -> {
+                        final MutableComponent component = MutableComponent.create(new LiteralContents(ChatFormatting.WHITE + (flag != flags.iterator().next() ? ", " : "")));
+                        component.append(flag.getChatComponent());
+                        return component;
+                    })
+                    .reduce(MutableComponent.create(new LiteralContents(DatChatFormatting.TextColour.INFO + "Flags: ")), MutableComponent::append);
+            message.append("\n")
+                    .append(flagComponent);
+        }
+
+        return message;
+    }
+
+    /**
+     * Get a component containing the player's name with a hover event for showing player info and a click event for getting more player info
+     * @param from the faction asking for the description
+     * @return the player's name, ready for chat
+     */
+    public MutableComponent getNameWithDescription(@Nullable Faction from) {
+        final String name = getName();
+        final MutableComponent component = MutableComponent.create(new LiteralContents(name));
+        component.withStyle(Style.EMPTY.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, getShortDescription(from))).withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/factions info " + name)));
+
+        return component;
+    }
+
+    public MutableComponent getShortDescription(@Nullable Faction from) {
+        final MutableComponent component = MutableComponent.create(new LiteralContents(""));
+
+        // Relation
+        EFactionRelation relation = RelationUtil.getRelation(from, this);
+        if (relation != EFactionRelation.SELF) {
+            component.append(relation.formatting + relation.name())
+                    .append("\n");
+        }
+
+        // Power
+        {
+            final boolean infinitePower = hasFlag(EFactionFlags.INFINITEPOWER);
+            final String power = infinitePower ? "∞" : String.valueOf(getTotalPower());
+            final String maxPower = infinitePower ? "∞" : String.valueOf(getTotalMaxPower());
+            component.append("\n")
+                    .append(DatChatFormatting.TextColour.INFO + "Power/Max: " + ChatFormatting.WHITE + "%s/%s".formatted(power, maxPower));
+        }
+
+        // Land
+        if (!hasFlag(EFactionFlags.UNCHARTED)) {
+            int count = 0;
+            int worth = 0;
+            for (FactionLevel level : FLevelCollection.getInstance().getAll().values()) {
+                int levelCount = level.getClaimsCount(getId());
+                count += levelCount;
+                worth += levelCount * level.getSettings().landWorth;
+            }
+
+            component.append("\n")
+                    .append(DatChatFormatting.TextColour.INFO + "Land/Worth: " + ChatFormatting.WHITE + "%s/%s".formatted(count, worth));
+        }
+
+        // Age
+        if (!hasFlag(EFactionFlags.DEFAULT)) {
+            component.append("\n")
+                    .append(DatChatFormatting.TextColour.INFO + "Age: " + ChatFormatting.WHITE + AgeUtil.calculateAgeString(creationTime));
+        }
+
+        return component;
     }
 
     /* ========================================= */
@@ -553,90 +717,6 @@ public class Faction extends DatabaseEntity {
             final ServerPlayer serverPlayer = player.getServerPlayer();
             if (serverPlayer != null) serverPlayer.sendSystemMessage(message);
         });
-    }
-
-    /**
-     * Get a summary of the faction for chat
-     * @return A chat component with the message
-     */
-    public Component getChatSummary() {
-        // Title
-        final MutableComponent message = MutableComponent.create(new LiteralContents(DatChatFormatting.TextColour.HEADER + "___====="))
-                .append(RelationUtil.wrapFactionName(this, this))
-                .append(DatChatFormatting.TextColour.HEADER +"=====___");
-
-        // Description
-        message.append("\n");
-        message.append(DatChatFormatting.TextColour.INFO + "Description: " + ChatFormatting.WHITE + description);
-
-        if (!hasFlag(EFactionFlags.DEFAULT)) {
-            // Age
-            message.append("\n");
-            message.append(DatChatFormatting.TextColour.INFO + "Age: " + ChatFormatting.WHITE + AgeUtil.calculateAgeString(creationTime));
-        }
-
-        // Power
-        {
-            final boolean infinitePower = hasFlag(EFactionFlags.INFINITEPOWER);
-            final String power = infinitePower ? "∞" : String.valueOf(getTotalPower());
-            final String maxPower = infinitePower ? "∞" : String.valueOf(getTotalMaxPower());
-            message.append("\n");
-            message.append(DatChatFormatting.TextColour.INFO + "Power/Max: " + ChatFormatting.WHITE + "%s/%s".formatted(power, maxPower));
-        }
-        // Land
-        if (!hasFlag(EFactionFlags.UNCHARTED)) {
-            final Pair<Integer, Integer> total = new Pair<>(0, 0);
-            final Map<String, Pair<Integer, Integer>> landCount = FLevelCollection.getInstance().getAll().values().stream()
-                    .collect(Collectors.toMap(
-                            level -> level.getId().location().getPath(),
-                            level -> {
-                                final int landAmount = level.getClaimsCount(id);
-                                final int landWorth = landAmount * level.getSettings().landWorth;
-                                total.setLeftHand(total.getLeftHand() + landAmount);
-                                total.setRightHand(total.getRightHand() + landWorth);
-                                return new Pair<>(landAmount, landWorth);
-                            }
-                    ));
-            message.append("\n");
-            message.append(DatChatFormatting.TextColour.INFO + "Land count/worth: " + "%d/%d".formatted(total.getLeftHand(), total.getRightHand()));
-            for (final String key : landCount.keySet()) {
-                final Pair<Integer, Integer> value = landCount.get(key);
-                if (value.getLeftHand() == 0) continue;
-                message.append("\n");
-                message.append("    " + ChatFormatting.DARK_GREEN + key + ": " + ChatFormatting.WHITE + "%d/%d".formatted(value.getLeftHand(), value.getRightHand()));
-            }
-        }
-
-        // Members
-        if (!hasFlag(EFactionFlags.ANONYMOUS)) {
-            final Set<FactionPlayer> players = getPlayers();
-            final MutableComponent playersComponent = players.stream()
-                    .map(player -> {
-                        final MutableComponent component = MutableComponent.create(new LiteralContents(ChatFormatting.WHITE + (player != players.iterator().next() ? "," : "")));
-                        component
-                                .append(player.getNameWithDescription())
-                                .withStyle(player.isPlayerOnline() ? DatChatFormatting.PlayerColour.ONLINE : DatChatFormatting.PlayerColour.OFFLINE);
-                        return component;
-                    })
-                    .reduce(MutableComponent.create(new LiteralContents(DatChatFormatting.TextColour.INFO + "Players: ")), MutableComponent::append);
-            message.append("\n");
-            message.append(playersComponent);
-        }
-
-        // Flags
-        if (!flags.isEmpty()) {
-            final Component flagComponent = flags.stream()
-                    .map(flag -> {
-                        final MutableComponent component = MutableComponent.create(new LiteralContents(ChatFormatting.WHITE + (flag != flags.iterator().next() ? ", " : "")));
-                        component.append(flag.getChatComponent());
-                        return component;
-                    })
-                    .reduce(MutableComponent.create(new LiteralContents(DatChatFormatting.TextColour.INFO + "Flags: ")), MutableComponent::append);
-            message.append("\n");
-            message.append(flagComponent);
-        }
-
-        return message;
     }
 
     /* ========================================= */

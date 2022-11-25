@@ -3,6 +3,7 @@ package com.datdeveloper.datfactions.factionData;
 import com.datdeveloper.datfactions.database.Database;
 import com.mojang.logging.LogUtils;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraftforge.server.ServerLifecycleHooks;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
@@ -24,14 +25,39 @@ public class FPlayerCollection extends BaseCollection<UUID, FactionPlayer> {
         template = new FactionPlayer(UUID.randomUUID(), "null");
     }
 
+    /* ========================================= */
+    /* Getters
+    /* ========================================= */
+
     public FactionPlayer getTemplate() {
         return template;
     }
 
+    /**
+     * Get a player by it's {@link ServerPlayer}
+     * @param player the ServerPlayer to get the equivilent FactionPlayer of
+     * @return The FactionPlayer represented by the server player
+     */
     public FactionPlayer getPlayer(@Nullable final ServerPlayer player) {
         if (player == null) return null;
         return this.getByKey(player.getUUID());
     }
+
+    /**
+     * Get a faction player by its name
+     * @param name The name of the player
+     * @return the FactionPlayer
+     */
+    public FactionPlayer getByName(String name) {
+        return map.values().stream()
+                .filter(player -> name.equals(player.getName()))
+                .findFirst()
+                .orElse(null);
+    }
+
+    /* ========================================= */
+    /* Registration
+    /* ========================================= */
 
     public boolean isPlayerRegistered(final UUID id) {
         return map.containsKey(id);

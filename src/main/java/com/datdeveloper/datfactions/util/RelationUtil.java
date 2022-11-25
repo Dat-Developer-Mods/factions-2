@@ -31,8 +31,8 @@ public class RelationUtil {
      * @return The relation between the player and the faction
      */
     public static EFactionRelation getRelation(final FactionPlayer from, final Faction to) {
-        if (from.hasFaction()) return getRelation(from.getFaction(), to);
-        return EFactionRelation.NEUTRAL;
+        if (to == null || !from.hasFaction()) return EFactionRelation.NEUTRAL;
+        return getRelation(from.getFaction(), to);
     }
 
     /**
@@ -42,8 +42,8 @@ public class RelationUtil {
      * @return The relation between the faction and the player
      */
     public static EFactionRelation getRelation(final Faction from, final FactionPlayer to) {
-        if (to.hasFaction()) return getRelation(from, to.getFaction());
-        return EFactionRelation.NEUTRAL;
+        if (from == null || !to.hasFaction()) return EFactionRelation.NEUTRAL;
+        return getRelation(from, to.getFaction());
     }
 
     /**
@@ -53,7 +53,7 @@ public class RelationUtil {
      * @return The relation between the two factions
      */
     public static EFactionRelation getRelation(final Faction from, final Faction to) {
-        if (from.getId().equals(to.getId())) return EFactionRelation.SELF;
+        if (from == null || to == null || from.getId().equals(to.getId())) return EFactionRelation.SELF;
 
         final FactionRelation relation = from.getRelation(to);
         if (relation != null) return relation.getRelation();
