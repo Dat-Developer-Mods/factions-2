@@ -34,6 +34,12 @@ public class FactionCollection extends BaseCollection<UUID, Faction>{
         final Set<FactionPlayer> players = faction.getPlayers();
         FactionIndex.getInstance().deleteFaction(factionId);
 
+        // Remove from relations
+        for (final Faction otherFaction : map.values()) {
+            otherFaction.setRelation(otherFaction, EFactionRelation.NEUTRAL);
+        }
+
+        // Remove from players
         for (final FactionPlayer player : players) {
             final ChangeFactionMembershipEvent event = new ChangeFactionMembershipEvent(null, player, null, null, ChangeFactionMembershipEvent.EChangeFactionReason.DISBAND);
             MinecraftForge.EVENT_BUS.post(event);

@@ -11,6 +11,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.server.ServerLifecycleHooks;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -167,21 +168,40 @@ public class FactionPlayer extends DatabaseEntity {
         this.markDirty();
     }
 
+    /**
+     * Sets the players faction and role
+     * Updates the faction index, the player's commands, and informs the faction members of the change
+     * @param factionId The ID of the new faction
+     * @param roleId The new Role ID for the player
+     */
     public void setFaction(final UUID factionId, final UUID roleId) {
         if (Objects.equals(this.factionId, factionId)) return;
 
         final Faction oldFaction = getFaction();
+        final Faction newFaction = FactionCollection.getInstance().getByKey(factionId);
 
         this.factionId = factionId;
         this.role = roleId;
 
-        if (oldFaction != null) oldFaction.sendFactionWideMessage(RelationUtil.wrapPlayerName(oldFaction, this).append(DatChatFormatting.TextColour.INFO + " has left the faction"));
+        FactionIndex.getInstance().updatePlayer(this);
 
-        if (this.factionId != null) getFaction().sendFactionWideMessage(RelationUtil.wrapPlayerName(getFaction(), this).append(DatChatFormatting.TextColour.INFO + " has Joined the faction"));
+        // Update Factions
+        if (oldFaction != null) {
+            oldFaction.sendFactionWideMessage(getNameWithDescription(oldFaction)
+                    .withStyle(RelationUtil.getRelation(oldFaction, this).formatting)
+                    .append(DatChatFormatting.TextColour.INFO + " has left the faction"),
+                    List.of(getId())
+            );
+        }
+        if (newFaction != null) {
+            newFaction.sendFactionWideMessage(getNameWithDescription(newFaction)
+                    .withStyle(RelationUtil.getRelation(newFaction, this).formatting)
+                    .append(DatChatFormatting.TextColour.INFO + " has joined the faction"),
+                    List.of(getId())
+            );
+        }
 
         updateCommands();
-
-        FactionIndex.getInstance().updatePlayer(this);
 
         this.markDirty();
     }
@@ -202,9 +222,12 @@ public class FactionPlayer extends DatabaseEntity {
      */
     public Component getChatSummary(@Nullable final Faction from) {
         // Title
-        final MutableComponent message = Component.literal(DatChatFormatting.TextColour.HEADER + "____====")
-                .append(RelationUtil.wrapPlayerName(from, this))
-                .append(DatChatFormatting.TextColour.HEADER +"====____");
+
+        final MutableComponent message = Component.literal(DatChatFormatting.TextColour.HEADER + "____===[")
+                .append(MutableComponent.create(Component.literal(getLastName()).getContents())
+                        .withStyle(RelationUtil.getRelation(from, this).formatting)
+                        .withStyle(Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/factions player " + getLastName()))))
+                .append(DatChatFormatting.TextColour.HEADER +"]===____");
 
 
         if (hasFaction()) {

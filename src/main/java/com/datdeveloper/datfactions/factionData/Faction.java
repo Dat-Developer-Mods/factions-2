@@ -1,5 +1,6 @@
 package com.datdeveloper.datfactions.factionData;
 
+import com.datdeveloper.datfactions.commands.util.FactionCommandUtils;
 import com.datdeveloper.datfactions.database.DatabaseEntity;
 import com.datdeveloper.datfactions.factionData.permissions.FactionRole;
 import com.datdeveloper.datfactions.util.AgeUtil;
@@ -471,9 +472,11 @@ public class Faction extends DatabaseEntity {
      */
     public Component getChatSummary(@Nullable final Faction from) {
         // Title
-        final MutableComponent message = Component.literal(DatChatFormatting.TextColour.HEADER + "____====")
-                .append(RelationUtil.wrapFactionName(from, this))
-                .append(DatChatFormatting.TextColour.HEADER +"====____");
+        final MutableComponent message = Component.literal(DatChatFormatting.TextColour.HEADER + "____===")
+                .append(MutableComponent.create(Component.literal(getName()).getContents())
+                        .withStyle(RelationUtil.getRelation(from, this).formatting)
+                        .withStyle(Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/factions info " + getName()))))
+                .append(DatChatFormatting.TextColour.HEADER +"===____");
 
         // Description
         message.append("\n")
@@ -636,7 +639,8 @@ public class Faction extends DatabaseEntity {
     public void informRelation(final Faction otherFaction, final EFactionRelation fromRelation) {
         final FactionRelation toRelation = getRelation(otherFaction);
         final EFactionRelation toRelationType = toRelation != null ? toRelation.relation : EFactionRelation.NEUTRAL;
-        final MutableComponent message = MutableComponent.create(RelationUtil.wrapFactionName(this, otherFaction).getContents());
+        final MutableComponent message = otherFaction.getNameWithDescription(this)
+                .withStyle(RelationUtil.getRelation(this, otherFaction).formatting);
         message.append(DatChatFormatting.TextColour.INFO.toString());
         switch (fromRelation){
             case ALLY -> {
@@ -649,9 +653,7 @@ public class Faction extends DatabaseEntity {
                         message.append("you still have a truce with them and are prevented from dealing pvp damage with each other, ");
                     case NEUTRAL:
                         message.append("you can add them as an ally with")
-                                .append(DatChatFormatting.TextColour.COMMAND.toString())
-                                .append("/faction ally ")
-                                .append(RelationUtil.wrapFactionName(this, otherFaction));
+                                .append(FactionCommandUtils.wrapCommand("/faction ally " + otherFaction.getName(), "/faction ally " + otherFaction.getName()));
                         break;
                     case ENEMY:
                         message.append("but you still regard them as an enemy");
@@ -665,9 +667,7 @@ public class Faction extends DatabaseEntity {
                     case TRUCE ->
                             message.append("you are now both at truce and are prevented from dealing pvp damage with each other, ");
                     case NEUTRAL -> message.append("you can also declare a truce with them with ")
-                            .append(DatChatFormatting.TextColour.COMMAND.toString())
-                            .append("/faction truce ")
-                            .append(RelationUtil.wrapFactionName(this, otherFaction));
+                            .append(FactionCommandUtils.wrapCommand("/faction truce " + otherFaction.getName(), "/faction truce " + otherFaction.getName()));
                     case ENEMY -> message.append("but you still regard them as an enemy");
                 }
             }
@@ -681,9 +681,7 @@ public class Faction extends DatabaseEntity {
                         message.append("you are currently at truce with them, but are not protected from pvp with them ");
                     case NEUTRAL:
                         message.append("you can also declare them as enemies with them with ")
-                                .append(DatChatFormatting.TextColour.COMMAND.toString())
-                                .append("/faction enemy ")
-                                .append(RelationUtil.wrapFactionName(this, otherFaction));
+                                .append(FactionCommandUtils.wrapCommand("/faction enemy " + otherFaction.getName(), "/faction enemy " + otherFaction.getName()));
                         break;
                     case ENEMY:
                         message.append("you are now hostile factions");
@@ -711,10 +709,17 @@ public class Faction extends DatabaseEntity {
      * @param message The message to send
      */
     public void sendFactionWideMessage(final Component message) {
-        getPlayers().forEach(player -> {
-            final ServerPlayer serverPlayer = player.getServerPlayer();
-            if (serverPlayer != null) serverPlayer.sendSystemMessage(message);
-        });
+        sendFactionWideMessage(message, Collections.emptyList());
+    }
+
+    public void sendFactionWideMessage(final Component message, final List<UUID> exclusions) {
+        getPlayers().stream()
+                .filter(player -> !exclusions.contains(player.getId()))
+                .forEach(player -> {
+                    final ServerPlayer serverPlayer = player.getServerPlayer();
+                    if (serverPlayer != null) serverPlayer.sendSystemMessage(message);
+                }
+        );
     }
 
     /**

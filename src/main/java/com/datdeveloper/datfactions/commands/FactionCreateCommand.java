@@ -1,5 +1,6 @@
 package com.datdeveloper.datfactions.commands;
 
+import com.datdeveloper.datfactions.commands.util.FactionCommandUtils;
 import com.datdeveloper.datfactions.util.RelationUtil;
 import com.datdeveloper.datfactions.api.events.ChangeFactionMembershipEvent;
 import com.datdeveloper.datfactions.api.events.CreateFactionEvent;
@@ -47,11 +48,14 @@ public class FactionCreateCommand extends BaseFactionCommand{
 
                             c.getSource().sendSuccess(MutableComponent.create(ComponentContents.EMPTY)
                                     .append(DatChatFormatting.TextColour.INFO + "Successfully created faction ")
-                                    .append(RelationUtil.wrapFactionName(newFaction, newFaction)).append("\n")
+                                    .append(
+                                            newFaction.getNameWithDescription(newFaction)
+                                                    .withStyle(RelationUtil.getRelation(newFaction, newFaction).formatting)
+                                    ).append("\n")
                                     .append(DatChatFormatting.TextColour.INFO + "Add a description with ")
-                                    .append(wrapCommand("/f desc <description>", "/f desc ")).append("\n")
+                                    .append(FactionCommandUtils.wrapCommand("/f desc <description>", "/f desc ")).append("\n")
                                     .append(DatChatFormatting.TextColour.INFO + "and invite people using ")
-                                    .append(wrapCommand("/f invite <player name>", "/f invite "))
+                                    .append(FactionCommandUtils.wrapCommand("/f invite <player name>", "/f invite "))
                             , false);
 
                             return 1;

@@ -4,8 +4,8 @@ package com.datdeveloper.datfactions.factionData;
 import com.datdeveloper.datfactions.database.Database;
 import com.datdeveloper.datfactions.database.DatabaseEntity;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * The baseclass for FactionObject collections
@@ -13,7 +13,7 @@ import java.util.Map;
  * @param <CollectionObject> The object being stored in the database
  */
 public abstract class BaseCollection<Key, CollectionObject extends DatabaseEntity> {
-    final Map<Key, CollectionObject> map = new HashMap<>();
+    final Map<Key, CollectionObject> map = new ConcurrentHashMap<>();
 
     public Map<Key, CollectionObject> getAll() {
         return map;
