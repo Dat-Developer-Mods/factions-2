@@ -25,6 +25,9 @@ public class DatFactionArguments {
     public static final RegistryObject<SingletonArgumentInfo<FactionPlayerArgument>> FACTION_PLAYER_COMMAND_ARGUMENT_TYPE = COMMAND_ARGUMENT_TYPES.register("factionplayer", () ->
             ArgumentTypeInfos.registerByClass(FactionPlayerArgument.class, SingletonArgumentInfo.contextFree(FactionPlayerArgument::new)));
 
+    public static final RegistryObject<FactionMemberArgument.Info> FACTION_MEMBER_COMMAND_ARGUMENT_TYPE = COMMAND_ARGUMENT_TYPES.register("factionmember", () ->
+            ArgumentTypeInfos.registerByClass(FactionMemberArgument.class, new FactionMemberArgument.Info()));
+
     public static final RegistryObject<SingletonArgumentInfo<NewFactionNameArgument>> FACTION_NAME_COMMAND_ARGUMENT_TYPE = COMMAND_ARGUMENT_TYPES.register("factionname", () ->
             ArgumentTypeInfos.registerByClass(NewFactionNameArgument.class, SingletonArgumentInfo.contextFree(NewFactionNameArgument::new)));
 
