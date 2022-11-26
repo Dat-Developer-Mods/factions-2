@@ -1,6 +1,8 @@
 package com.datdeveloper.datfactions.factionData.permissions;
 
 import com.datdeveloper.datfactions.database.DatabaseEntity;
+import com.datdeveloper.datfactions.factionData.Faction;
+import com.datdeveloper.datfactions.factionData.FactionCollection;
 
 import java.util.*;
 
@@ -83,14 +85,47 @@ public class FactionRole extends DatabaseEntity {
     /* Permission Management
     /* ========================================= */
 
+    /**
+     * Check the role has a permission
+     * @param permission The permission to test for
+     * @return True if the role has the given permission
+     */
     public boolean hasPermission(final ERolePermissions permission) {
         return administrator || permissions.contains(permission);
     }
 
+    /**
+     * Check the role has any of the given permissions
+     * @param permissionTests The permissions to test for
+     * @return True if the role has any of the given permissions
+     */
+    public boolean hasAnyPermissions(final List<ERolePermissions> permissionTests) {
+        return administrator || permissionTests.stream().anyMatch(permissions::contains);
+    }
+
+    /**
+     * Check the role has all the given permissions
+     * @param permissionTests The permissions to test for
+     * @return True if the role has all the given permissions
+     */
+    public boolean hadAllPermissions(final List<ERolePermissions> permissionTests) {
+        return administrator || permissions.containsAll(permissionTests);
+    }
+
+    /**
+     * Add a permission to the role
+     * Ignores if the role already has the permission
+     * @param permission The permission to add
+     */
     public void addPermission(final ERolePermissions permission) {
         this.permissions.add(permission);
     }
 
+    /**
+     * Remove a permission to the role
+     * Ignores if the role does not have the permission
+     * @param permission The permission to remove
+     */
     public void removePermission(final ERolePermissions permission) {
         this.permissions.remove(permission);
     }
@@ -99,6 +134,12 @@ public class FactionRole extends DatabaseEntity {
     /* Default Roles
     /* ========================================= */
 
+    /**
+     * Get a list of the default roles
+     * This should only be used to generate the template, to get the server's default roles you should look there
+     * @see FactionCollection#getTemplate()
+     * @return a list of the default roles
+     */
     public static List<FactionRole> getDefaultRoles() {
         final List<FactionRole> roles = new ArrayList<>();
         roles.add(defaultOwnerRole());
@@ -109,6 +150,13 @@ public class FactionRole extends DatabaseEntity {
         return roles;
     }
 
+    /**
+     * Get the default owner role
+     * This should only be used to generate the template, to get the server's default owner role you should look there
+     * @see FactionCollection#getTemplate()
+     * @see Faction#getOwnerRole()
+     * @return the default Owner role
+     */
     public static FactionRole defaultOwnerRole() {
         final FactionRole owner = new FactionRole("Owner");
 
@@ -117,6 +165,12 @@ public class FactionRole extends DatabaseEntity {
         return owner;
     }
 
+    /**
+     * Get the default officer role
+     * This should only be used to generate the template and is not guaranteed to be one of the default roles
+     * @see FactionCollection#getTemplate()
+     * @return the default Officer role
+     */
     public static FactionRole defaultOfficerRole() {
         final FactionRole officer = new FactionRole("Officer");
 
@@ -160,6 +214,12 @@ public class FactionRole extends DatabaseEntity {
         return officer;
     }
 
+    /**
+     * Get the default member role
+     * This should only be used to generate the template and is not guaranteed to be one of the default roles
+     * @see FactionCollection#getTemplate()
+     * @return the default Member role
+     */
     public static FactionRole defaultMemberRole() {
         final FactionRole member = new FactionRole("Member");
 
@@ -182,7 +242,13 @@ public class FactionRole extends DatabaseEntity {
 
         return member;
     }
-
+    /**
+     * Get the default recruit role
+     * This should only be used to generate the template, to get the server's default recruit role you should look there
+     * @see FactionCollection#getTemplate()
+     * @see Faction#getRecruitRole()
+     * @return the default Recruit role
+     */
     public static FactionRole defaultRecruitRole() {
         final FactionRole recruit = new FactionRole("Recruit");
 

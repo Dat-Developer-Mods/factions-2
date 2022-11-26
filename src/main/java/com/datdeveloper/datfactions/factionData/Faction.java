@@ -397,6 +397,11 @@ public class Faction extends DatabaseEntity {
         return flags;
     }
 
+    /**
+     * Check if the faction has a flag
+     * @param flag The flag to check for
+     * @return true if the faction has the flag
+     */
     public boolean hasFlag(final EFactionFlags flag) {
         return flags.contains(flag);
     }
@@ -712,6 +717,11 @@ public class Faction extends DatabaseEntity {
         sendFactionWideMessage(message, Collections.emptyList());
     }
 
+    /**
+     * Send a message to every member in the faction except the one's specified
+     * @param message The message to send
+     * @param exclusions The faction members to exclude sending the message to
+     */
     public void sendFactionWideMessage(final Component message, final List<UUID> exclusions) {
         getPlayers().stream()
                 .filter(player -> !exclusions.contains(player.getId()))
@@ -741,6 +751,8 @@ public class Faction extends DatabaseEntity {
     @Override
     public void markClean() {
         super.markClean();
+
+        // We need to make the roles as clean as well
         roles.forEach(DatabaseEntity::markClean);
     }
 

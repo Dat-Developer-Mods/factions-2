@@ -214,6 +214,7 @@ public class FactionPlayer extends DatabaseEntity {
     public void setRole(final UUID role) {
         this.role = role;
         updateCommands();
+        markDirty();
     }
 
     /* ========================================= */

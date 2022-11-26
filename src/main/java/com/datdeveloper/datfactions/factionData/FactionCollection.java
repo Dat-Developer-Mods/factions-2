@@ -21,6 +21,28 @@ public class FactionCollection extends BaseCollection<UUID, Faction>{
         return instance;
     }
 
+    /* ========================================= */
+    /* Getters
+    /* ========================================= */
+
+    public Faction getTemplate() {
+        return template;
+    }
+
+    /**
+     * Check if a faction exists with the given name
+     * @param name The name to check for
+     * @return true if the name is taken
+     */
+    public boolean isNameTaken(final String name) {
+        return map.values().stream()
+                .anyMatch(faction -> faction.getName().equals(name));
+    }
+
+    /* ========================================= */
+    /* Creation and Deletion
+    /* ========================================= */
+
     public Faction createFaction(final String name) {
         final UUID factionId = UUID.randomUUID();
         final Faction newFaction = new Faction(factionId, name, template);
@@ -57,16 +79,6 @@ public class FactionCollection extends BaseCollection<UUID, Faction>{
             final FactionRole newRole = event.getNewRole();
             player.setFaction(newFaction != null ? newFaction.getId() : null, newRole != null ? newRole.getId() : null, FactionChangeMembershipEvent.EChangeFactionReason.DISBAND);
         }
-    }
-
-    /**
-     * Check if a faction exists with the given name
-     * @param name The name to check for
-     * @return true if the name is taken
-     */
-    public boolean isNameTaken(final String name) {
-        return map.values().stream()
-                .anyMatch(faction -> faction.getName().equals(name));
     }
 
     /* ========================================= */
