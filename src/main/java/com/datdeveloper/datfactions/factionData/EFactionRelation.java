@@ -16,13 +16,13 @@ public enum EFactionRelation {
      */
     TRUCE(ChatFormatting.DARK_AQUA),
     /**
-     * Enemies
-     */
-    ENEMY(ChatFormatting.DARK_RED),
-    /**
      * No Relation
      */
     NEUTRAL(ChatFormatting.DARK_PURPLE),
+    /**
+     * Enemies
+     */
+    ENEMY(ChatFormatting.DARK_RED),
     /**
      * Same faction
      */

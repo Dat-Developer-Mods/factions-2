@@ -7,7 +7,6 @@ import com.datdeveloper.datfactions.util.RelationUtil;
 import com.datdeveloper.datmoddingapi.util.DatChatFormatting;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.*;
-import net.minecraft.network.chat.contents.LiteralContents;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.server.ServerLifecycleHooks;
 import org.jetbrains.annotations.Nullable;
@@ -123,7 +122,7 @@ public class FactionPlayer extends DatabaseEntity {
     }
 
     public String getName() {
-        ServerPlayer player = getServerPlayer();
+        final ServerPlayer player = getServerPlayer();
         return player != null ? player.getName().getString() : getLastName();
     }
 
@@ -201,9 +200,9 @@ public class FactionPlayer extends DatabaseEntity {
      * @param from The faction querying the relation
      * @return a description of the player for chat
      */
-    public Component getChatDescription(@Nullable Faction from) {
+    public Component getChatSummary(@Nullable final Faction from) {
         // Title
-        final MutableComponent message = MutableComponent.create(new LiteralContents(DatChatFormatting.TextColour.HEADER + "____===="))
+        final MutableComponent message = Component.literal(DatChatFormatting.TextColour.HEADER + "____====")
                 .append(RelationUtil.wrapPlayerName(from, this))
                 .append(DatChatFormatting.TextColour.HEADER +"====____");
 
@@ -212,7 +211,7 @@ public class FactionPlayer extends DatabaseEntity {
             final Faction faction = getFaction();
             if (!faction.hasFlag(EFactionFlags.ANONYMOUS)) {
                 message.append("\n")
-                        .append(DatChatFormatting.TextColour.INFO + "Faction: " + faction.getNameWithDescription(from))
+                        .append(DatChatFormatting.TextColour.INFO + "Faction: ").append(faction.getNameWithDescription(from)).append("\n")
                         .append(DatChatFormatting.TextColour.INFO + "Role: " + ChatFormatting.WHITE + getRole().getName());
             }
         }
@@ -234,9 +233,9 @@ public class FactionPlayer extends DatabaseEntity {
      * @param from the faction asking for the description
      * @return the player's name, ready for chat
      */
-    public MutableComponent getNameWithDescription(@Nullable Faction from) {
+    public MutableComponent getNameWithDescription(@Nullable final Faction from) {
         final String name = getName();
-        final MutableComponent component = MutableComponent.create(new LiteralContents(name));
+        final MutableComponent component = Component.literal(name);
         component.withStyle(Style.EMPTY.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, getShortDescription(from))).withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/factions player " + name)));
 
         return component;
@@ -247,10 +246,10 @@ public class FactionPlayer extends DatabaseEntity {
      * @param from The faction asking for the description
      * @return A short version of the player's description for hover
      */
-    public MutableComponent getShortDescription(@Nullable Faction from) {
-        final MutableComponent component = MutableComponent.create(new LiteralContents(""));
+    public MutableComponent getShortDescription(@Nullable final Faction from) {
+        final MutableComponent component = Component.literal("");
 
-        EFactionRelation relation = RelationUtil.getRelation(from, this);
+        final EFactionRelation relation = RelationUtil.getRelation(from, this);
         if (relation != EFactionRelation.SELF) {
             component.append(relation.formatting + relation.name())
                     .append("\n");
@@ -263,7 +262,7 @@ public class FactionPlayer extends DatabaseEntity {
             final Faction faction = getFaction();
             if (!faction.hasFlag(EFactionFlags.ANONYMOUS)) {
                 component.append("\n")
-                        .append(DatChatFormatting.TextColour.INFO + "Faction: " + RelationUtil.getRelation(from, faction) + faction.getName()).append("\n")
+                        .append(DatChatFormatting.TextColour.INFO + "Faction: " + RelationUtil.getRelation(from, faction).formatting + faction.getName()).append("\n")
                         .append(DatChatFormatting.TextColour.INFO + "Role: " + ChatFormatting.WHITE + getRole().getName());
             }
         }

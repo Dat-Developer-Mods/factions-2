@@ -1,25 +1,20 @@
 package com.datdeveloper.datfactions.commands;
 
-import com.datdeveloper.datfactions.commands.arguments.FactionArgument;
 import com.datdeveloper.datfactions.commands.arguments.FactionPlayerArgument;
 import com.datdeveloper.datfactions.factionData.FPlayerCollection;
-import com.datdeveloper.datfactions.factionData.Faction;
 import com.datdeveloper.datfactions.factionData.FactionPlayer;
-import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
-import net.minecraft.commands.arguments.GameProfileArgument;
 
-import java.util.Collection;
 import java.util.function.Predicate;
 
-import static com.datdeveloper.datfactions.commands.FactionPermissions.FACTIONINFO;
+import static com.datdeveloper.datfactions.commands.FactionPermissions.FACTIONPLAYERINFO;
 
 public class FactionPlayerInfoCommand extends BaseFactionCommand {
     static void register(final LiteralArgumentBuilder<CommandSourceStack> command) {
-        final Predicate<CommandSourceStack> predicate = FactionPermissions.hasPermission(FACTIONINFO);
+        final Predicate<CommandSourceStack> predicate = FactionPermissions.hasPermission(FACTIONPLAYERINFO);
         final LiteralCommandNode<CommandSourceStack> subCommand = Commands.literal("player")
                 .requires(predicate)
                 .then(Commands.argument("targetPlayer", new FactionPlayerArgument())
@@ -27,16 +22,14 @@ public class FactionPlayerInfoCommand extends BaseFactionCommand {
                             final FactionPlayer factionPlayer = FPlayerCollection.getInstance().getPlayer(c.getSource().getPlayer());
                             final FactionPlayer target = c.getArgument("targetPlayer", FactionPlayer.class);
 
-                            c.getSource().sendSystemMessage(target.getChatDescription(factionPlayer.getFaction()));
+                            c.getSource().sendSystemMessage(target.getChatSummary(factionPlayer.getFaction()));
 
                             return 1;
                         }))
                 .executes(c -> {
                     final FactionPlayer factionPlayer = FPlayerCollection.getInstance().getPlayer(c.getSource().getPlayer());
 
-                    if (factionPlayer == null || !factionPlayer.hasFaction()) return 2;
-
-                    c.getSource().sendSystemMessage(factionPlayer.getFaction().getChatSummary(factionPlayer.getFaction()));
+                    c.getSource().sendSystemMessage(factionPlayer.getChatSummary(factionPlayer.getFaction()));
 
                     return 1;
                 })
@@ -44,5 +37,6 @@ public class FactionPlayerInfoCommand extends BaseFactionCommand {
 
         command.then(subCommand);
         command.then(Commands.literal("pinfo").requires(predicate).redirect(subCommand));
+        command.then(Commands.literal("showplayer").requires(predicate).redirect(subCommand));
     }
 }
