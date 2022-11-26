@@ -34,6 +34,7 @@ public class FactionPermissions {
 
     // Basic Faction
     public static final PermissionNode<Boolean> FACTIONJOIN = createNode("datfactions.faction.join");
+    public static final PermissionNode<Boolean> FACTIONLEAVE = createNode("datfactions.faction.leave");
     public static final PermissionNode<Boolean> FACTIONHOME = createNode("datfactions.faction.home");
 
     // Faction Management
@@ -91,6 +92,7 @@ public class FactionPermissions {
             FACTIONPLAYERINFO,
             FACTIONMAP,
             FACTIONJOIN,
+            FACTIONLEAVE,
             FACTIONHOME,
             FACTIONCREATE,
             FACTIONSETNAME,

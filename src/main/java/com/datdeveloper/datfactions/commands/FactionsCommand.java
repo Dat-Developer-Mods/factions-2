@@ -19,10 +19,13 @@ public class FactionsCommand {
         FactionInfoCommand.register(command);
         FactionPlayerInfoCommand.register(command);
         FactionCreateCommand.register(command);
+
         FactionNameCommand.register(command);
         FactionDescriptionCommand.register(command);
         FactionMotdCommand.register(command);
         FactionSetHomeCommand.register(command);
+
+        FactionLeaveCommand.register(command);
         FactionHomeCommand.register(command);
 
         final CommandNode<CommandSourceStack> mainCommand = dispatcher.register(command);
