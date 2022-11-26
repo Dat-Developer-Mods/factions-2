@@ -653,7 +653,7 @@ public class Faction extends DatabaseEntity {
                         message.append("you still have a truce with them and are prevented from dealing pvp damage with each other, ");
                     case NEUTRAL:
                         message.append("you can add them as an ally with")
-                                .append(FactionCommandUtils.wrapCommand("/faction ally " + otherFaction.getName(), "/faction ally " + otherFaction.getName()));
+                                .append(FactionCommandUtils.wrapCommand("/faction ally " + otherFaction.getName()));
                         break;
                     case ENEMY:
                         message.append("but you still regard them as an enemy");
@@ -667,7 +667,7 @@ public class Faction extends DatabaseEntity {
                     case TRUCE ->
                             message.append("you are now both at truce and are prevented from dealing pvp damage with each other, ");
                     case NEUTRAL -> message.append("you can also declare a truce with them with ")
-                            .append(FactionCommandUtils.wrapCommand("/faction truce " + otherFaction.getName(), "/faction truce " + otherFaction.getName()));
+                            .append(FactionCommandUtils.wrapCommand("/faction truce " + otherFaction.getName()));
                     case ENEMY -> message.append("but you still regard them as an enemy");
                 }
             }
@@ -681,7 +681,7 @@ public class Faction extends DatabaseEntity {
                         message.append("you are currently at truce with them, but are not protected from pvp with them ");
                     case NEUTRAL:
                         message.append("you can also declare them as enemies with them with ")
-                                .append(FactionCommandUtils.wrapCommand("/faction enemy " + otherFaction.getName(), "/faction enemy " + otherFaction.getName()));
+                                .append(FactionCommandUtils.wrapCommand("/faction enemy " + otherFaction.getName()));
                         break;
                     case ENEMY:
                         message.append("you are now hostile factions");

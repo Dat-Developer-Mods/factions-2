@@ -25,6 +25,7 @@ public abstract class BaseCollection<Key, CollectionObject extends DatabaseEntit
      * @return the object in the collection
      */
     public CollectionObject getByKey(final Key key) {
+        if (key == null) return null;
         return map.get(key);
     }
 

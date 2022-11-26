@@ -1,5 +1,6 @@
 package com.datdeveloper.datfactions.factionData;
 
+import com.datdeveloper.datfactions.api.events.FactionChangeMembershipEvent;
 import com.datdeveloper.datfactions.database.DatabaseEntity;
 import com.datdeveloper.datfactions.factionData.permissions.FactionRole;
 import com.datdeveloper.datfactions.util.AgeUtil;
@@ -171,10 +172,12 @@ public class FactionPlayer extends DatabaseEntity {
     /**
      * Sets the players faction and role
      * Updates the faction index, the player's commands, and informs the faction members of the change
+     *
      * @param factionId The ID of the new faction
      * @param roleId The new Role ID for the player
+     * @param reason The reason the player left
      */
-    public void setFaction(final UUID factionId, final UUID roleId) {
+    public void setFaction(final UUID factionId, final UUID roleId, final FactionChangeMembershipEvent.EChangeFactionReason reason) {
         if (Objects.equals(this.factionId, factionId)) return;
 
         final Faction oldFaction = getFaction();
@@ -186,19 +189,21 @@ public class FactionPlayer extends DatabaseEntity {
         FactionIndex.getInstance().updatePlayer(this);
 
         // Update Factions
-        if (oldFaction != null) {
-            oldFaction.sendFactionWideMessage(getNameWithDescription(oldFaction)
-                    .withStyle(RelationUtil.getRelation(oldFaction, this).formatting)
-                    .append(DatChatFormatting.TextColour.INFO + " has left the faction"),
-                    List.of(getId())
-            );
-        }
-        if (newFaction != null) {
-            newFaction.sendFactionWideMessage(getNameWithDescription(newFaction)
-                    .withStyle(RelationUtil.getRelation(newFaction, this).formatting)
-                    .append(DatChatFormatting.TextColour.INFO + " has joined the faction"),
-                    List.of(getId())
-            );
+        if (reason == FactionChangeMembershipEvent.EChangeFactionReason.LEAVE) {
+            if (oldFaction != null) {
+                oldFaction.sendFactionWideMessage(getNameWithDescription(oldFaction)
+                                .withStyle(RelationUtil.getRelation(oldFaction, this).formatting)
+                                .append(DatChatFormatting.TextColour.INFO + " has left the faction"),
+                        List.of(getId())
+                );
+            }
+            if (newFaction != null) {
+                newFaction.sendFactionWideMessage(getNameWithDescription(newFaction)
+                                .withStyle(RelationUtil.getRelation(newFaction, this).formatting)
+                                .append(DatChatFormatting.TextColour.INFO + " has joined the faction"),
+                        List.of(getId())
+                );
+            }
         }
 
         updateCommands();

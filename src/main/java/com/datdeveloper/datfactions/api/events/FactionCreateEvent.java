@@ -9,12 +9,12 @@ import org.jetbrains.annotations.Nullable;
  * Can be cancelled, changes to the name will be reflected
  */
 @Cancelable
-public class CreateFactionEvent extends BaseFactionEvent {
+public class FactionCreateEvent extends BaseFactionEvent {
     /**
      * The name of the faction
      */
     String name;
-    public CreateFactionEvent(@Nullable final CommandSource instigator, final String name) {
+    public FactionCreateEvent(@Nullable final CommandSource instigator, final String name) {
         super(instigator);
         this.name = name;
     }

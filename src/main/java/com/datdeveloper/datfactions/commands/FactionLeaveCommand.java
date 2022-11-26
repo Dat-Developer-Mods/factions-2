@@ -1,6 +1,6 @@
 package com.datdeveloper.datfactions.commands;
 
-import com.datdeveloper.datfactions.api.events.ChangeFactionMembershipEvent;
+import com.datdeveloper.datfactions.api.events.FactionChangeMembershipEvent;
 import com.datdeveloper.datfactions.commands.util.FactionCommandUtils;
 import com.datdeveloper.datfactions.factionData.FPlayerCollection;
 import com.datdeveloper.datfactions.factionData.Faction;
@@ -39,7 +39,7 @@ public class FactionLeaveCommand extends BaseFactionCommand {
                     if (fPlayer.getRole() == faction.getOwnerRole()) {
                         c.getSource().sendSystemMessage(
                                 Component.literal(DatChatFormatting.TextColour.ERROR + "You cannot leave the faction when you are the owner, disband the faction with ")
-                                        .append(FactionCommandUtils.wrapCommand("/f disband", "/f disband"))
+                                        .append(FactionCommandUtils.wrapCommand("/f disband"))
                                         .append(DatChatFormatting.TextColour.ERROR + ", or set a new owner with ")
                                         .append(FactionCommandUtils.wrapCommand("/f setowner <player>", "/f setowner "))
                         );
@@ -47,14 +47,14 @@ public class FactionLeaveCommand extends BaseFactionCommand {
                     }
 
 
-                    final ChangeFactionMembershipEvent event = new ChangeFactionMembershipEvent(c.getSource().source, fPlayer, null, null, ChangeFactionMembershipEvent.EChangeFactionReason.LEAVE);
+                    final FactionChangeMembershipEvent event = new FactionChangeMembershipEvent(c.getSource().source, fPlayer, null, null, FactionChangeMembershipEvent.EChangeFactionReason.LEAVE);
                     MinecraftForge.EVENT_BUS.post(event);
                     if (event.isCanceled()) return 0;
 
                     final Faction newFaction = event.getNewFaction();
                     final FactionRole newRole = event.getNewRole();
 
-                    fPlayer.setFaction(newFaction != null ? newFaction.getId() : null, newRole != null ? newRole.getId() : null);
+                    fPlayer.setFaction(newFaction != null ? newFaction.getId() : null, newRole != null ? newRole.getId() : null, FactionChangeMembershipEvent.EChangeFactionReason.LEAVE);
 
                     c.getSource().sendSuccess(Component.literal(DatChatFormatting.TextColour.INFO + "Successfully left " + faction.getNameWithDescription(newFaction))
                     ,false);

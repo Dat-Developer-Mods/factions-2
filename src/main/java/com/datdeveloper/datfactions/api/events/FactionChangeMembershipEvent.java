@@ -13,7 +13,7 @@ import java.util.stream.Stream;
  * Fired when a player changes faction
  * Changes to newFaction and newRole will only be reflected, and the event can only be cancelled, if the reason isn't CREATE, DISBAND, NEWPLAYER, or ADMIN
  */
-public class ChangeFactionMembershipEvent extends FactionPlayerEvent {
+public class FactionChangeMembershipEvent extends FactionPlayerEvent {
 
     /**
      * The faction that the player is joining
@@ -32,7 +32,7 @@ public class ChangeFactionMembershipEvent extends FactionPlayerEvent {
      */
     final EChangeFactionReason reason;
 
-    public ChangeFactionMembershipEvent(@Nullable final CommandSource instigator, @NotNull final FactionPlayer player, @Nullable final Faction newFaction, @Nullable final FactionRole newRole, final EChangeFactionReason reason) {
+    public FactionChangeMembershipEvent(@Nullable final CommandSource instigator, @NotNull final FactionPlayer player, @Nullable final Faction newFaction, @Nullable final FactionRole newRole, final EChangeFactionReason reason) {
         super(instigator, player);
         this.newFaction = newFaction;
         this.newRole = newRole;
@@ -77,6 +77,8 @@ public class ChangeFactionMembershipEvent extends FactionPlayerEvent {
         JOIN,
         /** Joined because they are a new player joining the default faction */
         NEWPLAYER,
+        /** Joined because they were deleted */
+        DELETE,
         /** Joined because an admin forced their faction */
         ADMIN
     }
