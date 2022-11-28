@@ -7,47 +7,42 @@ import net.minecraft.world.level.ChunkPos;
 import net.minecraftforge.eventbus.api.Cancelable;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
+
 /**
- * Fired when a faction claims chunks
- * Cancellable, and changes to chunkPos and level, and newOwner will be reflected
+ * Fired when a faction claims chunks <br>
+ * Note that the default checks are performed in low priority, to disable them use {@link #setSkipDefaultChecks(boolean)}
+ * You can access the processed results in lowest priority
+ * <br>
+ * Cancellable, default checks can be skipped, and changes to chunks and level, and claimingFaction will be reflected
  */
 @Cancelable
+@BaseFactionEvent.SkipChecks
 public class FactionLandChangeOwnerEvent extends BaseFactionEvent {
     /**
-     * The chunk the faction claims
+     * The chunks the faction are claiming
      */
-    ChunkPos chunkPos;
+    final List<ChunkPos> chunks;
     /**
-     * The level the chunk is in
+     * The level the chunks are in
      */
     FactionLevel level;
 
     /**
-     * The previous owner of the chunk
+     * The faction claiming the chunk
      */
     @Nullable
-    final Faction oldOwner;
+    Faction claimingFaction;
 
-    /**
-     * The new owner of the chunk
-     */
-    @Nullable
-    Faction newOwner;
-
-    public FactionLandChangeOwnerEvent(@Nullable final CommandSource instigator, final ChunkPos chunkPos, final FactionLevel level, @Nullable final Faction oldOwner, @Nullable final Faction newOwner) {
+    public FactionLandChangeOwnerEvent(@Nullable final CommandSource instigator, final List<ChunkPos> chunks, final FactionLevel level, @Nullable final Faction claimingFaction) {
         super(instigator);
-        this.chunkPos = chunkPos;
+        this.chunks = chunks;
         this.level = level;
-        this.oldOwner = oldOwner;
-        this.newOwner = newOwner;
+        this.claimingFaction = claimingFaction;
     }
 
-    public ChunkPos getChunkPos() {
-        return chunkPos;
-    }
-
-    public void setChunkPos(final ChunkPos chunkPos) {
-        this.chunkPos = chunkPos;
+    public List<ChunkPos> getChunks() {
+        return chunks;
     }
 
     public FactionLevel getLevel() {
@@ -58,15 +53,11 @@ public class FactionLandChangeOwnerEvent extends BaseFactionEvent {
         this.level = level;
     }
 
-    public @Nullable Faction getOldOwner() {
-        return oldOwner;
+    public @Nullable Faction getClaimingFaction() {
+        return claimingFaction;
     }
 
-    public @Nullable Faction getNewOwner() {
-        return newOwner;
-    }
-
-    public void setNewOwner(@Nullable final Faction newOwner) {
-        this.newOwner = newOwner;
+    public void setClaimingFaction(@Nullable final Faction claimingFaction) {
+        this.claimingFaction = claimingFaction;
     }
 }

@@ -8,6 +8,7 @@ import org.jetbrains.annotations.Nullable;
 
 /**
  * Fired when the faction name changes
+ * <br>
  * Can be cancelled, changes to the name will be reflected
  */
 @Cancelable

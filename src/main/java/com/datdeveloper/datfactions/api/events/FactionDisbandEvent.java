@@ -8,6 +8,7 @@ import org.jetbrains.annotations.Nullable;
 
 /**
  * Called when a faction is being disbanded
+ * <br>
  * Is Cancellable
  */
 @Cancelable

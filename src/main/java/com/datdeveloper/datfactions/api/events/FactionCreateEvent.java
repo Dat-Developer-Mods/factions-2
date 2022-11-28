@@ -6,6 +6,7 @@ import org.jetbrains.annotations.Nullable;
 
 /**
  * Called when a faction is created
+ * <br>
  * Can be cancelled, changes to the name will be reflected
  */
 @Cancelable

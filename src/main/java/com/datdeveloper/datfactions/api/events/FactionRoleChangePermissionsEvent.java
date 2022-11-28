@@ -12,6 +12,7 @@ import java.util.Set;
 
 /**
  * Fired when a faction changes the permissions of a Role
+ * <br>
  * Cancellable, and changes to newPermissions will be reflected
  */
 @Cancelable

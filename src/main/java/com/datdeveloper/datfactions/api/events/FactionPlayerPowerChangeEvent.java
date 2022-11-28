@@ -8,6 +8,7 @@ import org.jetbrains.annotations.Nullable;
 
 /**
  * Fired when a faction player gains power
+ * <br>
  * Cancellable, and changes to powerChange are reflected
  */
 @Cancelable

@@ -8,6 +8,7 @@ import org.jetbrains.annotations.Nullable;
 
 /**
  * Fired when a faction changes its relation with another faction
+ * <br>
  * Cancellable, and changes to newRelation will be reflected.
  */
 public class FactionChangeRelationEvent extends FactionEvent {

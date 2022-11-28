@@ -9,6 +9,7 @@ import org.jetbrains.annotations.Nullable;
 
 /**
  * Fired when a faction removes a role
+ * <br>
  * Cancellable
  */
 @Cancelable

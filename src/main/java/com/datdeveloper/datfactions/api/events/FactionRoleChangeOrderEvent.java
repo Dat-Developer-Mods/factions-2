@@ -9,6 +9,7 @@ import org.jetbrains.annotations.Nullable;
 
 /**
  * Fired when a faction changes the position of a role in the hierarchy
+ * <br>
  * Cancellable, and changes to newParent will be reflected
  */
 @Cancelable

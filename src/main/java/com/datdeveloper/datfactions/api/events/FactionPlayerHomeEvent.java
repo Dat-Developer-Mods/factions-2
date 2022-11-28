@@ -8,6 +8,7 @@ import org.jetbrains.annotations.Nullable;
 
 /**
  * Called when a player goes to the faction home
+ * <br>
  * Cancellable
  */
 @Cancelable

@@ -8,6 +8,7 @@ import org.jetbrains.annotations.Nullable;
 
 /**
  * Fired when a faction creates a role
+ * <br>
  * Cancellable, and changes to newRoleName and newRoleParent will be reflected
  */
 @Cancelable

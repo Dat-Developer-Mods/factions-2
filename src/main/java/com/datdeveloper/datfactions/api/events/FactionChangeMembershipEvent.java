@@ -11,6 +11,7 @@ import java.util.stream.Stream;
 
 /**
  * Fired when a player changes faction
+ * <br>
  * Changes to newFaction and newRole will only be reflected, and the event can only be cancelled, if the reason isn't CREATE, DISBAND, NEWPLAYER, or ADMIN
  */
 public class FactionChangeMembershipEvent extends FactionPlayerEvent {

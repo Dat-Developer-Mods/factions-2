@@ -11,6 +11,7 @@ import java.util.Set;
 
 /**
  * Fired when a faction changes its flags
+ * <br>
  * Cancellable, and changes to newFlags will be reflected
  */
 @Cancelable
