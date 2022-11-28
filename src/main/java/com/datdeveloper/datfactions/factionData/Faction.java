@@ -224,12 +224,31 @@ public class Faction extends DatabaseEntity {
     }
 
     /**
-     * Get the worth of the chunks the factions owns in the specified level
+     * Get the count of the chunks the faction owns in the specified level
+     * @param level The level to check
+     * @return the count of chunks the faction owns in the specified level
+     */
+    public int getLandCountInlevel(final FactionLevel level) {
+        return level.getClaimsCount(this.getId());
+    }
+
+    /**
+     * Get the worth of the chunks the faction owns in the specified level
      * @param level The level to check
      * @return the total worth of the chunks the faction owns in the specified level
      */
     public int getLandWorthInLevel(final FactionLevel level) {
         return level.getClaimsWorth(this.getId());
+    }
+
+    /**
+     * Get the count of all the chunks the faction owns
+     * @return the count of all the chunks the faction owns
+     */
+    public int getTotalLandCount() {
+        return FLevelCollection.getInstance().getAll().values().stream()
+                .mapToInt(factionLevel -> factionLevel.getClaimsCount(this.getId()))
+                .sum();
     }
 
     /**
@@ -586,7 +605,10 @@ public class Faction extends DatabaseEntity {
     public MutableComponent getNameWithDescription(@Nullable final Faction from) {
         final String name = getName();
         final MutableComponent component = Component.literal(name);
-        component.withStyle(Style.EMPTY.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, getShortDescription(from))).withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/factions info " + name)));
+        component.withStyle(Style.EMPTY
+                .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, getShortDescription(from)))
+                .withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/factions info " + name))
+        );
 
         return component;
     }
@@ -762,5 +784,15 @@ public class Faction extends DatabaseEntity {
         return super.isDirty() || roles.stream()
                 .map(DatabaseEntity::isDirty)
                 .reduce(Boolean.FALSE, Boolean::logicalOr);
+    }
+
+    @Override
+    public int hashCode() {
+        return this.id.hashCode();
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        return (obj instanceof Faction faction) && this.getId().equals(faction.getId());
     }
 }

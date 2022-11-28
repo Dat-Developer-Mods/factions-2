@@ -65,6 +65,11 @@ public class FactionPlayer extends DatabaseEntity {
      */
     transient EFPlayerChatMode chatMode = EFPlayerChatMode.PUBLIC;
 
+    /**
+     * The method used to alert the player that it's moved into territory
+     */
+    EFPlayerChunkAlertMode chunkAlertMode;
+
     public FactionPlayer(final UUID id, final String lastName) {
         this.id = id;
         this.lastName = lastName;
@@ -74,6 +79,7 @@ public class FactionPlayer extends DatabaseEntity {
         this.power = this.maxPower;
         this.factionId = null;
         this.role = null;
+        this.chunkAlertMode = EFPlayerChunkAlertMode.TITLE;
     }
 
     public FactionPlayer(final ServerPlayer player, final FactionPlayer template) {
@@ -84,6 +90,7 @@ public class FactionPlayer extends DatabaseEntity {
         this.maxPower = template.maxPower;
         this.factionId = template.factionId;
         this.role = template.role;
+        this.chunkAlertMode = template.chunkAlertMode;
     }
 
     /* ========================================= */
@@ -141,6 +148,14 @@ public class FactionPlayer extends DatabaseEntity {
         return autoClaim;
     }
 
+    public EFPlayerChunkAlertMode getChunkAlertMode() {
+        return chunkAlertMode;
+    }
+
+    public EFPlayerChatMode getChatMode() {
+        return chatMode;
+    }
+
     /* ========================================= */
     /* Setters
     /* ========================================= */
@@ -155,10 +170,6 @@ public class FactionPlayer extends DatabaseEntity {
         this.markDirty();
     }
 
-    public void setAutoClaim(final boolean autoClaim) {
-        this.autoClaim = autoClaim;
-    }
-
     public void setPower(final int power) {
         this.power = power;
         this.markDirty();
@@ -167,6 +178,19 @@ public class FactionPlayer extends DatabaseEntity {
     public void setMaxPower(final int maxPower) {
         this.maxPower = maxPower;
         this.markDirty();
+    }
+
+    public void setAutoClaim(final boolean autoClaim) {
+        this.autoClaim = autoClaim;
+    }
+
+    public void setChatMode(final EFPlayerChatMode chatMode) {
+        this.chatMode = chatMode;
+    }
+
+    public void setChunkAlertMode(final EFPlayerChunkAlertMode chunkAlertMode) {
+        this.chunkAlertMode = chunkAlertMode;
+        markDirty();
     }
 
     /**
@@ -325,5 +349,15 @@ public class FactionPlayer extends DatabaseEntity {
         if (serverPlayer == null) return;
 
         serverPlayer.getServer().getCommands().sendCommands(serverPlayer);
+    }
+
+    @Override
+    public int hashCode() {
+        return this.id.hashCode();
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        return (obj instanceof FactionPlayer fPlayer) && this.getId().equals(fPlayer.getId());
     }
 }

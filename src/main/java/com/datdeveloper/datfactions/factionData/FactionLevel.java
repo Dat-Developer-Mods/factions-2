@@ -17,6 +17,7 @@ public class FactionLevel extends DatabaseEntity {
     /**
      * The ID of the level
      */
+    @NotNull
     final ResourceKey<Level> id;
 
     /**
@@ -29,13 +30,15 @@ public class FactionLevel extends DatabaseEntity {
      */
     Map<ChunkPos, ChunkClaim> claims;
 
-    public FactionLevel(final ResourceKey<Level> id) {
+    // TODO: Add a faction or player blacklist to block a faction in the world
+
+    public FactionLevel(final @NotNull ResourceKey<Level> id) {
         this.id = id;
         settings = null;
         claims = new HashMap<>();
     }
 
-    public FactionLevel(final ResourceKey<Level> id, final FactionLevelSettings settings) {
+    public FactionLevel(final @NotNull ResourceKey<Level> id, final FactionLevelSettings settings) {
         this.id = id;
         this.settings = settings;
         claims = new HashMap<>();
@@ -44,7 +47,7 @@ public class FactionLevel extends DatabaseEntity {
     /* ========================================= */
     /* Getters
     /* ========================================= */
-    public ResourceKey<Level> getId() {
+    public @NotNull ResourceKey<Level> getId() {
         return id;
     }
 
@@ -52,6 +55,13 @@ public class FactionLevel extends DatabaseEntity {
         return claims;
     }
 
+    public ServerLevel getServerLevel() {
+        return ServerLifecycleHooks.getCurrentServer().getLevel(getId());
+    }
+
+    public String getName() {
+        return getId().location().getPath();
+    }
 
     /* ========================================= */
     /* Claims
@@ -59,7 +69,7 @@ public class FactionLevel extends DatabaseEntity {
     public int getClaimsCount(@NotNull final UUID factionId) {
         if (factionId.equals(getSettings().defaultOwner)) return Integer.MAX_VALUE;
         return (int) claims.values().stream()
-                .filter(claim -> claim.getFactionId() == factionId)
+                .filter(claim -> claim.getFactionId().equals(factionId))
                 .count();
     }
 
@@ -68,9 +78,14 @@ public class FactionLevel extends DatabaseEntity {
         else return getClaimsCount(factionId) * getSettings().landWorth;
     }
 
+    @NotNull
     public UUID getChunkOwner(final ChunkPos pos) {
         final ChunkClaim claim = claims.get(pos);
         return claim != null ? claim.getFactionId() : getSettings().defaultOwner;
+    }
+
+    public Faction getChunkOwningFaction(final ChunkPos pos) {
+        return FactionCollection.getInstance().getByKey(getChunkOwner(pos));
     }
 
     public void setChunkOwner(final ChunkPos pos, final Faction faction) {
@@ -80,6 +95,7 @@ public class FactionLevel extends DatabaseEntity {
         }
 
         claims.put(pos, new ChunkClaim(faction.getId()));
+        markDirty();
     }
 
     /* ========================================= */
@@ -104,6 +120,9 @@ public class FactionLevel extends DatabaseEntity {
      */
     public FactionLevelSettings getSettingsToChange() {
         if (settings == null) settings = new FactionLevelSettings(FLevelCollection.getInstance().defaultSettings);
+        markDirty();
+        return settings;
+    }
 
         return settings;
     }
@@ -121,5 +140,15 @@ public class FactionLevel extends DatabaseEntity {
     @Override
     public boolean isDirty() {
         return super.isDirty() || (settings != null && settings.isDirty());
+    }
+
+    @Override
+    public int hashCode() {
+        return this.id.hashCode();
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        return (obj instanceof FactionLevel fLevel) && this.getId().equals(fLevel.getId());
     }
 }

@@ -18,6 +18,7 @@ public class FactionsCommand {
         FactionListCommand.register(command);
         FactionInfoCommand.register(command);
         FactionPlayerInfoCommand.register(command);
+        FactionMapCommand.register(command);
         FactionCreateCommand.register(command);
 
         FactionNameCommand.register(command);

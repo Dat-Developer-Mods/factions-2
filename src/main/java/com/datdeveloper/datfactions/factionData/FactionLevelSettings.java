@@ -25,6 +25,13 @@ public class FactionLevelSettings extends DatabaseEntity {
     boolean requireConnect;
 
     /**
+     * Whether the faction home must be on an owned chunk
+     */
+    boolean homeRequiresOwnedChunk;
+
+    // TODO: Min players to claim
+
+    /**
      * The maximum amount of land a faction can have in this world
      */
     int maxLand;
@@ -109,6 +116,10 @@ public class FactionLevelSettings extends DatabaseEntity {
         return requireConnect;
     }
 
+    public boolean isHomeRequiresOwnedChunk() {
+        return homeRequiresOwnedChunk;
+    }
+
     public int getMaxLand() {
         return maxLand;
     }
@@ -153,6 +164,11 @@ public class FactionLevelSettings extends DatabaseEntity {
 
     public void setRequireConnect(final boolean requireConnect) {
         this.requireConnect = requireConnect;
+        markDirty();
+    }
+
+    public void setHomeRequiresOwnedChunk(final boolean homeRequiresOwnedChunk) {
+        this.homeRequiresOwnedChunk = homeRequiresOwnedChunk;
         markDirty();
     }
 
