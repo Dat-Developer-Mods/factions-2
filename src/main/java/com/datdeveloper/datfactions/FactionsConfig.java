@@ -15,7 +15,7 @@ public class FactionsConfig {
 
     private static ConfigValue<Integer> maxFactionRanks;
 
-    private static ConfigValue<Integer> globalMaxFactionLandWorth;
+    private static ConfigValue<Integer> globalMaxFactionLandCount;
 
     private static ConfigValue<Long> factionOfflineExpiryTime;
     private static ConfigValue<Boolean> removePlayerOnBan;
@@ -44,7 +44,6 @@ public class FactionsConfig {
     private static ConfigValue<Integer> teleportDelay;
     private static final Map<EFactionFlags, ConfigValue<Boolean>> flagBlacklist = new HashMap<>();
 
-
     FactionsConfig(final ForgeConfigSpec.Builder builder) {
         builder.push("Faction Management");
         {
@@ -61,9 +60,9 @@ public class FactionsConfig {
                     .comment("The maximum amount of ranks a faction can have")
                     .defineInRange("MaxFactionMotdLength", 120, 0, Integer.MAX_VALUE);
 
-            globalMaxFactionLandWorth = builder
-                    .comment("The total maximum amount of chunk worth a faction can have across all worlds")
-                    .defineInRange("globalMaxFactionLandWorth", 500, 0, Integer.MAX_VALUE);
+            globalMaxFactionLandCount = builder
+                    .comment("The total maximum amount of chunks a faction can have across all worlds")
+                    .defineInRange("globalMaxFactionLandCount", 100, 0, Integer.MAX_VALUE);
 
             factionOfflineExpiryTime = builder
                     .comment("The amount of time a faction can spend offline before it is deleted in milliseconds, set to 0 to disable")
@@ -171,8 +170,8 @@ public class FactionsConfig {
         return maxFactionRanks.get();
     }
 
-    public static int getGlobalMaxFactionLandWorth() {
-        return globalMaxFactionLandWorth.get();
+    public static int getGlobalMaxFactionLandCount() {
+        return globalMaxFactionLandCount.get();
     }
 
     public static long getFactionOfflineExpiryTime() {

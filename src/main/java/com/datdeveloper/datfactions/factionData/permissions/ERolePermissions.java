@@ -13,15 +13,15 @@ public enum ERolePermissions {
     DEMOTE("Allows the player to demote other players below their role"),
 
     // Land
-    CLAIM("Allows the player to claim land"),
+    CLAIMONE("Allows the player to claim single chunks"),
     UNCLAIM("Allows the player to unclaim land"),
     UNCLAIMALL("Allows the player to unclaim all the faction's land at once"),
     AUTOCLAIM("Allows the player to use autoclaiming"),
 
     // Land Access
-    CONTAINERS("Allows the player to access containers on the faction land"),
-    BUILD("Allows the player to build on the faction's land"),
-    INTERACT("Allows the player to interact with blocks (Doors, buttons, furnaces, etc) on the faction's land"),
+    CONTAINERS("Allows the player to access containers on the faction chunks"),
+    BUILD("Allows the player to build on the faction's chunks"),
+    INTERACT("Allows the player to interact with blocks (Doors, buttons, furnaces, etc) on the faction's chunks"),
 
     // Faction Management
     SETNAME("Allows the player to set the faction's name"),

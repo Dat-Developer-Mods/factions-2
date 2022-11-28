@@ -46,7 +46,6 @@ public class FactionLeaveCommand extends BaseFactionCommand {
                         return 2;
                     }
 
-
                     final FactionChangeMembershipEvent event = new FactionChangeMembershipEvent(c.getSource().source, fPlayer, null, null, FactionChangeMembershipEvent.EChangeFactionReason.LEAVE);
                     MinecraftForge.EVENT_BUS.post(event);
                     if (event.isCanceled()) return 0;
