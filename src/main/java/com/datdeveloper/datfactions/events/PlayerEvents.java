@@ -23,6 +23,9 @@ import org.slf4j.Logger;
 
 import java.util.Objects;
 
+/**
+ * Events pertaining to the players
+ */
 @Mod.EventBusSubscriber(modid = Datfactions.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class PlayerEvents {
     private static final Logger logger = LogUtils.getLogger();

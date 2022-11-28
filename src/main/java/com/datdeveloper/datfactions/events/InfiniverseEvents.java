@@ -5,6 +5,9 @@ import commoble.infiniverse.api.UnregisterDimensionEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
+/**
+ * Events fired by the Infiniverse mod
+ */
 @Mod.EventBusSubscriber(modid = Datfactions.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class InfiniverseEvents {
 

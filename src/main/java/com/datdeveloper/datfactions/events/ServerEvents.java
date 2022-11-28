@@ -8,6 +8,9 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.server.permission.events.PermissionGatherEvent;
 
+/**
+ * Events for dealing with server stuff
+ */
 @Mod.EventBusSubscriber(modid = Datfactions.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class ServerEvents {
     /**
