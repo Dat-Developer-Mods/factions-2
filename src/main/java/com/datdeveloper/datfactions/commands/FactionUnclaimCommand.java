@@ -1,10 +1,13 @@
 package com.datdeveloper.datfactions.commands;
 
+import com.datdeveloper.datfactions.api.events.FactionDisbandEvent;
 import com.datdeveloper.datfactions.api.events.FactionLandChangeOwnerEvent;
+import com.datdeveloper.datfactions.commands.util.FactionCommandUtils;
 import com.datdeveloper.datfactions.factionData.*;
 import com.datdeveloper.datfactions.factionData.permissions.ERolePermissions;
 import com.datdeveloper.datmoddingapi.permissions.DatPermissions;
 import com.datdeveloper.datmoddingapi.util.DatChatFormatting;
+import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.tree.LiteralCommandNode;
@@ -18,27 +21,27 @@ import net.minecraftforge.common.MinecraftForge;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FactionClaimCommand extends BaseFactionCommand {
+public class FactionUnclaimCommand extends BaseFactionCommand {
     static void register(final LiteralArgumentBuilder<CommandSourceStack> command) {
 
-        final LiteralCommandNode<CommandSourceStack> claimCommand = Commands.literal("claim")
+        final LiteralCommandNode<CommandSourceStack> claimCommand = Commands.literal("unclaim")
                 .requires(commandSourceStack1 -> {
-                    if (!(commandSourceStack1.isPlayer()) && DatPermissions.hasAnyPermissions(commandSourceStack1.source, FactionPermissions.FACTIONCLAIMONE, FactionPermissions.FACTIONCLAIMSQUARE, FactionPermissions.FACTIONCLAIMAUTO))
+                    if (!(commandSourceStack1.isPlayer()) && DatPermissions.hasAnyPermissions(commandSourceStack1.source, FactionPermissions.FACTIONUNCLAIMONE, FactionPermissions.FACTIONUNCLAIMSQUARE, FactionPermissions.FACTIONUNCLAIMALL))
                         return false;
                     final FactionPlayer fPlayer1 = getPlayerOrTemplate(commandSourceStack1.getPlayer());
-                    return fPlayer1.hasFaction() && fPlayer1.getRole().hasAnyPermissions(List.of(ERolePermissions.CLAIMONE, ERolePermissions.CLAIMSQUARE, ERolePermissions.AUTOCLAIM));
+                    return fPlayer1.hasFaction() && fPlayer1.getRole().hasAnyPermissions(List.of(ERolePermissions.UNCLAIMONE, ERolePermissions.UNCLAIMSQUARE, ERolePermissions.UNCLAIMALL));
                 })
                 .then(
                         Commands.literal("one")
                                 .requires(commandSourceStack -> {
                                     final ServerPlayer player = commandSourceStack.getPlayer();
                                     final FactionPlayer fPlayer = getPlayerOrTemplate(player);
-                                    return DatPermissions.hasPermission(player, FactionPermissions.FACTIONCLAIMONE) && fPlayer.getRole().hasPermission(ERolePermissions.CLAIMONE);
+                                    return DatPermissions.hasPermission(player, FactionPermissions.FACTIONUNCLAIMONE) && fPlayer.getRole().hasPermission(ERolePermissions.UNCLAIMONE);
                                 })
                                 .executes(c -> {
                                     final ServerPlayer player = c.getSource().getPlayer();
 
-                                    return claimChunks(player, new ArrayList<>(List.of(new ChunkPos(player.getOnPos()))));
+                                    return unclaimChunks(null, new ArrayList<>(List.of(new ChunkPos(player.getOnPos()))));
                                 })
 
                 )
@@ -72,31 +75,52 @@ public class FactionClaimCommand extends BaseFactionCommand {
                                                         }
                                                     }
 
-                                                    return claimChunks(player, chunks);
+                                                    return unclaimChunks(player, chunks);
                                                 })
                                 )
                 )
                 .then(
-                        Commands.literal("auto")
+                        Commands.literal("all")
                                 .requires(commandSourceStack -> {
                                     final ServerPlayer player = commandSourceStack.getPlayer();
                                     final FactionPlayer fPlayer = getPlayerOrTemplate(player);
                                     return DatPermissions.hasPermission(player, FactionPermissions.FACTIONCLAIMAUTO) && fPlayer.getRole().hasPermission(ERolePermissions.AUTOCLAIM);
                                 })
+                                .then(
+                                        Commands.argument("areyousure", BoolArgumentType.bool())
+                                                .executes(c -> {
+                                                    final ServerPlayer player = c.getSource().getPlayer();
+                                                    final FactionPlayer fPlayer = FPlayerCollection.getInstance().getPlayer(player);
+                                                    final Faction faction = fPlayer.getFaction();
+
+                                                    final boolean areYouSure = BoolArgumentType.getBool(c, "areyousure");
+                                                    if (!areYouSure) return 2;
+
+                                                    final FactionDisbandEvent event = new FactionDisbandEvent(c.getSource().source, faction);
+                                                    MinecraftForge.EVENT_BUS.post(event);
+                                                    if (event.isCanceled()) return 0;
+
+                                                    FactionCollection.getInstance().disbandFaction(faction.getId());
+                                                    return 1;
+                                                })
+                                )
                                 .executes(c -> {
                                     final ServerPlayer player = c.getSource().getPlayer();
-                                    final FactionPlayer fPlayer = getPlayerOrTemplate(player);
+                                    FactionPlayer fPlayer = getPlayerOrTemplate(player);
+                                    Faction faction = fPlayer.getFaction();
 
-                                    final boolean autoClaim = fPlayer.isAutoClaim();
-                                    if (autoClaim) {
-                                        fPlayer.setAutoClaim(false);
-                                        player.sendSystemMessage(Component.literal(DatChatFormatting.TextColour.INFO + "Disabling auto-claiming, you will no longer claim chunks as you cross into their borders"));
-                                    } else {
-                                        fPlayer.setAutoClaim(true);
-                                        player.sendSystemMessage(Component.literal(DatChatFormatting.TextColour.INFO + "Enabled auto-claiming, you will now claim chunks as you cross into their borders"));
+                                    c.getSource().sendSuccess(Component.literal(
+                                                            DatChatFormatting.TextColour.ERROR + "Are you sure you want to release all ")
+                                                    .append(
+                                                            faction.getNameWithDescription(faction)
+                                                                    .withStyle(EFactionRelation.SELF.formatting)
+                                                    )
+                                                    .append(DatChatFormatting.TextColour.ERROR + " chunks? This action is not reversible\n")
+                                                    .append(DatChatFormatting.TextColour.ERROR + "Use ")
+                                                    .append(FactionCommandUtils.wrapCommand("/f unclaim all true", "/f unclaim all "))
+                                                    .append(DatChatFormatting.TextColour.ERROR + " if you are")
 
-                                        claimChunks(player, new ArrayList<>(List.of(new ChunkPos(player.getOnPos()))));
-                                    }
+                                            ,false);
 
                                     return 1;
                                 })
@@ -105,22 +129,20 @@ public class FactionClaimCommand extends BaseFactionCommand {
         command.then(claimCommand);
     }
 
-    public static int claimChunks(final ServerPlayer player, final List<ChunkPos> chunks) {
-        final FactionPlayer fPlayer = getPlayerOrTemplate(player);
-        Faction faction = fPlayer.getFaction();
+    public static int unclaimChunks(final ServerPlayer player, final List<ChunkPos> chunks) {
         FactionLevel level = FLevelCollection.getInstance().getByKey(player.getLevel().dimension());
 
         // Event
-        final FactionLandChangeOwnerEvent event = new FactionLandChangeOwnerEvent(player, chunks, level, faction);
+        final FactionLandChangeOwnerEvent event = new FactionLandChangeOwnerEvent(player, chunks, level, null);
         MinecraftForge.EVENT_BUS.post(event);
         if (event.isCanceled()) return -1;
 
         level = event.getLevel();
-        faction = event.getNewOwner();
+        Faction faction = event.getNewOwner();
 
         level.setChunksOwner(chunks, faction);
 
-        player.sendSystemMessage(Component.literal(DatChatFormatting.TextColour.INFO + "Successfully claimed " + event.getChunks().size() + " chunks"));
+        player.sendSystemMessage(Component.literal(DatChatFormatting.TextColour.INFO + "Successfully unclaimed " + event.getChunks().size() + " chunks"));
 
         return event.getChunks().size();
     }

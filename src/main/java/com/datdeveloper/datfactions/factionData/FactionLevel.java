@@ -3,6 +3,7 @@ package com.datdeveloper.datfactions.factionData;
 import com.datdeveloper.datfactions.database.DatabaseEntity;
 import com.datdeveloper.datfactions.util.RelationUtil;
 import com.datdeveloper.datmoddingapi.util.DatChatFormatting;
+import com.ibm.icu.impl.coll.Collation;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
@@ -15,9 +16,7 @@ import net.minecraft.world.level.Level;
 import net.minecraftforge.server.ServerLifecycleHooks;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * A representation of the level storing the claims in that level and level specific config
@@ -97,13 +96,22 @@ public class FactionLevel extends DatabaseEntity {
         return FactionCollection.getInstance().getByKey(getChunkOwner(pos));
     }
 
-    public void setChunkOwner(final ChunkPos pos, final Faction faction) {
+    public void setChunkOwner(final ChunkPos chunk, final Faction faction) {
         if (faction == null || faction.getId().equals(getSettings().defaultOwner)) {
-            claims.remove(pos);
+            claims.remove(chunk);
             return;
         }
 
-        claims.put(pos, new ChunkClaim(faction.getId()));
+        claims.put(chunk, new ChunkClaim(faction.getId()));
+        markDirty();
+    }
+
+
+    public void setChunksOwner(final Collection<ChunkPos> chunks, final Faction faction) {
+        for (ChunkPos chunk : chunks) {
+            claims.put(chunk, new ChunkClaim(faction.getId()));
+        }
+
         markDirty();
     }
 

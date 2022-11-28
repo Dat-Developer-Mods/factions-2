@@ -7,10 +7,13 @@ import net.minecraft.world.level.ChunkPos;
 import net.minecraftforge.eventbus.api.Cancelable;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
- * Fired when a faction claims chunks <br>
+ * Fired when a faction claims or unclaims chunks <br>
  * Note that the default checks are performed in low priority, to disable them use {@link #setSkipDefaultChecks(boolean)}
  * You can access the processed results in lowest priority
  * <br>
@@ -20,28 +23,31 @@ import java.util.List;
 @BaseFactionEvent.SkipChecks
 public class FactionLandChangeOwnerEvent extends BaseFactionEvent {
     /**
-     * The chunks the faction are claiming
+     * The chunks being claimed
      */
-    final List<ChunkPos> chunks;
+    Set<ChunkPos> chunks;
+
     /**
      * The level the chunks are in
      */
     FactionLevel level;
 
     /**
-     * The faction claiming the chunk
+     * The new owner of the chunk
+     * <p>
+     * If this is null then it can be assumed that the land is being unclaimed
      */
     @Nullable
-    Faction claimingFaction;
+    Faction newOwner;
 
-    public FactionLandChangeOwnerEvent(@Nullable final CommandSource instigator, final List<ChunkPos> chunks, final FactionLevel level, @Nullable final Faction claimingFaction) {
+    public FactionLandChangeOwnerEvent(@Nullable final CommandSource instigator, final Collection<ChunkPos> chunks, final FactionLevel level, @Nullable final Faction newOwner) {
         super(instigator);
-        this.chunks = chunks;
+        this.chunks = new HashSet<>(chunks);
         this.level = level;
-        this.claimingFaction = claimingFaction;
+        this.newOwner = newOwner;
     }
 
-    public List<ChunkPos> getChunks() {
+    public Set<ChunkPos> getChunks() {
         return chunks;
     }
 
@@ -53,11 +59,15 @@ public class FactionLandChangeOwnerEvent extends BaseFactionEvent {
         this.level = level;
     }
 
-    public @Nullable Faction getClaimingFaction() {
-        return claimingFaction;
+    public @Nullable Faction getNewOwner() {
+        return newOwner;
     }
 
-    public void setClaimingFaction(@Nullable final Faction claimingFaction) {
-        this.claimingFaction = claimingFaction;
+    public void setNewOwner(@Nullable final Faction newOwner) {
+        this.newOwner = newOwner;
+    }
+
+    public void setChunks(Set<ChunkPos> chunks) {
+        this.chunks = chunks;
     }
 }

@@ -37,14 +37,14 @@ public class FactionEvents {
             }
         });
 
-        final Faction faction = event.getClaimingFaction();
+        final Faction faction = event.getNewOwner();
         final FactionLevel level = event.getLevel();
         final List<ChunkPos> chunks = new ArrayList<>(event.getChunks());
-        List<ChunkPos> connectedChunks = new ArrayList<>();
+        Set<ChunkPos> connectedChunks = new HashSet<>();
         final Map<Faction, Set<ChunkPos>> stolenChunks = new HashMap<>();
 
         if (event.isSkipDefaultChecks()) {
-            connectedChunks = chunks;
+            connectedChunks = new HashSet<>(chunks);
             for (final ChunkPos chunk : connectedChunks) {
                 final Faction owner = FactionCollection.getInstance().getByKey(level.getChunkOwner(chunk));
                 stolenChunks.computeIfAbsent(owner, (key) -> new HashSet<>()).add(chunk);
@@ -103,7 +103,7 @@ public class FactionEvents {
                     return;
                 }
             } else {
-                connectedChunks = chunks;
+                connectedChunks = new HashSet<>(chunks);
             }
 
             // Afford
@@ -127,5 +127,7 @@ public class FactionEvents {
                 return;
             }
         }
+
+        event.setChunks(connectedChunks);
     }
 }
