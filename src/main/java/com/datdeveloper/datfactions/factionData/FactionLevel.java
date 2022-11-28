@@ -1,9 +1,18 @@
 package com.datdeveloper.datfactions.factionData;
 
 import com.datdeveloper.datfactions.database.DatabaseEntity;
+import com.datdeveloper.datfactions.util.RelationUtil;
+import com.datdeveloper.datmoddingapi.util.DatChatFormatting;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.HoverEvent;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.server.ServerLifecycleHooks;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
@@ -98,6 +107,13 @@ public class FactionLevel extends DatabaseEntity {
         markDirty();
     }
 
+    public boolean doesChunkConnect(final ChunkPos pos, final Faction faction) {
+        return faction.getId().equals(getChunkOwner(new ChunkPos(pos.x + 1, pos.z)))
+                || faction.getId().equals(getChunkOwner(new ChunkPos(pos.x, pos.z + 1)))
+                || faction.getId().equals(getChunkOwner(new ChunkPos(pos.x - 1, pos.z)))
+                || faction.getId().equals(getChunkOwner(new ChunkPos(pos.x, pos.z - 1)));
+    }
+
     /* ========================================= */
     /* Settings
     /* ========================================= */
@@ -124,7 +140,31 @@ public class FactionLevel extends DatabaseEntity {
         return settings;
     }
 
-        return settings;
+    /* ========================================= */
+    /* Misc
+    /* ========================================= */
+
+    public MutableComponent getNameWithDescription(final Faction from) {
+        return Component.literal(getName())
+                .withStyle(Style.EMPTY.withHoverEvent(
+                        new HoverEvent(
+                                HoverEvent.Action.SHOW_TEXT,
+                                getShortDescription(from)
+                        )
+                ));
+    }
+
+    public MutableComponent getShortDescription(final Faction from) {
+        final FactionLevelSettings settings = getSettings();
+        final Faction defaultOwner = FactionCollection.getInstance().getByKey(settings.getDefaultOwner());
+        return Component.literal(defaultOwner.getName())
+                        .withStyle(RelationUtil.getRelation(from, defaultOwner).formatting).append("\n")
+                        .append(DatChatFormatting.TextColour.INFO + "Land Worth: ")
+                        .append(ChatFormatting.WHITE.toString() + settings.getLandWorth()).append("\n")
+                        .append(DatChatFormatting.TextColour.INFO + "Max Land: ")
+                        .append(ChatFormatting.WHITE.toString() + settings.getMaxLand()).append("\n")
+                        .append(DatChatFormatting.TextColour.INFO + "Passive Power Gain: ")
+                        .append(ChatFormatting.WHITE + String.valueOf(settings.getPassivePowerGainMultiplier()) + "x");
     }
     
     /* ========================================= */

@@ -1,6 +1,7 @@
 package com.datdeveloper.datfactions.database;
 
 import com.datdeveloper.datfactions.database.jsonAdapters.BlockPosAdapter;
+import com.datdeveloper.datfactions.database.jsonAdapters.ChunkPosAdapter;
 import com.datdeveloper.datfactions.database.jsonAdapters.DatUUIDTypeAdapter;
 import com.datdeveloper.datfactions.database.jsonAdapters.ResourceKeyAdapterFactory;
 import com.datdeveloper.datfactions.factionData.Faction;
@@ -15,6 +16,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -49,6 +51,7 @@ public class FlatFileDatabase extends Database {
                 .enableComplexMapKeySerialization()
 
                 .registerTypeAdapter(BlockPos.class, new BlockPosAdapter())
+                .registerTypeAdapter(ChunkPos.class, new ChunkPosAdapter())
                 .registerTypeAdapterFactory(new ResourceKeyAdapterFactory())
                 .registerTypeAdapter(UUID.class, new DatUUIDTypeAdapter())
                 .create();

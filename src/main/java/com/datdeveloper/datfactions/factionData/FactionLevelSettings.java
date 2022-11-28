@@ -57,6 +57,11 @@ public class FactionLevelSettings extends DatabaseEntity {
      */
     boolean requireLandStealConnect;
 
+    /**
+     * Whether to inform chunk owners that their chunk has been stolen
+     */
+    boolean notifyLandOwnersOfSteal;
+
     // Misc
     /**
      * The delay before teleporting to this world with /factions home
@@ -75,10 +80,11 @@ public class FactionLevelSettings extends DatabaseEntity {
         this.requireConnect = true;
         this.maxLand = Integer.MAX_VALUE;
         this.landWorth = 10;
-        this.maxClaimRadius = 5;
+        this.maxClaimRadius = 3;
 
         this.allowLandSteal = true;
         this.requireLandStealConnect = false;
+        this.notifyLandOwnersOfSteal = false;
 
         this.teleportDelay = 5;
         this.passivePowerGainMultiplier = 1.f;
@@ -95,6 +101,7 @@ public class FactionLevelSettings extends DatabaseEntity {
 
         this.allowLandSteal = template.allowLandSteal;
         this.requireLandStealConnect = template.requireLandStealConnect;
+        this.notifyLandOwnersOfSteal = template.notifyLandOwnersOfSteal;
 
         this.teleportDelay = template.teleportDelay;
         this.passivePowerGainMultiplier = template.passivePowerGainMultiplier;
@@ -118,6 +125,10 @@ public class FactionLevelSettings extends DatabaseEntity {
 
     public boolean isHomeRequiresOwnedChunk() {
         return homeRequiresOwnedChunk;
+    }
+
+    public boolean isNotifyLandOwnersOfSteal() {
+        return notifyLandOwnersOfSteal;
     }
 
     public int getMaxLand() {
@@ -169,6 +180,11 @@ public class FactionLevelSettings extends DatabaseEntity {
 
     public void setHomeRequiresOwnedChunk(final boolean homeRequiresOwnedChunk) {
         this.homeRequiresOwnedChunk = homeRequiresOwnedChunk;
+        markDirty();
+    }
+
+    public void setNotifyLandOwnersOfSteal(final boolean notifyLandOwnersOfSteal) {
+        this.notifyLandOwnersOfSteal = notifyLandOwnersOfSteal;
         markDirty();
     }
 

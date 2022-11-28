@@ -1,5 +1,10 @@
 package com.datdeveloper.datfactions.factionData.permissions;
 
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.HoverEvent;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.Style;
+
 /**
  * The available permissions for a role in a faction
  */
@@ -14,9 +19,11 @@ public enum ERolePermissions {
 
     // Land
     CLAIMONE("Allows the player to claim single chunks"),
-    UNCLAIM("Allows the player to unclaim land"),
-    UNCLAIMALL("Allows the player to unclaim all the faction's land at once"),
+    CLAIMSQUARE("Allows the player to claim a square radius of chunks"),
     AUTOCLAIM("Allows the player to use autoclaiming"),
+    UNCLAIMONE("Allows the player to unclaim a single chunk at a time"),
+    UNCLAIMSQUARE("Allows the player to unclaim a square of chunks at a time"),
+    UNCLAIMALL("Allows the player to unclaim all the faction's chunks at once"),
 
     // Land Access
     CONTAINERS("Allows the player to access containers on the faction chunks"),
@@ -53,5 +60,16 @@ public enum ERolePermissions {
 
     ERolePermissions(final String description) {
         this.description = description;
+    }
+
+
+
+    /**
+     * Get a chat component that contains the name of the permission and shows its description on hover
+     * @return a chat component representing the permission
+     */
+    MutableComponent getChatComponent() {
+        final MutableComponent component = MutableComponent.create(Component.literal(this.name().toLowerCase()).getContents());
+        return component.withStyle(Style.EMPTY.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal(description))));
     }
 }

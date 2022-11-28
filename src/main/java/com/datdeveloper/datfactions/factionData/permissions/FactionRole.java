@@ -183,8 +183,8 @@ public class FactionRole extends DatabaseEntity {
                 ERolePermissions.DEMOTE,
 
                 // Land
-                ERolePermissions.CLAIM,
-                ERolePermissions.UNCLAIM,
+                ERolePermissions.CLAIMONE,
+                ERolePermissions.UNCLAIMONE,
                 ERolePermissions.AUTOCLAIM,
 
                 // Land Access
@@ -225,8 +225,8 @@ public class FactionRole extends DatabaseEntity {
 
         member.permissions = new HashSet<>(Arrays.asList(
                 // Land
-                ERolePermissions.CLAIM,
-                ERolePermissions.UNCLAIM,
+                ERolePermissions.CLAIMONE,
+                ERolePermissions.UNCLAIMONE,
 
                 // Land Access
                 ERolePermissions.CONTAINERS,
