@@ -13,6 +13,10 @@ import org.jetbrains.annotations.Nullable;
  */
 @Cancelable
 public class FactionDisbandEvent extends FactionEvent {
+    /**
+     * @param instigator The CommandSource that instigated the event
+     * @param faction The faction the event is about
+     */
     public FactionDisbandEvent(@Nullable final CommandSource instigator, @NotNull final Faction faction) {
         super(instigator, faction);
     }

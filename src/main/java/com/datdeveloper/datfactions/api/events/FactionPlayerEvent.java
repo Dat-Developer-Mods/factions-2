@@ -15,11 +15,19 @@ public class FactionPlayerEvent extends BaseFactionEvent {
     @NotNull
     final FactionPlayer player;
 
+    /**
+     * @param instigator The CommandSource that instigated the event
+     * @param player The player the event is for
+     */
     public FactionPlayerEvent(@Nullable final CommandSource instigator, @NotNull final FactionPlayer player) {
         super(instigator);
         this.player = player;
     }
 
+    /**
+     * Get the player the event is about
+     * @return the player the event is about
+     */
     public @NotNull FactionPlayer getPlayer() {
         return player;
     }

@@ -12,13 +12,22 @@ public class FactionEvent extends BaseFactionEvent {
     /**
      * The faction the player is currently in
      */
-    final Faction playerFaction;
+    final Faction faction;
+
+    /**
+     * @param instigator The CommandSource that instigated the event
+     * @param faction The faction the event is about
+     */
     FactionEvent(@Nullable final CommandSource instigator, @NotNull final Faction faction) {
         super(instigator);
-        this.playerFaction = faction;
+        this.faction = faction;
     }
 
-    public Faction getPlayerFaction() {
-        return playerFaction;
+    /**
+     * Get the faction the event is about
+     * @return the faction the event is about
+     */
+    public Faction getFaction() {
+        return faction;
     }
 }

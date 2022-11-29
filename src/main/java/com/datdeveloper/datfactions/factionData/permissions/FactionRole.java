@@ -259,4 +259,18 @@ public class FactionRole extends DatabaseEntity {
 
         return recruit;
     }
+
+    /* ========================================= */
+    /* Database Stuff
+    /* ========================================= */
+
+    @Override
+    public int hashCode() {
+        return id.hashCode();
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        return (obj instanceof UUID uuid) && id.equals(uuid);
+    }
 }

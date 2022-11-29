@@ -13,6 +13,10 @@ import org.jetbrains.annotations.Nullable;
  */
 @Cancelable
 public class FactionPlayerHomeEvent extends FactionPlayerEvent {
+    /**
+     * @param instigator The CommandSource that instigated the event
+     * @param player The player the event is for
+     */
     public FactionPlayerHomeEvent(@Nullable final CommandSource instigator, @NotNull final FactionPlayer player) {
         super(instigator, player);
     }

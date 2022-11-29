@@ -1,6 +1,7 @@
 package com.datdeveloper.datfactions.api.events;
 
 import com.datdeveloper.datfactions.factionData.Faction;
+import com.datdeveloper.datfactions.factionData.permissions.FactionRole;
 import net.minecraft.commands.CommandSource;
 import net.minecraftforge.eventbus.api.Cancelable;
 import org.jetbrains.annotations.NotNull;
@@ -21,27 +22,50 @@ public class FactionCreateRoleEvent extends FactionEvent {
     /**
      * The role that the new role will be directly superior to
      */
-    String newRoleParent;
+    FactionRole newRoleParent;
 
-    public FactionCreateRoleEvent(@Nullable final CommandSource instigator, @NotNull final Faction faction, final String newRoleName, final String newRoleParent) {
+    /**
+     * @param instigator The CommandSource that instigated the event
+     * @param faction The faction the event is about
+     * @param newRoleName The name of the new role
+     * @param newRoleParent The parent of the role
+     */
+    public FactionCreateRoleEvent(@Nullable final CommandSource instigator, @NotNull final Faction faction, final String newRoleName, final FactionRole newRoleParent) {
         super(instigator, faction);
         this.newRoleName = newRoleName;
         this.newRoleParent = newRoleParent;
     }
 
+    /**
+     * Get the name of the new role
+     * @return the name of the new role
+     */
     public String getNewRoleName() {
         return newRoleName;
     }
 
+    /**
+     * Set the name of the new role
+     * @param newRoleName The new role's name
+     */
     public void setNewRoleName(final String newRoleName) {
         this.newRoleName = newRoleName;
     }
 
-    public String getNewRoleParent() {
+    /**
+     * Get the parent of the new role
+     * @return the parent of the new role
+     */
+    public FactionRole getNewRoleParent() {
         return newRoleParent;
     }
 
-    public void setNewRoleParent(final String newRoleParent) {
+    /**
+     * Set the parent of the new role
+     * @param newRoleParent The new parent of the role
+     */
+    public void setNewRoleParent(final FactionRole newRoleParent) {
+        if (newRoleParent.equals())
         this.newRoleParent = newRoleParent;
     }
 }

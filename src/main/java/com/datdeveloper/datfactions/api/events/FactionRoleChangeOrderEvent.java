@@ -20,6 +20,12 @@ public class FactionRoleChangeOrderEvent extends FactionRoleEvent {
     @NotNull
     FactionRole newParent;
 
+    /**
+     * @param instigator The CommandSource that instigated the event
+     * @param faction The faction the event is about
+     * @param role The role changing order
+     * @param newParent
+     */
     public FactionRoleChangeOrderEvent(@Nullable final CommandSource instigator, @NotNull final Faction faction, @NotNull final FactionRole role, @NotNull final FactionRole newParent) {
         super(instigator, faction, role);
         this.newParent = newParent;
