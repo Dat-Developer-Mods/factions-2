@@ -1,9 +1,6 @@
 package com.datdeveloper.datfactions.util;
 
-import com.datdeveloper.datfactions.factionData.FLevelCollection;
-import com.datdeveloper.datfactions.factionData.Faction;
-import com.datdeveloper.datfactions.factionData.FactionLevel;
-import com.datdeveloper.datfactions.factionData.FactionPlayer;
+import com.datdeveloper.datfactions.factionData.*;
 import com.datdeveloper.datmoddingapi.util.DatChatFormatting;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.*;
@@ -23,7 +20,7 @@ public class MapUtil {
             {CompassDirection.SW, CompassDirection.S, CompassDirection.SE}
     };
 
-    final static char DEFAULTCHAR = '-';
+    final static Component DEFAULTCHAR = Component.literal("-").withStyle(ChatFormatting.DARK_GRAY);;
 
     final static char[] SYMBOLS = "/\\#?!%$&*£[]{}abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789".toCharArray();
 
@@ -89,7 +86,11 @@ public class MapUtil {
                         );
                     } else {
                         final Faction owner = level.getChunkOwningFaction(pos);
-                        rowComponent.append(symbolMap.computeIfAbsent(owner, this::getNextSymbol));
+                        if (owner.hasFlag(EFactionFlags.UNCHARTED) || owner.getId().equals(level.getSettings().getDefaultOwner())) {
+                            rowComponent.append(DEFAULTCHAR);
+                        } else {
+                            rowComponent.append(symbolMap.computeIfAbsent(owner, this::getNextSymbol));
+                        }
                     }
                 }
             }
@@ -99,10 +100,6 @@ public class MapUtil {
     }
 
     private MutableComponent getNextSymbol(final Faction faction) {
-        if (faction.getId().equals(level.getSettings().getDefaultOwner())) {
-            return Component.literal(String.valueOf(DEFAULTCHAR)).withStyle(ChatFormatting.DARK_GRAY);
-        }
-
         final int nextSymbol = currentSymbol++;
 
         final char symbol;
@@ -141,9 +138,11 @@ public class MapUtil {
     }
 
     public MutableComponent build() {
-        return buildHeader()
-                .append(buildMap()).append("\n")
-                .append(buildFooter());
+        final MutableComponent component = buildHeader()
+                .append(buildMap()).append("\n");
+
+        if (!symbolMap.isEmpty()) component.append(buildFooter());
+        return component;
     }
 
     private static enum CompassDirection {
