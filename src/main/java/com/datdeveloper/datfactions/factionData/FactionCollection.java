@@ -110,15 +110,16 @@ public class FactionCollection extends BaseCollection<UUID, Faction>{
             WILDERNESS = new Faction(WildernessId, "Wilderness");
             WILDERNESS.description = "Uncharted Territory";
             WILDERNESS.creationTime = 0;
-            WILDERNESS.addFlag(EFactionFlags.PERMANENT);
             WILDERNESS.addFlag(EFactionFlags.DEFAULT);
-            WILDERNESS.addFlag(EFactionFlags.INFINITEPOWER);
+            WILDERNESS.addFlag(EFactionFlags.PERMANENT);
             WILDERNESS.addFlag(EFactionFlags.FRIENDLYFIRE);
             WILDERNESS.addFlag(EFactionFlags.UNCHARTED);
+            WILDERNESS.addFlag(EFactionFlags.INFINITEPOWER);
             WILDERNESS.addFlag(EFactionFlags.UNLIMITEDLAND);
             WILDERNESS.addFlag(EFactionFlags.UNRELATEABLE);
             WILDERNESS.addFlag(EFactionFlags.ANONYMOUS);
             WILDERNESS.addFlag(EFactionFlags.OPENBUILD);
+            WILDERNESS.addFlag(EFactionFlags.WEAKBORDERS);
             Database.instance.storeFaction(WILDERNESS);
             map.put(WildernessId, WILDERNESS);
         }

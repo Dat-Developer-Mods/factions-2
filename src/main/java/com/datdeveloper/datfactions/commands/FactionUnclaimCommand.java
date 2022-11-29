@@ -41,7 +41,7 @@ public class FactionUnclaimCommand extends BaseFactionCommand {
                                 .executes(c -> {
                                     final ServerPlayer player = c.getSource().getPlayer();
 
-                                    return unclaimChunks(null, new ArrayList<>(List.of(new ChunkPos(player.getOnPos()))));
+                                    return unclaimChunks(c.getSource().getPlayer(), new ArrayList<>(List.of(new ChunkPos(player.getOnPos()))));
                                 })
 
                 )
@@ -130,6 +130,8 @@ public class FactionUnclaimCommand extends BaseFactionCommand {
     }
 
     public static int unclaimChunks(final ServerPlayer player, final List<ChunkPos> chunks) {
+        final FactionPlayer fPlayer = getPlayerOrTemplate(player);
+        final Faction faction = fPlayer.getFaction();
         FactionLevel level = FLevelCollection.getInstance().getByKey(player.getLevel().dimension());
 
         // Event
@@ -138,9 +140,9 @@ public class FactionUnclaimCommand extends BaseFactionCommand {
         if (event.isCanceled()) return -1;
 
         level = event.getLevel();
-        Faction faction = event.getNewOwner();
+        final Faction newOwner = event.getNewOwner();
 
-        level.setChunksOwner(chunks, faction);
+        level.setChunksOwner(chunks, newOwner);
 
         player.sendSystemMessage(Component.literal(DatChatFormatting.TextColour.INFO + "Successfully unclaimed " + event.getChunks().size() + " chunks"));
 
