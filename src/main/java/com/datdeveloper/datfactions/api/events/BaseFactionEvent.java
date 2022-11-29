@@ -20,12 +20,19 @@ public abstract class BaseFactionEvent extends Event {
     @Nullable
     final CommandSource instigator;
 
+    /**
+     * Whether to skip the default checks
+     */
     boolean skipDefaultChecks = false;
 
     BaseFactionEvent(@Nullable final CommandSource instigator) {
         this.instigator = instigator;
     }
 
+    /**
+     * Get the CommandSource that instigated the event
+     * @return the CommandSource that instigated the event
+     */
     public @Nullable CommandSource getInstigator() {
         return instigator;
     }
@@ -77,7 +84,6 @@ public abstract class BaseFactionEvent extends Event {
     /* ========================================= */
 
     // Implementation borrowed from EventListenerHelper
-
     private static final LockHelper<Class<?>, Boolean> canSkipChecksLists = new LockHelper<>(new IdentityHashMap<>());
 
     private boolean hasCanSkipDefaultCheck(final Class<?> eventClass) {

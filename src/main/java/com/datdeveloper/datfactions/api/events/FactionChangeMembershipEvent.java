@@ -33,6 +33,13 @@ public class FactionChangeMembershipEvent extends FactionPlayerEvent {
      */
     final EChangeFactionReason reason;
 
+    /**
+     * @param instigator The CommandSource that instigated the event
+     * @param player The player changing faction
+     * @param newFaction The faction the player is changing to
+     * @param newRole The role in the faction the player will get
+     * @param reason The reason the player changed faction
+     */
     public FactionChangeMembershipEvent(@Nullable final CommandSource instigator, @NotNull final FactionPlayer player, @Nullable final Faction newFaction, @Nullable final FactionRole newRole, final EChangeFactionReason reason) {
         super(instigator, player);
         this.newFaction = newFaction;
@@ -40,18 +47,36 @@ public class FactionChangeMembershipEvent extends FactionPlayerEvent {
         this.reason = reason;
     }
 
+    /**
+     * Get the faction the player is joining
+     * @return the faction the player is joining
+     */
     public @Nullable Faction getNewFaction() {
         return newFaction;
     }
 
+    /**
+     * Set the faction the player will join
+     * Only works if the reason isn't CREATE, DISBAND, NEWPLAYER, or ADMIN
+     * @param newFaction the faction the player will join
+     */
     public void setNewFaction(@Nullable final Faction newFaction) {
         this.newFaction = newFaction;
     }
 
+    /**
+     * Get the new role the player will take
+     * @return the new role for the player
+     */
     public @Nullable FactionRole getNewRole() {
         return newRole;
     }
 
+    /**
+     * Set the role the player will take
+     * Only works if the reason isn't CREATE, DISBAND, NEWPLAYER, or ADMIN
+     * @param newRole The role the player will take
+     */
     public void setNewRole(@Nullable final FactionRole newRole) {
         this.newRole = newRole;
     }
