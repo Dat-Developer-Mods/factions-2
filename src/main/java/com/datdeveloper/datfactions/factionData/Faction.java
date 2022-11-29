@@ -513,14 +513,20 @@ public class Faction extends DatabaseEntity {
         }
 
         // Power
+        final int power = getTotalPower();
         {
             final boolean infinitePower = hasFlag(EFactionFlags.INFINITEPOWER);
-            final String power = infinitePower ? "∞" : String.valueOf(getTotalPower());
-            final String maxPower = infinitePower ? "∞" : String.valueOf(getTotalMaxPower());
+            final int maxPower = getTotalMaxPower();
+            final String powerStr = infinitePower ? "∞" : String.valueOf(power);
+            final String maxPowerStr = infinitePower ? "∞" : String.valueOf(maxPower);
             message.append("\n")
-                    .append(DatChatFormatting.TextColour.INFO + "Power/Max: " + ChatFormatting.WHITE + "%s/%s".formatted(power, maxPower));
+                    .append(DatChatFormatting.TextColour.INFO + "Power/Max: ")
+                    .append(
+                            Component.literal(powerStr)
+                                    .withStyle( power > 0.6666 * maxPower ? ChatFormatting.DARK_GREEN : (power > 0.3333 * maxPower ? ChatFormatting.GOLD : ChatFormatting.DARK_RED))
+                    )
+                    .append(ChatFormatting.WHITE + "/" + maxPowerStr);
         }
-
         // Land
         if (!hasFlag(EFactionFlags.UNCHARTED)) {
             final Pair<Integer, Integer> total = new Pair<>(0, 0);
@@ -536,7 +542,11 @@ public class Faction extends DatabaseEntity {
                             }
                     ));
             message.append("\n");
-            message.append(DatChatFormatting.TextColour.INFO + "Land count/worth: " + ChatFormatting.WHITE + "%d/%d".formatted(total.getLeftHand(), total.getRightHand()));
+            message.append(DatChatFormatting.TextColour.INFO + "Land count/worth: ")
+                    .append(
+                            Component.literal("%d/%d".formatted(total.getLeftHand(), total.getRightHand()))
+                            .withStyle(total.getRightHand() > power ? ChatFormatting.DARK_RED : ChatFormatting.WHITE)
+                    );
             for (final String key : landCount.keySet()) {
                 final Pair<Integer, Integer> value = landCount.get(key);
                 if (value.getLeftHand() == 0) continue;
@@ -624,11 +634,18 @@ public class Faction extends DatabaseEntity {
         }
 
         // Power
+        final int power = getTotalPower();
         {
             final boolean infinitePower = hasFlag(EFactionFlags.INFINITEPOWER);
-            final String power = infinitePower ? "∞" : String.valueOf(getTotalPower());
-            final String maxPower = infinitePower ? "∞" : String.valueOf(getTotalMaxPower());
-            component.append(DatChatFormatting.TextColour.INFO + "Power/Max: " + ChatFormatting.WHITE + "%s/%s".formatted(power, maxPower));
+            final int maxPower = getTotalMaxPower();
+            final String powerStr = infinitePower ? "∞" : String.valueOf(power);
+            final String maxPowerStr = infinitePower ? "∞" : String.valueOf(maxPower);
+            component.append(DatChatFormatting.TextColour.INFO + "Power/Max: ")
+                    .append(
+                            Component.literal(powerStr)
+                                    .withStyle( power > 0.6666 * maxPower ? ChatFormatting.DARK_GREEN : (power > 0.3333 * maxPower ? ChatFormatting.GOLD : ChatFormatting.DARK_RED))
+                    )
+                    .append(ChatFormatting.WHITE + "/" + maxPowerStr);
         }
 
         // Land
@@ -642,7 +659,11 @@ public class Faction extends DatabaseEntity {
             }
 
             component.append("\n")
-                    .append(DatChatFormatting.TextColour.INFO + "Land/Worth: " + ChatFormatting.WHITE + "%s/%s".formatted(count, worth));
+                    .append(DatChatFormatting.TextColour.INFO + "Land/Worth: ")
+                    .append(
+                            Component.literal("%s/%s".formatted(count, worth))
+                                    .withStyle(worth > power ? ChatFormatting.DARK_RED : ChatFormatting.WHITE)
+                    );
         }
 
         // Age
