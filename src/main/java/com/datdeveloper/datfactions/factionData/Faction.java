@@ -532,28 +532,33 @@ public class Faction extends DatabaseEntity {
         // Land
         if (!hasFlag(EFactionFlags.UNCHARTED)) {
             final Pair<Integer, Integer> total = new Pair<>(0, 0);
-            final Map<String, Pair<Integer, Integer>> landCount = FLevelCollection.getInstance().getAll().values().stream()
+            final Map<FactionLevel, Pair<Integer, Integer>> landCount = FLevelCollection.getInstance().getAll().values().stream()
                     .collect(Collectors.toMap(
-                            level -> level.getId().location().getPath(),
+                            level -> level,
                             level -> {
                                 final int landAmount = level.getClaimsCount(id);
                                 final int landWorth = landAmount * level.getSettings().landWorth;
-                                total.setLeftHand(total.getLeftHand() + landAmount);
-                                total.setRightHand(total.getRightHand() + landWorth);
-                                return new Pair<>(landAmount, landWorth);
+                                total.setLeftHand(total.getLeftHand() + landWorth);
+                                total.setRightHand(total.getRightHand() + landAmount);
+                                return new Pair<>(landWorth, landAmount);
                             }
                     ));
             message.append("\n");
-            message.append(DatChatFormatting.TextColour.INFO + "Land count/worth: ")
+            message.append(DatChatFormatting.TextColour.INFO + "Land worth/count: ")
                     .append(
                             Component.literal("%d/%d".formatted(total.getLeftHand(), total.getRightHand()))
                             .withStyle(total.getRightHand() > power ? ChatFormatting.DARK_RED : ChatFormatting.WHITE)
                     );
-            for (final String key : landCount.keySet()) {
-                final Pair<Integer, Integer> value = landCount.get(key);
+            for (final FactionLevel level : landCount.keySet()) {
+                final Pair<Integer, Integer> value = landCount.get(level);
                 if (value.getLeftHand() == 0) continue;
                 message.append("\n")
-                        .append("    " + ChatFormatting.DARK_GREEN + key + ": " + ChatFormatting.WHITE + "%d/%d".formatted(value.getLeftHand(), value.getRightHand()));
+                        .append("    ")
+                        .append(
+                                level.getNameWithDescription(from)
+                                        .withStyle(ChatFormatting.DARK_GREEN)
+                        )
+                        .append(": " + ChatFormatting.WHITE + "%d/%d".formatted(value.getLeftHand(), value.getRightHand()));
             }
         }
 
@@ -752,6 +757,20 @@ public class Faction extends DatabaseEntity {
         }
 
         sendFactionWideMessage(message);
+    }
+
+    /**
+     * Check the faction's home is still valid
+     */
+    public void validateHome() {
+        if (homeLevel == null || homeLocation == null) return;
+        final FactionLevel homeLevel = FLevelCollection.getInstance().getByKey(getHomeLevel());
+
+        if (homeLevel.getChunkOwner(new ChunkPos(homeLocation)).equals(getId())) return;
+
+        setFactionHome(null, null);
+        sendFactionWideMessage(Component.literal(DatChatFormatting.TextColour.ERROR + "You no longer have a faction home"));
+        markDirty();
     }
 
     /**

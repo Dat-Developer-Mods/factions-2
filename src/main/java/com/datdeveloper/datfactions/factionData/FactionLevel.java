@@ -3,7 +3,6 @@ package com.datdeveloper.datfactions.factionData;
 import com.datdeveloper.datfactions.database.DatabaseEntity;
 import com.datdeveloper.datfactions.util.RelationUtil;
 import com.datdeveloper.datmoddingapi.util.DatChatFormatting;
-import com.ibm.icu.impl.coll.Collation;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
@@ -103,18 +102,28 @@ public class FactionLevel extends DatabaseEntity {
     }
 
     public void setChunkOwner(final ChunkPos chunk, final Faction faction) {
+        final Faction oldOwner = getChunkOwningFaction(chunk);
+
         if (faction == null || faction.getId().equals(getSettings().defaultOwner)) {
             claims.remove(chunk);
             return;
         }
 
         claims.put(chunk, new ChunkClaim(faction.getId()));
+
+        oldOwner.validateHome();
+
         markDirty();
     }
 
 
     public void setChunksOwner(final Collection<ChunkPos> chunks, final Faction faction) {
-        for (ChunkPos chunk : chunks) {
+        if (faction == null || faction.getId().equals(getSettings().defaultOwner)) {
+            claims.keySet().removeAll(chunks);
+            return;
+        }
+
+        for (final ChunkPos chunk : chunks) {
             claims.put(chunk, new ChunkClaim(faction.getId()));
         }
 
@@ -176,7 +185,7 @@ public class FactionLevel extends DatabaseEntity {
                         .append(DatChatFormatting.TextColour.INFO + "Land Worth: ")
                         .append(ChatFormatting.WHITE.toString() + settings.getLandWorth()).append("\n")
                         .append(DatChatFormatting.TextColour.INFO + "Max Land: ")
-                        .append(ChatFormatting.WHITE.toString() + settings.getMaxLand()).append("\n")
+                        .append(ChatFormatting.WHITE.toString() + (settings.getMaxLand() == Integer.MAX_VALUE ? "∞" : settings.getMaxLand())).append("\n")
                         .append(DatChatFormatting.TextColour.INFO + "Passive Power Gain: ")
                         .append(ChatFormatting.WHITE + String.valueOf(settings.getPassivePowerGainMultiplier()) + "x");
     }

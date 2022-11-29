@@ -1,6 +1,5 @@
 package com.datdeveloper.datfactions.commands;
 
-import com.datdeveloper.datfactions.api.events.FactionDisbandEvent;
 import com.datdeveloper.datfactions.api.events.FactionLandChangeOwnerEvent;
 import com.datdeveloper.datfactions.commands.util.FactionCommandUtils;
 import com.datdeveloper.datfactions.factionData.*;
@@ -22,7 +21,6 @@ import net.minecraftforge.common.MinecraftForge;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 public class FactionUnclaimCommand extends BaseFactionCommand {
     static void register(final LiteralArgumentBuilder<CommandSourceStack> command) {
@@ -43,7 +41,14 @@ public class FactionUnclaimCommand extends BaseFactionCommand {
                                 })
                                 .executes(c -> {
                                     final ServerPlayer player = c.getSource().getPlayer();
+                                    final FactionPlayer fPlayer = FPlayerCollection.getInstance().getPlayer(player);
                                     final FactionLevel level = FLevelCollection.getInstance().getByKey(player.getLevel().dimension());
+                                    final ChunkPos chunk = new ChunkPos(player.getOnPos());
+
+                                    if (!level.getChunkOwningFaction(chunk).equals(fPlayer.getFaction())) {
+                                        c.getSource().sendFailure(Component.literal("You don't own that chunk"));
+                                        return -2;
+                                    }
 
                                     return unclaimChunks(c.getSource().getPlayer(), new ArrayList<>(List.of(new ChunkPos(player.getOnPos()))), level);
                                 })
@@ -71,7 +76,7 @@ public class FactionUnclaimCommand extends BaseFactionCommand {
                                                                 Component.literal("You cannot unclaim a radius bigger than " + maxClaimRadius + " in ")
                                                                         .append(level.getNameWithDescription(fPlayer.getFaction()).withStyle(ChatFormatting.AQUA))
                                                         );
-                                                        return 2;
+                                                        return -2;
                                                     }
 
                                                     final ChunkPos playerChunk = new ChunkPos(player.getOnPos());
@@ -79,8 +84,17 @@ public class FactionUnclaimCommand extends BaseFactionCommand {
                                                     final List<ChunkPos> chunks = new ArrayList<>();
                                                     for (int i = -(radius - 1); i < radius; ++i) {
                                                         for (int j = -(radius - 1); j < radius; ++j) {
-                                                            chunks.add(new ChunkPos(playerChunk.x + i, playerChunk.z + j));
+                                                            final ChunkPos chunk = new ChunkPos(playerChunk.x + i, playerChunk.z + j);
+                                                            if (level.getChunkOwningFaction(chunk).equals(fPlayer.getFaction())) {
+                                                                chunks.add(chunk);
+                                                            }
                                                         }
+                                                    }
+
+
+                                                    if (chunks.isEmpty()) {
+                                                        c.getSource().sendFailure(Component.literal("You don't any chunks in that radius"));
+                                                        return -2;
                                                     }
 
                                                     return unclaimChunks(player, chunks, level);
@@ -105,7 +119,7 @@ public class FactionUnclaimCommand extends BaseFactionCommand {
                                                     final boolean areYouSure = BoolArgumentType.getBool(c, "areyousure");
                                                     if (!areYouSure) return 2;
 
-                                                    List<ChunkPos> chunks = level.getFactionChunks(fPlayer.getFaction());
+                                                    final List<ChunkPos> chunks = level.getFactionChunks(fPlayer.getFaction());
 
                                                     if (chunks.isEmpty()) {
                                                         c.getSource().sendFailure(
@@ -122,9 +136,9 @@ public class FactionUnclaimCommand extends BaseFactionCommand {
                                 )
                                 .executes(c -> {
                                     final ServerPlayer player = c.getSource().getPlayer();
-                                    FactionPlayer fPlayer = getPlayerOrTemplate(player);
-                                    Faction faction = fPlayer.getFaction();
-                                    FactionLevel level = FLevelCollection.getInstance().getByKey(player.getLevel().dimension());
+                                    final FactionPlayer fPlayer = getPlayerOrTemplate(player);
+                                    final Faction faction = fPlayer.getFaction();
+                                    final FactionLevel level = FLevelCollection.getInstance().getByKey(player.getLevel().dimension());
 
                                     c.getSource().sendSuccess(Component.literal(
                                                             DatChatFormatting.TextColour.ERROR + "Are you sure you want to release all ")
@@ -161,7 +175,7 @@ public class FactionUnclaimCommand extends BaseFactionCommand {
                                                     final boolean areYouSure = BoolArgumentType.getBool(c, "areyousure");
                                                     if (!areYouSure) return 2;
 
-                                                    Map<FactionLevel, List<ChunkPos>> chunks = FLevelCollection.getInstance().getAllFactionChunks(faction);
+                                                    final Map<FactionLevel, List<ChunkPos>> chunks = FLevelCollection.getInstance().getAllFactionChunks(faction);
                                                     if (chunks.isEmpty()) {
                                                         c.getSource().sendFailure(
                                                                 faction.getNameWithDescription(faction)
@@ -172,7 +186,7 @@ public class FactionUnclaimCommand extends BaseFactionCommand {
                                                     }
 
                                                     int count = 0;
-                                                    for (FactionLevel level : chunks.keySet()) {
+                                                    for (final FactionLevel level : chunks.keySet()) {
                                                         count += unclaimChunks(player, chunks.get(level), level);
                                                     }
 
@@ -181,9 +195,9 @@ public class FactionUnclaimCommand extends BaseFactionCommand {
                                 )
                                 .executes(c -> {
                                     final ServerPlayer player = c.getSource().getPlayer();
-                                    FactionPlayer fPlayer = getPlayerOrTemplate(player);
-                                    Faction faction = fPlayer.getFaction();
-                                    FactionLevel level = FLevelCollection.getInstance().getByKey(player.getLevel().dimension());
+                                    final FactionPlayer fPlayer = getPlayerOrTemplate(player);
+                                    final Faction faction = fPlayer.getFaction();
+                                    final FactionLevel level = FLevelCollection.getInstance().getByKey(player.getLevel().dimension());
 
                                     c.getSource().sendSuccess(Component.literal(
                                                             DatChatFormatting.TextColour.ERROR + "Are you sure you want to release all ")

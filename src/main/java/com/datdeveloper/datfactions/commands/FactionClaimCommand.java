@@ -3,6 +3,7 @@ package com.datdeveloper.datfactions.commands;
 import com.datdeveloper.datfactions.api.events.FactionLandChangeOwnerEvent;
 import com.datdeveloper.datfactions.factionData.*;
 import com.datdeveloper.datfactions.factionData.permissions.ERolePermissions;
+import com.datdeveloper.datfactions.util.RelationUtil;
 import com.datdeveloper.datmoddingapi.permissions.DatPermissions;
 import com.datdeveloper.datmoddingapi.util.DatChatFormatting;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
@@ -16,8 +17,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraftforge.common.MinecraftForge;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class FactionClaimCommand extends BaseFactionCommand {
     static void register(final LiteralArgumentBuilder<CommandSourceStack> command) {
@@ -122,7 +122,24 @@ public class FactionClaimCommand extends BaseFactionCommand {
         level = event.getLevel();
         faction = event.getNewOwner();
 
-        level.setChunksOwner(chunks, faction);
+        final Map<Faction, Integer> stolen = new HashMap<>();
+        for (final ChunkPos chunk : chunks) {
+            final Faction owner = level.getChunkOwningFaction(chunk);
+            if (!owner.hasFlag(EFactionFlags.WEAKBORDERS)) {
+                stolen.put(faction, stolen.computeIfAbsent(faction, (key) -> 0) + 1);
+            }
+
+            level.setChunkOwner(chunk, faction);
+        }
+
+        for (final Faction owner : stolen.keySet()) {
+            owner.sendFactionWideMessage(
+                    faction.getNameWithDescription(owner)
+                            .withStyle(RelationUtil.getRelation(owner, faction).formatting)
+                            .append(DatChatFormatting.TextColour.ERROR + " has stolen ")
+                            .append(stolen.get(owner) + " chunks from you")
+            );
+        }
 
         player.sendSystemMessage(Component.literal(DatChatFormatting.TextColour.INFO + "Successfully claimed " + event.getChunks().size() + " chunks"));
 

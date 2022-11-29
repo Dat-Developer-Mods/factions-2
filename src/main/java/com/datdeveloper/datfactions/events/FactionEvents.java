@@ -93,7 +93,7 @@ public class FactionEvents {
             }
         }
 
-        if (faction.getTotalLandCount() == 0 && !chunks.isEmpty()) connectedChunks.add(chunks.remove(0));
+        if (faction.getLandCountInlevel(level) == 0 && !chunks.isEmpty()) connectedChunks.add(chunks.remove(0));
 
         // Check chunks are connected
         if (level.getSettings().isRequireConnect()) {
