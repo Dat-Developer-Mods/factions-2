@@ -3,6 +3,7 @@ package com.datdeveloper.datfactions.events;
 import com.datdeveloper.datfactions.Datfactions;
 import com.datdeveloper.datfactions.factionData.*;
 import com.datdeveloper.datfactions.util.RelationUtil;
+import com.datdeveloper.datmoddingapi.util.DatChatFormatting;
 import com.mojang.logging.LogUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
@@ -77,6 +78,7 @@ public class PlayerEvents {
     public static void enterChunk(final EntityEvent.EnteringSection event) {
         if (!(event.getEntity() instanceof ServerPlayer player)) return;
         if (!event.didChunkChange()) return;
+
         final FactionPlayer fPlayer = FPlayerCollection.getInstance().getPlayer(player);
 
         if (fPlayer.getChunkAlertMode() == EFPlayerChunkAlertMode.DISABLED) return;
@@ -85,24 +87,33 @@ public class PlayerEvents {
         final Faction lastChunkOwner = level.getChunkOwningFaction(event.getOldPos().chunk());
         final Faction nextChunkOwner = level.getChunkOwningFaction(event.getNewPos().chunk());
 
-        if (Objects.equals(lastChunkOwner, nextChunkOwner)) return;
+        // Ignore message if the player did not enter territory owned by a different owner to their last chunk
+        // Or either owner has the silent flag
+        if (Objects.equals(lastChunkOwner, nextChunkOwner) || nextChunkOwner.hasFlag(EFactionFlags.SILENT) || lastChunkOwner.hasFlag(EFactionFlags.SILENT)) return;
 
         final MutableComponent title = nextChunkOwner.getNameWithDescription(fPlayer.getFaction())
                                 .withStyle(RelationUtil.getRelation(fPlayer.getFaction(), nextChunkOwner).formatting);
-
         final MutableComponent description = Component.literal(nextChunkOwner.getDescription()).withStyle(ChatFormatting.WHITE);
+
         switch (fPlayer.getChunkAlertMode()) {
             case TITLE, ACTIONBAR -> {
                 player.connection.send(new ClientboundSetTitlesAnimationPacket(10, 40, 10));
                 if (fPlayer.getChunkAlertMode() == EFPlayerChunkAlertMode.TITLE) {
+                    // This'll cause problems with long descriptions
                     player.connection.send(new ClientboundSetSubtitleTextPacket(description));
                     player.connection.send(new ClientboundSetTitleTextPacket(title));
                 } else {
-                    player.connection.send(new ClientboundSetActionBarTextPacket(title));
+                    // Action bar messages don't support subtitles, annoyingly
+                    player.connection.send(new ClientboundSetActionBarTextPacket(Component.literal(DatChatFormatting.TextColour.INFO + "Now entering ")
+                            .append(title)
+                            .append(DatChatFormatting.TextColour.INFO + " territory")));
                 }
             }
             case CHAT -> player.sendSystemMessage(
-                    title.append("\n").append(description)
+                   Component.literal(DatChatFormatting.TextColour.INFO + "Now entering ")
+                            .append(title)
+                            .append(DatChatFormatting.TextColour.INFO + " territory").append("\n")
+                            .append(description)
             );
         }
     }
