@@ -8,6 +8,7 @@ import com.datdeveloper.datmoddingapi.util.DatChatFormatting;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.tree.LiteralCommandNode;
+import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
@@ -53,13 +54,16 @@ public class FactionClaimCommand extends BaseFactionCommand {
                                         Commands.argument("radius", IntegerArgumentType.integer(1))
                                                 .executes(c -> {
                                                     final ServerPlayer player = c.getSource().getPlayer();
+                                                    final FactionPlayer fPlayer = FPlayerCollection.getInstance().getPlayer(player);
                                                     final FactionLevel level = FLevelCollection.getInstance().getByKey(player.getLevel().dimension());
 
                                                     final int radius = c.getArgument("radius", int.class);
 
                                                     final int maxClaimRadius = level.getSettings().getMaxClaimRadius();
                                                     if (maxClaimRadius < radius) {
-                                                        c.getSource().sendFailure(Component.literal("You cannot claim a radius bigger than " + maxClaimRadius + " in " + level.getName()));
+                                                        c.getSource().sendFailure(
+                                                                Component.literal("You cannot claim a radius bigger than " + maxClaimRadius + " in ")
+                                                                        .append(level.getNameWithDescription(fPlayer.getFaction()).withStyle(ChatFormatting.AQUA)));
                                                         return 2;
                                                     }
 

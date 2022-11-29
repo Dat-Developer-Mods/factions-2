@@ -11,6 +11,7 @@ import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.tree.LiteralCommandNode;
+import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
@@ -20,6 +21,8 @@ import net.minecraftforge.common.MinecraftForge;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class FactionUnclaimCommand extends BaseFactionCommand {
     static void register(final LiteralArgumentBuilder<CommandSourceStack> command) {
@@ -40,8 +43,9 @@ public class FactionUnclaimCommand extends BaseFactionCommand {
                                 })
                                 .executes(c -> {
                                     final ServerPlayer player = c.getSource().getPlayer();
+                                    final FactionLevel level = FLevelCollection.getInstance().getByKey(player.getLevel().dimension());
 
-                                    return unclaimChunks(c.getSource().getPlayer(), new ArrayList<>(List.of(new ChunkPos(player.getOnPos()))));
+                                    return unclaimChunks(c.getSource().getPlayer(), new ArrayList<>(List.of(new ChunkPos(player.getOnPos()))), level);
                                 })
 
                 )
@@ -56,13 +60,17 @@ public class FactionUnclaimCommand extends BaseFactionCommand {
                                         Commands.argument("radius", IntegerArgumentType.integer(1))
                                                 .executes(c -> {
                                                     final ServerPlayer player = c.getSource().getPlayer();
+                                                    final FactionPlayer fPlayer = FPlayerCollection.getInstance().getPlayer(player);
                                                     final FactionLevel level = FLevelCollection.getInstance().getByKey(player.getLevel().dimension());
 
                                                     final int radius = c.getArgument("radius", int.class);
 
                                                     final int maxClaimRadius = level.getSettings().getMaxClaimRadius();
                                                     if (maxClaimRadius < radius) {
-                                                        c.getSource().sendFailure(Component.literal("You cannot claim a radius bigger than " + maxClaimRadius + " in " + level.getName()));
+                                                        c.getSource().sendFailure(
+                                                                Component.literal("You cannot unclaim a radius bigger than " + maxClaimRadius + " in ")
+                                                                        .append(level.getNameWithDescription(fPlayer.getFaction()).withStyle(ChatFormatting.AQUA))
+                                                        );
                                                         return 2;
                                                     }
 
@@ -75,16 +83,73 @@ public class FactionUnclaimCommand extends BaseFactionCommand {
                                                         }
                                                     }
 
-                                                    return unclaimChunks(player, chunks);
+                                                    return unclaimChunks(player, chunks, level);
                                                 })
                                 )
+                )
+                .then(
+                        Commands.literal("level")
+                                .requires(commandSourceStack -> {
+                                    final ServerPlayer player = commandSourceStack.getPlayer();
+                                    final FactionPlayer fPlayer = getPlayerOrTemplate(player);
+                                    return DatPermissions.hasPermission(player, FactionPermissions.FACTIONUNCLAIMLEVEL) && fPlayer.getRole().hasPermission(ERolePermissions.UNCLAIMLEVEL);
+                                })
+                                .then(
+                                        Commands.argument("areyousure", BoolArgumentType.bool())
+                                                .executes(c -> {
+                                                    final ServerPlayer player = c.getSource().getPlayer();
+                                                    final FactionPlayer fPlayer = FPlayerCollection.getInstance().getPlayer(player);
+                                                    final Faction faction = fPlayer.getFaction();
+                                                    final FactionLevel level = FLevelCollection.getInstance().getByKey(player.getLevel().dimension());
+
+                                                    final boolean areYouSure = BoolArgumentType.getBool(c, "areyousure");
+                                                    if (!areYouSure) return 2;
+
+                                                    List<ChunkPos> chunks = level.getFactionChunks(fPlayer.getFaction());
+
+                                                    if (chunks.isEmpty()) {
+                                                        c.getSource().sendFailure(
+                                                                faction.getNameWithDescription(faction)
+                                                                        .withStyle(EFactionRelation.SELF.formatting)
+                                                                        .append(DatChatFormatting.TextColour.ERROR + " does not own any chunks in ")
+                                                                        .append(level.getNameWithDescription(fPlayer.getFaction()).withStyle(ChatFormatting.AQUA))
+                                                        );
+                                                        return -2;
+                                                    }
+
+                                                    return unclaimChunks(player, chunks, level);
+                                                })
+                                )
+                                .executes(c -> {
+                                    final ServerPlayer player = c.getSource().getPlayer();
+                                    FactionPlayer fPlayer = getPlayerOrTemplate(player);
+                                    Faction faction = fPlayer.getFaction();
+                                    FactionLevel level = FLevelCollection.getInstance().getByKey(player.getLevel().dimension());
+
+                                    c.getSource().sendSuccess(Component.literal(
+                                                            DatChatFormatting.TextColour.ERROR + "Are you sure you want to release all ")
+                                                    .append(
+                                                            faction.getNameWithDescription(faction)
+                                                                    .withStyle(EFactionRelation.SELF.formatting)
+                                                    )
+                                                    .append(DatChatFormatting.TextColour.ERROR + " chunks in ")
+                                                    .append(level.getNameWithDescription(fPlayer.getFaction()).withStyle(ChatFormatting.AQUA))
+                                                    .append("? This action is not reversible\n")
+                                                    .append(DatChatFormatting.TextColour.ERROR + "Use ")
+                                                    .append(FactionCommandUtils.wrapCommand("/f unclaim level true", "/f unclaim level "))
+                                                    .append(DatChatFormatting.TextColour.ERROR + " if you are")
+
+                                            ,false);
+
+                                    return 1;
+                                })
                 )
                 .then(
                         Commands.literal("all")
                                 .requires(commandSourceStack -> {
                                     final ServerPlayer player = commandSourceStack.getPlayer();
                                     final FactionPlayer fPlayer = getPlayerOrTemplate(player);
-                                    return DatPermissions.hasPermission(player, FactionPermissions.FACTIONCLAIMAUTO) && fPlayer.getRole().hasPermission(ERolePermissions.AUTOCLAIM);
+                                    return DatPermissions.hasPermission(player, FactionPermissions.FACTIONUNCLAIMALL) && fPlayer.getRole().hasPermission(ERolePermissions.UNCLAIMALL);
                                 })
                                 .then(
                                         Commands.argument("areyousure", BoolArgumentType.bool())
@@ -96,18 +161,29 @@ public class FactionUnclaimCommand extends BaseFactionCommand {
                                                     final boolean areYouSure = BoolArgumentType.getBool(c, "areyousure");
                                                     if (!areYouSure) return 2;
 
-                                                    final FactionDisbandEvent event = new FactionDisbandEvent(c.getSource().source, faction);
-                                                    MinecraftForge.EVENT_BUS.post(event);
-                                                    if (event.isCanceled()) return 0;
+                                                    Map<FactionLevel, List<ChunkPos>> chunks = FLevelCollection.getInstance().getAllFactionChunks(faction);
+                                                    if (chunks.isEmpty()) {
+                                                        c.getSource().sendFailure(
+                                                                faction.getNameWithDescription(faction)
+                                                                        .withStyle(EFactionRelation.SELF.formatting)
+                                                                .append(DatChatFormatting.TextColour.ERROR + " does not own any chunks ")
+                                                        );
+                                                        return -2;
+                                                    }
 
-                                                    FactionCollection.getInstance().disbandFaction(faction.getId());
-                                                    return 1;
+                                                    int count = 0;
+                                                    for (FactionLevel level : chunks.keySet()) {
+                                                        count += unclaimChunks(player, chunks.get(level), level);
+                                                    }
+
+                                                    return count;
                                                 })
                                 )
                                 .executes(c -> {
                                     final ServerPlayer player = c.getSource().getPlayer();
                                     FactionPlayer fPlayer = getPlayerOrTemplate(player);
                                     Faction faction = fPlayer.getFaction();
+                                    FactionLevel level = FLevelCollection.getInstance().getByKey(player.getLevel().dimension());
 
                                     c.getSource().sendSuccess(Component.literal(
                                                             DatChatFormatting.TextColour.ERROR + "Are you sure you want to release all ")
@@ -115,7 +191,7 @@ public class FactionUnclaimCommand extends BaseFactionCommand {
                                                             faction.getNameWithDescription(faction)
                                                                     .withStyle(EFactionRelation.SELF.formatting)
                                                     )
-                                                    .append(DatChatFormatting.TextColour.ERROR + " chunks? This action is not reversible\n")
+                                                    .append(DatChatFormatting.TextColour.ERROR + " chunks in? This action is not reversible\n")
                                                     .append(DatChatFormatting.TextColour.ERROR + "Use ")
                                                     .append(FactionCommandUtils.wrapCommand("/f unclaim all true", "/f unclaim all "))
                                                     .append(DatChatFormatting.TextColour.ERROR + " if you are")
@@ -129,10 +205,9 @@ public class FactionUnclaimCommand extends BaseFactionCommand {
         command.then(claimCommand);
     }
 
-    public static int unclaimChunks(final ServerPlayer player, final List<ChunkPos> chunks) {
+    public static int unclaimChunks(final ServerPlayer player, final List<ChunkPos> chunks, FactionLevel level) {
         final FactionPlayer fPlayer = getPlayerOrTemplate(player);
         final Faction faction = fPlayer.getFaction();
-        FactionLevel level = FLevelCollection.getInstance().getByKey(player.getLevel().dimension());
 
         // Event
         final FactionLandChangeOwnerEvent event = new FactionLandChangeOwnerEvent(player, chunks, level, null);

@@ -92,6 +92,12 @@ public class FactionLevel extends DatabaseEntity {
         return claim != null ? claim.getFactionId() : getSettings().defaultOwner;
     }
 
+    public List<ChunkPos> getFactionChunks(final Faction faction) {
+        return claims.keySet().stream()
+                .filter(chunk -> claims.get(chunk).factionId.equals(faction.getId()))
+                .toList();
+    }
+
     public Faction getChunkOwningFaction(final ChunkPos pos) {
         return FactionCollection.getInstance().getByKey(getChunkOwner(pos));
     }

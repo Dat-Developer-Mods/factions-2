@@ -45,15 +45,18 @@ public class FactionEvents {
 
         if (event.isSkipDefaultChecks()) return;
 
-        // Handle unclaiming
+        // Handle unclaim
         if (faction == null) {
-
+            // TODO: Disallow separating land clusters
             return;
         }
 
         // Check Level
         if (!level.getSettings().isAllowClaiming()) {
-            sendSourceMessage(source, Component.literal(DatChatFormatting.TextColour.ERROR + "You cannot claim chunks in " + level.getNameWithDescription(faction)));
+            sendSourceMessage(source,
+                    Component.literal(DatChatFormatting.TextColour.ERROR + "You cannot claim chunks in ")
+                            .append(level.getNameWithDescription(faction).withStyle(ChatFormatting.AQUA))
+            );
             event.setCanceled(true);
             return;
         }

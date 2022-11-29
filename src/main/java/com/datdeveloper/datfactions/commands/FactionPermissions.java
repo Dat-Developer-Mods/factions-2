@@ -64,6 +64,7 @@ public class FactionPermissions {
     public static final PermissionNode<Boolean> FACTIONCLAIMSQUARE = createNode("datfactions.faction.claim.square");
     public static final PermissionNode<Boolean> FACTIONUNCLAIMONE = createNode("datfactions.faction.unclaim.one");
     public static final PermissionNode<Boolean> FACTIONUNCLAIMSQUARE = createNode("datfactions.faction.unclaim.square");
+    public static final PermissionNode<Boolean> FACTIONUNCLAIMLEVEL = createNode("datfactions.faction.unclaim.level");
     public static final PermissionNode<Boolean> FACTIONUNCLAIMALL = createNode("datfactions.faction.unclaim.all");
 
     /* ========================================= */
@@ -114,7 +115,8 @@ public class FactionPermissions {
             FACTIONCLAIMSQUARE,
             FACTIONUNCLAIMONE,
             FACTIONUNCLAIMSQUARE,
-                FACTIONUNCLAIMALL
+            FACTIONUNCLAIMLEVEL,
+            FACTIONUNCLAIMALL
         );
     }
 }

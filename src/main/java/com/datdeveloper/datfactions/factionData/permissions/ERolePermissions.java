@@ -23,6 +23,7 @@ public enum ERolePermissions {
     AUTOCLAIM("Allows the player to use autoclaiming"),
     UNCLAIMONE("Allows the player to unclaim a single chunk at a time"),
     UNCLAIMSQUARE("Allows the player to unclaim a square of chunks at a time"),
+    UNCLAIMLEVEL("Allows the player to unclaim all the faction's chunks in a level"),
     UNCLAIMALL("Allows the player to unclaim all the faction's chunks at once"),
 
     // Land Access
