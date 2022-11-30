@@ -426,6 +426,11 @@ public class Faction extends DatabaseEntity {
         markDirty();
     }
 
+    public void removeInvite(final UUID playerId) {
+        playerInvites.remove(playerId);
+        markDirty();
+    }
+
     /* ========================================= */
     /* Flags
     /* ========================================= */

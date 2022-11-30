@@ -7,6 +7,7 @@ import net.minecraft.commands.CommandSource;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Arrays;
 import java.util.stream.Stream;
 
 /**
@@ -78,7 +79,18 @@ public class FactionChangeMembershipEvent extends FactionPlayerEvent {
      * @param newRole The role the player will take
      */
     public void setNewRole(@Nullable final FactionRole newRole) {
+        if (Arrays.asList(EChangeFactionReason.CREATE, EChangeFactionReason.DISBAND, EChangeFactionReason.NEWPLAYER, EChangeFactionReason.ADMIN).contains(getReason())) {
+            throw new UnsupportedOperationException("You cannot set the new role of the player if reason is CREATE, DISBAND, NEWPLAYER, or ADMIN");
+        }
         this.newRole = newRole;
+    }
+
+    /**
+     * Get the reason for the membership change
+     * @return the reason
+     */
+    public EChangeFactionReason getReason() {
+        return reason;
     }
 
     @Override
