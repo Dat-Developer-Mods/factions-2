@@ -115,7 +115,13 @@ public class FactionClaimCommand extends BaseFactionCommand {
         FactionLevel level = FLevelCollection.getInstance().getByKey(player.getLevel().dimension());
 
         // Event
-        final FactionLandChangeOwnerEvent event = new FactionLandChangeOwnerEvent(player, chunks, level, faction);
+        final FactionLandChangeOwnerEvent event = new FactionLandChangeOwnerEvent(
+                player,
+                chunks,
+                level,
+                faction,
+                FactionLandChangeOwnerEvent.EChangeOwnerReason.CLAIM
+        );
         MinecraftForge.EVENT_BUS.post(event);
         if (event.isCanceled()) return -1;
 

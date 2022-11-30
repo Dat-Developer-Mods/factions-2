@@ -1,19 +1,28 @@
 package com.datdeveloper.datfactions.factionData;
 
 import com.datdeveloper.datfactions.api.events.FactionChangeMembershipEvent;
+import com.datdeveloper.datfactions.api.events.FactionLandChangeOwnerEvent;
 import com.datdeveloper.datfactions.database.Database;
 import com.datdeveloper.datfactions.factionData.permissions.FactionRole;
 import com.datdeveloper.datmoddingapi.util.DatChatFormatting;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraftforge.common.MinecraftForge;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-public class FactionCollection extends BaseCollection<UUID, Faction>{
-
+public class FactionCollection extends BaseCollection<UUID, Faction> {
+    /**
+     * The template new factions are based off of
+     */
     Faction template;
+
+    /**
+     * The default faction
+     */
     Faction WILDERNESS;
 
     static final FactionCollection instance = new FactionCollection();
@@ -63,11 +72,23 @@ public class FactionCollection extends BaseCollection<UUID, Faction>{
         );
 
         final Set<FactionPlayer> players = faction.getPlayers();
+
+        // Remove from index
         FactionIndex.getInstance().deleteFaction(faction);
 
         // Remove from relations
         for (final Faction otherFaction : map.values()) {
             otherFaction.setRelation(faction, EFactionRelation.NEUTRAL);
+        }
+
+        // Release all land
+        final Map<FactionLevel, List<ChunkPos>> allFactionChunks = FLevelCollection.getInstance().getAllFactionChunks(faction);
+        for (final FactionLevel factionLevel : allFactionChunks.keySet()) {
+            final List<ChunkPos> chunks = allFactionChunks.get(factionLevel);
+            final FactionLandChangeOwnerEvent event = new FactionLandChangeOwnerEvent(null, chunks, factionLevel, null, FactionLandChangeOwnerEvent.EChangeOwnerReason.DISBAND);
+            MinecraftForge.EVENT_BUS.post(event);
+
+            factionLevel.setChunksOwner(chunks, event.getNewOwner());
         }
 
         // Remove from players

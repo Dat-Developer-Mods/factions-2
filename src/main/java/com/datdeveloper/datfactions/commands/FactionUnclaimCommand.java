@@ -224,7 +224,13 @@ public class FactionUnclaimCommand extends BaseFactionCommand {
         final Faction faction = fPlayer.getFaction();
 
         // Event
-        final FactionLandChangeOwnerEvent event = new FactionLandChangeOwnerEvent(player, chunks, level, null);
+        final FactionLandChangeOwnerEvent event = new FactionLandChangeOwnerEvent(
+                player,
+                chunks,
+                level,
+                null,
+                FactionLandChangeOwnerEvent.EChangeOwnerReason.UNCLAIM
+        );
         MinecraftForge.EVENT_BUS.post(event);
         if (event.isCanceled()) return -1;
 

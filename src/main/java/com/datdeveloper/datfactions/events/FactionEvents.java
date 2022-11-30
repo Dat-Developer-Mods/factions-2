@@ -43,10 +43,10 @@ public class FactionEvents {
         Set<ChunkPos> connectedChunks = new HashSet<>();
         final Map<Faction, Set<ChunkPos>> stolenChunks = new HashMap<>();
 
-        if (event.isSkipDefaultChecks()) return;
+        if (event.isSkipDefaultChecks() || event.getReason() == FactionLandChangeOwnerEvent.EChangeOwnerReason.DISBAND) return;
 
         // Handle unclaim
-        if (faction == null) {
+        if (event.getReason() == FactionLandChangeOwnerEvent.EChangeOwnerReason.UNCLAIM) {
             // TODO: Disallow separating land clusters
             return;
         }
