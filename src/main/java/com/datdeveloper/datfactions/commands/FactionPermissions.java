@@ -45,11 +45,11 @@ public class FactionPermissions {
     public static final PermissionNode<Boolean> FACTIONSETHOME = createNode("datfactions.faction.setHome");
     public static final PermissionNode<Boolean> FACTIONDISBAND = createNode("datfactions.faction.disband");
 
-    // Ranks
-    public static final PermissionNode<Boolean> FACTIONRANKADD = createNode("datfactions.faction.rank.add");
-    public static final PermissionNode<Boolean> FACTIONRANKREMOVE = createNode("datfactions.faction.rank.remove");
-    public static final PermissionNode<Boolean> FACTIONRANKREORDER = createNode("datfactions.faction.rank.reorder");
-    public static final PermissionNode<Boolean> FACTIONRANKPERMISSIONS = createNode("datfactions.faction.rank.permissions");
+    // Roles
+    public static final PermissionNode<Boolean> FACTIONROLEADD = createNode("datfactions.faction.rank.add");
+    public static final PermissionNode<Boolean> FACTIONROLEREMOVE = createNode("datfactions.faction.rank.remove");
+    public static final PermissionNode<Boolean> FACTIONROLEREORDER = createNode("datfactions.faction.rank.reorder");
+    public static final PermissionNode<Boolean> FACTIONROLEPERMISSIONS = createNode("datfactions.faction.rank.permissions");
 
     // User Management
     public static final PermissionNode<Boolean> FACTIONPROMOTE = createNode("datfactions.faction.player.promote");
@@ -101,10 +101,10 @@ public class FactionPermissions {
             FACTIONSETMOTD,
             FACTIONSETHOME,
             FACTIONDISBAND,
-            FACTIONRANKADD,
-            FACTIONRANKREMOVE,
-            FACTIONRANKREORDER,
-            FACTIONRANKPERMISSIONS,
+                FACTIONROLEADD,
+                FACTIONROLEREMOVE,
+                FACTIONROLEREORDER,
+                FACTIONROLEPERMISSIONS,
             FACTIONPROMOTE,
             FACTIONDEMOTE,
             FACTIONSETRANK,

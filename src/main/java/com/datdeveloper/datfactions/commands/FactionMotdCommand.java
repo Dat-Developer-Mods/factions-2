@@ -1,13 +1,12 @@
 package com.datdeveloper.datfactions.commands;
 
-import com.datdeveloper.datfactions.FactionsConfig;
 import com.datdeveloper.datfactions.api.events.FactionChangeMotdEvent;
 import com.datdeveloper.datfactions.factionData.FPlayerCollection;
 import com.datdeveloper.datfactions.factionData.Faction;
 import com.datdeveloper.datfactions.factionData.FactionPlayer;
 import com.datdeveloper.datfactions.factionData.permissions.ERolePermissions;
-import com.datdeveloper.datmoddingapi.command.arguments.LimitedStringArgument;
 import com.datdeveloper.datmoddingapi.permissions.DatPermissions;
+import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import net.minecraft.commands.CommandSourceStack;
@@ -29,7 +28,7 @@ public class FactionMotdCommand extends BaseFactionCommand {
 
         final LiteralCommandNode<CommandSourceStack> subCommand = Commands.literal("motd")
                 .requires(predicate)
-                .then(Commands.argument("motd", LimitedStringArgument.greedyString(FactionsConfig.getMaxFactionMotdLength()))
+                .then(Commands.argument("motd", StringArgumentType.greedyString())
                         .executes(c -> {
                             final FactionPlayer fPlayer = FPlayerCollection.getInstance().getPlayer(c.getSource().getPlayer());
                             final Faction faction = fPlayer.getFaction();

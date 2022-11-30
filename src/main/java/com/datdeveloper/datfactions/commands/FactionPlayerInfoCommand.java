@@ -1,14 +1,17 @@
 package com.datdeveloper.datfactions.commands;
 
-import com.datdeveloper.datfactions.commands.arguments.FactionPlayerArgument;
+import com.datdeveloper.datfactions.commands.suggestions.DatSuggestionProviders;
 import com.datdeveloper.datfactions.factionData.FPlayerCollection;
 import com.datdeveloper.datfactions.factionData.FactionPlayer;
 import com.datdeveloper.datmoddingapi.asyncTask.AsyncHandler;
+import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
+import net.minecraft.commands.arguments.GameProfileArgument;
+import net.minecraft.network.chat.Component;
 
 import java.util.function.Predicate;
 
@@ -19,10 +22,20 @@ public class FactionPlayerInfoCommand extends BaseFactionCommand {
         final Predicate<CommandSourceStack> predicate = FactionPermissions.hasPermission(FACTIONPLAYERINFO);
         final LiteralCommandNode<CommandSourceStack> subCommand = Commands.literal("player")
                 .requires(predicate)
-                .then(Commands.argument("targetPlayer", new FactionPlayerArgument())
+                .then(Commands.argument("targetPlayer", GameProfileArgument.gameProfile())
+                        .suggests(DatSuggestionProviders.fPlayerProvider)
                         .executes(c -> {
+                            final GameProfile profile = GameProfileArgument.getGameProfiles(c, "targetPlayer")
+                                    .stream().findFirst().orElse(null);
+                            if (profile == null) {
+                                c.getSource().sendFailure(Component.literal("Failed to find player"));
+                                return 2;
+                            }
+
+
+
                             final FactionPlayer factionPlayer = FPlayerCollection.getInstance().getPlayer(c.getSource().getPlayer());
-                            final FactionPlayer target = c.getArgument("targetPlayer", FactionPlayer.class);
+                            final FactionPlayer target = FPlayerCollection.getInstance().getByKey(profile.getId());
 
                             return execute(c, factionPlayer, target);
                         }))

@@ -6,13 +6,14 @@ import com.datdeveloper.datfactions.factionData.FPlayerCollection;
 import com.datdeveloper.datfactions.factionData.Faction;
 import com.datdeveloper.datfactions.factionData.FactionPlayer;
 import com.datdeveloper.datfactions.factionData.permissions.ERolePermissions;
-import com.datdeveloper.datmoddingapi.command.arguments.LimitedStringArgument;
 import com.datdeveloper.datmoddingapi.permissions.DatPermissions;
 import com.datdeveloper.datmoddingapi.util.DatChatFormatting;
+import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentContents;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraftforge.common.MinecraftForge;
@@ -31,11 +32,17 @@ public class FactionDescriptionCommand extends BaseFactionCommand {
         };
         final LiteralCommandNode<CommandSourceStack> subCommand = Commands.literal("desc")
                 .requires(predicate)
-                .then(Commands.argument("description", LimitedStringArgument.greedyString(FactionsConfig.getMaxFactionDescriptionLength()))
+                .then(Commands.argument("description", StringArgumentType.greedyString())
                         .executes(c -> {
+                            final String newDescription = c.getArgument("description", String.class);
+
+                            if (newDescription.length() > FactionsConfig.getMaxFactionNameLength()) {
+                                c.getSource().sendFailure(Component.literal("Your faction name cannot be longer than " + FactionsConfig.getMaxFactionNameLength()));
+                                return 2;
+                            }
+
                             final FactionPlayer fPlayer = FPlayerCollection.getInstance().getPlayer(c.getSource().getPlayer());
                             final Faction faction = fPlayer.getFaction();
-                            final String newDescription = c.getArgument("description", String.class);
 
                             final FactionChangeDescriptionEvent event = new FactionChangeDescriptionEvent(c.getSource().source, faction, newDescription);
                             MinecraftForge.EVENT_BUS.post(event);

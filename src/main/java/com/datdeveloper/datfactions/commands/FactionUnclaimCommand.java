@@ -27,10 +27,10 @@ public class FactionUnclaimCommand extends BaseFactionCommand {
 
         final LiteralCommandNode<CommandSourceStack> claimCommand = Commands.literal("unclaim")
                 .requires(commandSourceStack1 -> {
-                    if (!(commandSourceStack1.isPlayer()) && DatPermissions.hasAnyPermissions(commandSourceStack1.source, FactionPermissions.FACTIONUNCLAIMONE, FactionPermissions.FACTIONUNCLAIMSQUARE, FactionPermissions.FACTIONUNCLAIMALL))
+                    if (!(commandSourceStack1.isPlayer()) && DatPermissions.hasAnyPermissions(commandSourceStack1.source, FactionPermissions.FACTIONUNCLAIMONE, FactionPermissions.FACTIONUNCLAIMSQUARE, FactionPermissions.FACTIONUNCLAIMLEVEL, FactionPermissions.FACTIONUNCLAIMALL))
                         return false;
                     final FactionPlayer fPlayer1 = getPlayerOrTemplate(commandSourceStack1.getPlayer());
-                    return fPlayer1.hasFaction() && fPlayer1.getRole().hasAnyPermissions(List.of(ERolePermissions.UNCLAIMONE, ERolePermissions.UNCLAIMSQUARE, ERolePermissions.UNCLAIMALL));
+                    return fPlayer1.hasFaction() && fPlayer1.getRole().hasAnyPermissions(List.of(ERolePermissions.UNCLAIMONE, ERolePermissions.UNCLAIMSQUARE, ERolePermissions.UNCLAIMLEVEL, ERolePermissions.UNCLAIMALL));
                 })
                 .then(
                         Commands.literal("one")
@@ -59,7 +59,7 @@ public class FactionUnclaimCommand extends BaseFactionCommand {
                                 .requires(commandSourceStack -> {
                                     final ServerPlayer player = commandSourceStack.getPlayer();
                                     final FactionPlayer fPlayer = getPlayerOrTemplate(player);
-                                    return DatPermissions.hasPermission(player, FactionPermissions.FACTIONCLAIMSQUARE) && fPlayer.getRole().hasPermission(ERolePermissions.CLAIMSQUARE);
+                                    return DatPermissions.hasPermission(player, FactionPermissions.FACTIONUNCLAIMSQUARE) && fPlayer.getRole().hasPermission(ERolePermissions.UNCLAIMSQUARE);
                                 })
                                 .then(
                                         Commands.argument("radius", IntegerArgumentType.integer(1))
