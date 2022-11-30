@@ -13,7 +13,7 @@ public class FactionsConfig {
     private static ConfigValue<Integer> maxFactionDescriptionLength;
     private static ConfigValue<Integer> maxFactionMotdLength;
 
-    private static ConfigValue<Integer> maxFactionRanks;
+    private static ConfigValue<Integer> maxFactionRoles;
 
     private static ConfigValue<Integer> globalMaxFactionLandCount;
 
@@ -29,7 +29,7 @@ public class FactionsConfig {
 
     private static ConfigValue<Long> playerPassivePowerGainInterval;
     private static ConfigValue<Integer> playerPassivePowerGainAmount;
-    private static ConfigValue<Float> rankPassivePowerGainMultiplier;
+    private static ConfigValue<Float> rolePassivePowerGainMultiplier;
 
     private static ConfigValue<Integer> baseKillPowerGain;
     private static ConfigValue<Integer> baseKillMaxPowerGain;
@@ -56,9 +56,9 @@ public class FactionsConfig {
             maxFactionMotdLength = builder
                     .comment("The maximum length a faction's MOTD can be")
                     .defineInRange("MaxFactionMotdLength", 120, 0, Integer.MAX_VALUE);
-            maxFactionRanks = builder
-                    .comment("The maximum amount of ranks a faction can have")
-                    .defineInRange("MaxFactionMotdLength", 120, 0, Integer.MAX_VALUE);
+            maxFactionRoles = builder
+                    .comment("The maximum amount of roles a faction can have")
+                    .defineInRange("MaxFactionRoles", 120, 0, Integer.MAX_VALUE);
 
             globalMaxFactionLandCount = builder
                     .comment("The total maximum amount of chunks a faction can have across all worlds")
@@ -94,12 +94,12 @@ public class FactionsConfig {
             playerPassivePowerGainAmount = builder
                     .comment("The base amount of max power a player gains passively just by being online")
                     .define("PlayerPassivePowerGainAmount", 5);
-            rankPassivePowerGainMultiplier  = builder
+            rolePassivePowerGainMultiplier = builder
                     .comment(
                             "The multiplier for passive power gain for being the owner of the faction",
                             "The multiplier for other ranks is inferred from their position in the faction's rank hierarchy"
                     )
-                    .define("RankPassivePowerGainMultiplier", 2.f);
+                    .define("RolePassivePowerGainMultiplier", 2.f);
 
             baseKillPowerGain = builder
                     .comment("The base amount of power a player gains by killing a player")
@@ -119,7 +119,7 @@ public class FactionsConfig {
                         "The multiplier for passive power gain for being the owner of the faction",
                         "The multiplier for other ranks is inferred from their position in the faction's rank hierarchy"
                 )
-                .define("RankKillPowerMultiplier", 2.f);
+                .define("RoleKillPowerMultiplier", 2.f);
 
             bonusPowerFlagMultiplier = builder
                 .comment(
@@ -166,8 +166,8 @@ public class FactionsConfig {
         return maxFactionMotdLength.get();
     }
 
-    public static int getMaxFactionRanks() {
-        return maxFactionRanks.get();
+    public static int getMaxFactionRoles() {
+        return maxFactionRoles.get();
     }
 
     public static int getGlobalMaxFactionLandCount() {
@@ -205,8 +205,8 @@ public class FactionsConfig {
         return playerPassivePowerGainAmount.get();
     }
 
-    public static float getRankPassivePowerGainMultiplier() {
-        return rankPassivePowerGainMultiplier.get();
+    public static float getRolePassivePowerGainMultiplier() {
+        return rolePassivePowerGainMultiplier.get();
     }
 
     public static int getBaseKillPowerGain() {

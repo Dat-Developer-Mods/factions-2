@@ -6,11 +6,10 @@ import java.util.*;
  * A useful mapping of factions to players and players to factions
  */
 public class FactionIndex {
-    final Map<UUID, Faction> playerToFactionMap = new HashMap<>();
-    final Map<UUID, Set<FactionPlayer>> factionToPlayerMap = new WeakHashMap<>();
+    final Map<FactionPlayer, Faction> playerToFactionMap = new HashMap<>();
+    final Map<Faction, Set<FactionPlayer>> factionToPlayerMap = new HashMap<>();
 
     boolean initialised = false;
-
 
     private final static FactionIndex instance = new FactionIndex();
     public static FactionIndex getInstance() {
@@ -20,57 +19,65 @@ public class FactionIndex {
         return initialised;
     }
 
+    /* ========================================= */
+    /* Players
+    /* ========================================= */
+
     /**
      * Get all the players in a faction
-     * @param factionId The ID of the faction
+     * @param faction The faction
      * @return A set of players in the faction
      */
-    Set<FactionPlayer> getFactionPlayers(final UUID factionId) {
-        return factionToPlayerMap.get(factionId);
+    Set<FactionPlayer> getFactionPlayers(final Faction faction) {
+        return factionToPlayerMap.get(faction);
     }
 
     /**
      * Update a player in the index
      * @param player the player to update
      */
-    public void updatePlayer(final FactionPlayer player) {
+    public void updatePlayerFaction(final FactionPlayer player) {
         if (!initialised) return;
-        final Faction previousFaction = playerToFactionMap.get(player.getId());
+        final Faction previousFaction = playerToFactionMap.get(player);
 
-        if (previousFaction != null) factionToPlayerMap.get(previousFaction.getId()).remove(player);
-        if (player.getFactionId() != null) factionToPlayerMap.get(player.getFactionId()).add(player);
+        if (previousFaction != null) factionToPlayerMap.get(previousFaction).remove(player);
+        if (player.getFactionId() != null) factionToPlayerMap.get(player.getFaction()).add(player);
 
-        playerToFactionMap.put(player.getId(), player.getFactionId() != null ? FactionCollection.getInstance().getByKey(player.getFactionId()) : null);
+        playerToFactionMap.put(player, player.hasFaction() ? FactionCollection.getInstance().getByKey(player.getFactionId()) : null);
     }
 
     /**
      * Delete a player from the index
-     * @param playerId the playerId
+     * @param player the player
      */
-    public void deletePlayer(final UUID playerId) {
-        final Faction faction = playerToFactionMap.remove(playerId);
+    public void deletePlayer(final FactionPlayer player) {
+        final Faction faction = playerToFactionMap.remove(player);
         if (faction != null) {
-            factionToPlayerMap.get(faction.getId()).removeIf(player -> player.getId().equals(playerId));
+            factionToPlayerMap.get(faction).removeIf(playerEl -> playerEl.equals(player));
         }
     }
+
+    /* ========================================= */
+    /* Factions
+    /* ========================================= */
 
     /**
      * Add a new faction to the Index
      * @param faction The faction to add
      */
     public void addFaction(final Faction faction) {
-        factionToPlayerMap.put(faction.getId(), new HashSet<>());
+        factionToPlayerMap.put(faction, new HashSet<>());
     }
 
     /**
      * Delete a faction from the index
-     * @param factionId The ID of the faction
+     * @param faction The ID of the faction
      */
-    public void deleteFaction(final UUID factionId) {
-        final Set<FactionPlayer> players = factionToPlayerMap.remove(factionId);
+    public void deleteFaction(final Faction faction) {
+        final Set<FactionPlayer> players = factionToPlayerMap.remove(faction);
 
         for (final FactionPlayer player : players) {
-            playerToFactionMap.put(player.getId(), null);
+            playerToFactionMap.put(player, null);
         }
     }
 
@@ -80,15 +87,16 @@ public class FactionIndex {
 
     public void initialise() {
         // Add factions
-        for (final UUID factionId : FactionCollection.getInstance().getAll().keySet()) {
-            factionToPlayerMap.put(factionId, new HashSet<>());
+        for (final Faction faction : FactionCollection.getInstance().getAll().values()) {
+            factionToPlayerMap.put(faction, new HashSet<>());
         }
 
         // Add players
         for (final FactionPlayer player : FPlayerCollection.getInstance().getAll().values()) {
-            playerToFactionMap.put(player.getId(), player.getFaction());
-            if (player.hasFaction()) {
-                factionToPlayerMap.get(player.getFactionId()).add(player);
+            final Faction faction = player.getFaction();
+            playerToFactionMap.put(player, faction);
+            if (faction != null) {
+                factionToPlayerMap.get(faction).add(player);
             }
         }
         initialised = true;

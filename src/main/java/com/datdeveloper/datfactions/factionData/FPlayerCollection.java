@@ -75,7 +75,7 @@ public class FPlayerCollection extends BaseCollection<UUID, FactionPlayer> {
         final FactionPlayer newPlayer = new FactionPlayer(player, template);
         map.put(player.getUUID(), newPlayer);
         Database.instance.storePlayer(newPlayer);
-        FactionIndex.getInstance().updatePlayer(newPlayer);
+        FactionIndex.getInstance().updatePlayerFaction(newPlayer);
         logger.info("Registered new factions player: " + player.getName().getString());
     }
 
@@ -100,7 +100,7 @@ public class FPlayerCollection extends BaseCollection<UUID, FactionPlayer> {
             final FactionPlayer player = Database.instance.loadPlayer(playerId);
             if (player == null) continue;
 
-            if (player.hasFaction() && FactionCollection.getInstance().getByKey(player.factionId) == null) {
+            if (player.hasFaction() && FactionCollection.getInstance().getByKey(player.getFactionId()) == null) {
                 logger.warn("Player " + player.lastName + " (" + player.id + ") belongs to a faction that no longer exists, they will be corrected to no faction");
                 player.setFaction(null, null, FactionChangeMembershipEvent.EChangeFactionReason.CREATE);
             }

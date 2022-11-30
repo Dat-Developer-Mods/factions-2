@@ -63,7 +63,7 @@ public class FactionCollection extends BaseCollection<UUID, Faction>{
         );
 
         final Set<FactionPlayer> players = faction.getPlayers();
-        FactionIndex.getInstance().deleteFaction(factionId);
+        FactionIndex.getInstance().deleteFaction(faction);
 
         // Remove from relations
         for (final Faction otherFaction : map.values()) {

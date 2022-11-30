@@ -63,9 +63,10 @@ public class FactionCreateRoleEvent extends FactionEvent {
     /**
      * Set the parent of the new role
      * @param newRoleParent The new parent of the role
+     * @throws IllegalArgumentException when trying to set the parent to null or the recruit role
      */
     public void setNewRoleParent(final FactionRole newRoleParent) {
-        if (newRoleParent.equals())
+        if (newRoleParent == null || !faction.getRoles().contains(newRoleParent) || newRoleParent.equals(faction.getRecruitRole())) throw new IllegalArgumentException("newRoleParent must be a valid role that isn't the recruit role");
         this.newRoleParent = newRoleParent;
     }
 }

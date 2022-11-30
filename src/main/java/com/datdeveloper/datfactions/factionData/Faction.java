@@ -65,7 +65,7 @@ public class Faction extends DatabaseEntity {
     /**
      * The invites to players the faction has
      */
-    final List<UUID> playerInvites;
+    final Set<UUID> playerInvites;
 
     /**
      * The roles the faction has, in order from owner to recruit (owner at position 0, recruit in last place)
@@ -94,7 +94,7 @@ public class Faction extends DatabaseEntity {
         this.homeLocation = null;
         this.homeLevel = null;
 
-        this.playerInvites = new ArrayList<>();
+        this.playerInvites = new HashSet<>();
         this.roles = FactionRole.getDefaultRoles();
         this.flags = new HashSet<>();
         this.relations = new HashMap<>();
@@ -113,7 +113,7 @@ public class Faction extends DatabaseEntity {
         this.homeLocation = template.homeLocation;
         this.homeLevel = template.homeLevel;
 
-        this.playerInvites = new ArrayList<>();
+        this.playerInvites = new HashSet<>();
 
         // Deep Copy roles
         this.roles = new ArrayList<>();
@@ -128,7 +128,7 @@ public class Faction extends DatabaseEntity {
     }
 
     public Set<FactionPlayer> getPlayers() {
-        return FactionIndex.getInstance().getFactionPlayers(this.getId());
+        return FactionIndex.getInstance().getFactionPlayers(this);
     }
 
     /* ========================================= */
@@ -163,10 +163,6 @@ public class Faction extends DatabaseEntity {
         return homeLevel;
     }
 
-    /* ========================================= */
-    /* Setters
-    /* ========================================= */
-
     public void setName(final String newName) {
         if (newName.equals(name) || newName.isEmpty()) return;
 
@@ -196,6 +192,8 @@ public class Faction extends DatabaseEntity {
         this.homeLevel = newHomeLevel;
         markDirty();
     }
+
+
 
     /* ========================================= */
     /* Power
@@ -266,6 +264,7 @@ public class Faction extends DatabaseEntity {
     /* ========================================= */
     /* Roles
     /* ========================================= */
+
     public List<FactionRole> getRoles() {
         return roles;
     }
@@ -407,6 +406,23 @@ public class Faction extends DatabaseEntity {
         }
 
         roles.remove(role);
+        markDirty();
+    }
+
+    /* ========================================= */
+    /* Invites
+    /* ========================================= */
+
+    public Set<UUID> getPlayerInvites() {
+        return playerInvites;
+    }
+
+    public boolean invitedPlayer(final UUID playerId) {
+        return getPlayerInvites().contains(playerId);
+    }
+
+    public void addInvite(final UUID playerId) {
+        playerInvites.add(playerId);
         markDirty();
     }
 

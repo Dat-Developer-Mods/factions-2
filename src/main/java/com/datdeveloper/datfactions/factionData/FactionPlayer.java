@@ -127,7 +127,7 @@ public class FactionPlayer extends DatabaseEntity {
 
     public Faction getFaction() {
         if (!hasFaction()) return null;
-        return FactionCollection.getInstance().getByKey(factionId);
+        return FactionCollection.getInstance().getByKey(getFactionId());
     }
 
     public String getName() {
@@ -202,7 +202,7 @@ public class FactionPlayer extends DatabaseEntity {
      * @param reason The reason the player left
      */
     public void setFaction(final UUID factionId, final UUID roleId, final FactionChangeMembershipEvent.EChangeFactionReason reason) {
-        if (Objects.equals(this.factionId, factionId)) return;
+        if (Objects.equals(this.getFactionId(), factionId)) return;
 
         final Faction oldFaction = getFaction();
         final Faction newFaction = FactionCollection.getInstance().getByKey(factionId);
@@ -210,7 +210,7 @@ public class FactionPlayer extends DatabaseEntity {
         this.factionId = factionId;
         this.role = roleId;
 
-        FactionIndex.getInstance().updatePlayer(this);
+        FactionIndex.getInstance().updatePlayerFaction(this);
 
         // Update Factions
         if (reason == FactionChangeMembershipEvent.EChangeFactionReason.LEAVE) {
@@ -275,7 +275,7 @@ public class FactionPlayer extends DatabaseEntity {
         // Last Online
         if (!isPlayerOnline()) {
             message.append("\n")
-                    .append(DatChatFormatting.TextColour.INFO + "Last Online: " + ChatFormatting.WHITE + AgeUtil.calculateAgeString(lastActiveTime) + " ago");
+                    .append(DatChatFormatting.TextColour.INFO + "Last Online: " + ChatFormatting.WHITE + AgeUtil.calculateAgeString(getLastActiveTime()) + " ago");
         }
 
         return message;
@@ -323,7 +323,7 @@ public class FactionPlayer extends DatabaseEntity {
         // Last Online
         if (!isPlayerOnline()) {
             component.append("\n")
-                    .append(DatChatFormatting.TextColour.INFO + "Last Online: " + ChatFormatting.WHITE + AgeUtil.calculateAgeString(lastActiveTime) + " ago");
+                    .append(DatChatFormatting.TextColour.INFO + "Last Online: " + ChatFormatting.WHITE + AgeUtil.calculateAgeString(getLastActiveTime()) + " ago");
         }
 
         return component;
