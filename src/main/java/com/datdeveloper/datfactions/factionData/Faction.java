@@ -417,7 +417,7 @@ public class Faction extends DatabaseEntity {
         return playerInvites;
     }
 
-    public boolean invitedPlayer(final UUID playerId) {
+    public boolean hasInvitedPlayer(final UUID playerId) {
         return getPlayerInvites().contains(playerId);
     }
 
@@ -587,12 +587,8 @@ public class Faction extends DatabaseEntity {
         if (!hasFlag(EFactionFlags.ANONYMOUS)) {
             final Set<FactionPlayer> players = getPlayers();
             final List<MutableComponent> playersComponents = players.stream()
-                    .map(player -> {
-                        final MutableComponent component = Component.literal((player != players.iterator().next() ? ChatFormatting.WHITE + ", " : ""));
-                        component.append(player.getNameWithDescription(from).withStyle(player.isPlayerOnline() ? DatChatFormatting.PlayerColour.ONLINE : DatChatFormatting.PlayerColour.OFFLINE));
-
-                        return component;
-                    }).toList();
+                    .map(player -> player.getNameWithDescription(from).withStyle(player.isPlayerOnline() ? DatChatFormatting.PlayerColour.ONLINE : DatChatFormatting.PlayerColour.OFFLINE))
+                    .toList();
             final Component playersComponent = ComponentUtils.formatList(playersComponents, ComponentUtils.DEFAULT_SEPARATOR);
 
             message.append("\n")
@@ -607,9 +603,7 @@ public class Faction extends DatabaseEntity {
                     .sorted(Comparator.comparingInt(relation -> relation.getRelation().ordinal()))
                     .map(relation -> {
                         final Faction otherFaction = relation.getFaction();
-                        final MutableComponent component = Component.literal("");
-                        component.append(otherFaction.getNameWithDescription(this).withStyle(relation.getRelation().formatting));
-                        return component;
+                        return otherFaction.getNameWithDescription(this).withStyle(relation.getRelation().formatting);
                     }).toList();
             final Component relationsComponent = ComponentUtils.formatList(relationsComponents, ComponentUtils.DEFAULT_SEPARATOR);
 
@@ -621,11 +615,7 @@ public class Faction extends DatabaseEntity {
         // Flags
         if (!flags.isEmpty()) {
             final List<MutableComponent> flagComponents = flags.stream()
-                    .map(flag -> {
-                        final MutableComponent component = Component.literal(ChatFormatting.WHITE + (flag != flags.iterator().next() ? ", " : ""));
-                        component.append(flag.getChatComponent());
-                        return component;
-                    })
+                    .map(EFactionFlags::getChatComponent)
                     .toList();
             final Component flagComponent = ComponentUtils.formatList(flagComponents, ComponentUtils.DEFAULT_SEPARATOR);
             message.append("\n")

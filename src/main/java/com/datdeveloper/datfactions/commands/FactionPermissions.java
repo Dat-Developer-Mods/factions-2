@@ -57,6 +57,7 @@ public class FactionPermissions {
     public static final PermissionNode<Boolean> FACTIONSETRANK = createNode("datfactions.faction.player.setRank");
     public static final PermissionNode<Boolean> FACTIONKICK = createNode("datfactions.faction.player.kick");
     public static final PermissionNode<Boolean> FACTIONINVITE = createNode("datfactions.faction.player.invite");
+    public static final PermissionNode<Boolean> FACTIONUNINVITE = createNode("datfactions.faction.player.invite");
 
     // Claims
     public static final PermissionNode<Boolean> FACTIONCLAIMONE = createNode("datfactions.faction.claim.one");
