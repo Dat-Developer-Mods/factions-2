@@ -20,11 +20,13 @@ public class FactionsCommand {
         FactionPlayerInfoCommand.register(command);
         FactionMapCommand.register(command);
         FactionCreateCommand.register(command);
+        FactionJoinCommand.register(command);
 
         FactionNameCommand.register(command);
         FactionDescriptionCommand.register(command);
         FactionMotdCommand.register(command);
         FactionSetHomeCommand.register(command);
+        FactionInviteCommand.register(command);
         FactionDisbandCommand.register(command);
 
         FactionClaimCommand.register(command);
