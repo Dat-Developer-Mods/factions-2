@@ -1,7 +1,8 @@
 package com.datdeveloper.datfactions.commands;
 
 import com.datdeveloper.datfactions.api.events.FactionInvitePlayerEvent;
-import com.datdeveloper.datfactions.commands.suggestions.DatSuggestionProviders;
+import com.datdeveloper.datfactions.commands.suggestions.FPlayerSuggestionProvider;
+import com.datdeveloper.datfactions.commands.util.FactionCommandUtils;
 import com.datdeveloper.datfactions.factionData.FPlayerCollection;
 import com.datdeveloper.datfactions.factionData.Faction;
 import com.datdeveloper.datfactions.factionData.FactionPlayer;
@@ -29,9 +30,8 @@ public class FactionInviteCommand extends BaseFactionCommand {
                     return fPlayer.hasFaction() && fPlayer.getRole().hasPermission(ERolePermissions.INVITE);
                 })
                 .then(Commands.argument("Target Player", GameProfileArgument.gameProfile())
-                        .suggests(DatSuggestionProviders.fPlayerProvider)
+                        .suggests(new FPlayerSuggestionProvider(true))
                         .executes(c -> {
-                            final String targetName = c.getArgument("Target Player", String.class);
                             final GameProfile profile = GameProfileArgument.getGameProfiles(c, "Target Player")
                                     .stream().findFirst().orElse(null);
                             if (profile == null) {
@@ -42,6 +42,13 @@ public class FactionInviteCommand extends BaseFactionCommand {
                             final Faction faction = player.getFaction();
                             final FactionPlayer target = FPlayerCollection.getInstance().getByKey(profile.getId());
 
+                            if (faction.equals(target.getFaction())) {
+                                c.getSource().sendFailure(Component.literal("That player is already in your faction"));
+                                return 3;
+                            } else if (faction.hasInvitedPlayer(target.getId())) {
+                                c.getSource().sendFailure(Component.literal("That player already has an invite from your faction"));
+                                return 4;
+                            }
 
                             final FactionInvitePlayerEvent event = new FactionInvitePlayerEvent(
                                     c.getSource().source,
@@ -53,13 +60,25 @@ public class FactionInviteCommand extends BaseFactionCommand {
 
                             faction.addInvite(target.getId());
                             c.getSource().sendSuccess(
-                                    Component.literal(DatChatFormatting.TextColour.INFO + "Successfull invited ")
+                                    Component.literal(DatChatFormatting.TextColour.INFO + "Successfully invited ")
                                             .append(
                                                     target.getNameWithDescription(faction)
                                                             .withStyle(RelationUtil.getRelation(faction, target).formatting)
                                             ).append(DatChatFormatting.TextColour.INFO + " to the faction"),
                                     true
                             );
+
+                            if (target.isPlayerOnline()) {
+                                target.getServerPlayer().sendSystemMessage(
+                                        Component.literal(DatChatFormatting.TextColour.INFO + "You have been invited to join ")
+                                                .append(
+                                                        faction.getNameWithDescription(target.getFaction())
+                                                                .withStyle(RelationUtil.getRelation(target, faction).formatting)
+                                                ).append("\n")
+                                                .append(DatChatFormatting.TextColour.INFO + "You can accept using ")
+                                                .append(FactionCommandUtils.wrapCommand("/f join " + faction.getName()))
+                                );
+                            }
 
                             return 1;
                         }))

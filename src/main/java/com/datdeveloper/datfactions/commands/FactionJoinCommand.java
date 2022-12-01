@@ -28,7 +28,10 @@ public class FactionJoinCommand extends BaseFactionCommand {
                 .then(Commands.argument("Target Faction", StringArgumentType.word())
                         .suggests((context, builder) -> {
                             FactionCollection.getInstance().getAll().values().stream()
-                                    .filter(faction -> faction.hasFlag(EFactionFlags.OPEN) || faction.invitedPlayer(context.getSource().getPlayer().getUUID()));
+                                    .filter(faction -> faction.hasFlag(EFactionFlags.OPEN) || faction.hasInvitedPlayer(context.getSource().getPlayer().getUUID()))
+                                    .forEach(faction -> {
+                                        builder.suggest(faction.getName());
+                                    });
                             // Get factions
                             return builder.buildFuture();
                         })
@@ -39,7 +42,7 @@ public class FactionJoinCommand extends BaseFactionCommand {
                             if (target == null) {
                                 c.getSource().sendFailure(Component.literal("Cannot find a faction with that name"));
                                 return 2;
-                            } else if (!target.hasFlag(EFactionFlags.OPEN) && !target.invitedPlayer(fPlayer.getId())) {
+                            } else if (!target.hasFlag(EFactionFlags.OPEN) && !target.hasInvitedPlayer(fPlayer.getId())) {
                                 c.getSource().sendFailure(Component.literal("You are not allowed to join that faction"));
 
                                 target.sendFactionWideMessage(
@@ -73,6 +76,15 @@ public class FactionJoinCommand extends BaseFactionCommand {
                             );
 
                             if (target != null) target.removeInvite(fPlayer.getId());
+
+                            c.getSource().sendSuccess(
+                                    Component.literal(DatChatFormatting.TextColour.INFO + "Successfully joined ")
+                                            .append(
+                                                    target.getNameWithDescription(target)
+                                                            .withStyle(EFactionRelation.SELF.formatting)
+                                            ),
+                                    true
+                            );
 
                             return 1;
                         }))

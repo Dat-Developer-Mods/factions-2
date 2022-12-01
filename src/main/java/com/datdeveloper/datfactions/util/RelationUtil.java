@@ -49,11 +49,11 @@ public class RelationUtil {
      * @return The relation between the two factions
      */
     public static EFactionRelation getRelation(final Faction from, final Faction to) {
-        if (from == null || to == null || from.getId().equals(to.getId())) return EFactionRelation.SELF;
+        if (from == null || to == null) return EFactionRelation.NEUTRAL;
 
         final FactionRelation relation = from.getRelation(to);
         if (relation != null) return relation.getRelation();
 
-        return EFactionRelation.NEUTRAL;
+        return EFactionRelation.SELF;
     }
 }

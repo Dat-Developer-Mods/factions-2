@@ -6,6 +6,7 @@ import com.datdeveloper.datfactions.factionData.FPlayerCollection;
 import com.datdeveloper.datfactions.factionData.Faction;
 import com.datdeveloper.datfactions.factionData.FactionPlayer;
 import com.datdeveloper.datfactions.factionData.permissions.FactionRole;
+import com.datdeveloper.datfactions.util.RelationUtil;
 import com.datdeveloper.datmoddingapi.permissions.DatPermissions;
 import com.datdeveloper.datmoddingapi.util.DatChatFormatting;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
@@ -55,8 +56,13 @@ public class FactionLeaveCommand extends BaseFactionCommand {
 
                     fPlayer.setFaction(newFaction != null ? newFaction.getId() : null, newRole != null ? newRole.getId() : null, FactionPlayerChangeMembershipEvent.EChangeFactionReason.LEAVE);
 
-                    c.getSource().sendSuccess(Component.literal(DatChatFormatting.TextColour.INFO + "Successfully left " + faction.getNameWithDescription(newFaction))
-                    ,false);
+                    c.getSource().sendSuccess(
+                            Component.literal(DatChatFormatting.TextColour.INFO + "Successfully left ")
+                                    .append(
+                                            faction.getNameWithDescription(newFaction)
+                                                    .withStyle(RelationUtil.getRelation(fPlayer, newFaction).formatting)
+                                    )
+                    ,true);
                     return 1;
                 }).build();
 

@@ -213,7 +213,7 @@ public class FactionPlayer extends DatabaseEntity {
         FactionIndex.getInstance().updatePlayerFaction(this);
 
         // Update Factions
-        if (reason == FactionPlayerChangeMembershipEvent.EChangeFactionReason.LEAVE) {
+        if (List.of(FactionPlayerChangeMembershipEvent.EChangeFactionReason.JOIN, FactionPlayerChangeMembershipEvent.EChangeFactionReason.LEAVE).contains(reason)) {
             if (oldFaction != null) {
                 oldFaction.sendFactionWideMessage(getNameWithDescription(oldFaction)
                                 .withStyle(RelationUtil.getRelation(oldFaction, this).formatting)
