@@ -13,24 +13,20 @@ import net.minecraft.commands.Commands;
 
 import java.util.Collection;
 import java.util.Comparator;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static com.datdeveloper.datfactions.commands.FactionPermissions.FACTIONLIST;
 
 public class FactionListCommand extends BaseFactionCommand {
     static void register(final LiteralArgumentBuilder<CommandSourceStack> command) {
-        final Predicate<CommandSourceStack> predicate = FactionPermissions.hasPermission(FACTIONLIST);
         final LiteralCommandNode<CommandSourceStack> subCommand = Commands.literal("list")
-                .requires(predicate)
-                .then(Commands.argument("page", IntegerArgumentType.integer(0))
-                        .executes(c -> execute(c, c.getArgument("page", Integer.class))))
+                .requires(FactionPermissions.hasPermission(FACTIONLIST))
+                .then(Commands.argument("Page", IntegerArgumentType.integer(0))
+                        .executes(c -> execute(c, c.getArgument("Page", Integer.class))))
                 .executes(c -> execute(c, 1))
                 .build();
 
         command.then(subCommand);
-        command.then(Commands.literal("faction").requires(predicate).redirect(subCommand));
-        command.then(Commands.literal("show").requires(predicate).redirect(subCommand));
     }
 
     private static int execute(final CommandContext<CommandSourceStack> context, final int page) {

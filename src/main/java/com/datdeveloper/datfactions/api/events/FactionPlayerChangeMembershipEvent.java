@@ -15,7 +15,7 @@ import java.util.stream.Stream;
  * <br>
  * Changes to newFaction and newRole will only be reflected, and the event can only be cancelled, if the reason isn't CREATE, DISBAND, NEWPLAYER, or ADMIN
  */
-public class FactionChangeMembershipEvent extends FactionPlayerEvent {
+public class FactionPlayerChangeMembershipEvent extends FactionPlayerEvent {
 
     /**
      * The faction that the player is joining
@@ -41,7 +41,7 @@ public class FactionChangeMembershipEvent extends FactionPlayerEvent {
      * @param newRole The role in the faction the player will get
      * @param reason The reason the player changed faction
      */
-    public FactionChangeMembershipEvent(@Nullable final CommandSource instigator, @NotNull final FactionPlayer player, @Nullable final Faction newFaction, @Nullable final FactionRole newRole, final EChangeFactionReason reason) {
+    public FactionPlayerChangeMembershipEvent(@Nullable final CommandSource instigator, @NotNull final FactionPlayer player, @Nullable final Faction newFaction, @Nullable final FactionRole newRole, final EChangeFactionReason reason) {
         super(instigator, player);
         this.newFaction = newFaction;
         this.newRole = newRole;

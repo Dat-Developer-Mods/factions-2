@@ -1,6 +1,6 @@
 package com.datdeveloper.datfactions.commands;
 
-import com.datdeveloper.datfactions.api.events.FactionChangeMembershipEvent;
+import com.datdeveloper.datfactions.api.events.FactionPlayerChangeMembershipEvent;
 import com.datdeveloper.datfactions.commands.util.FactionCommandUtils;
 import com.datdeveloper.datfactions.factionData.FPlayerCollection;
 import com.datdeveloper.datfactions.factionData.Faction;
@@ -46,14 +46,14 @@ public class FactionLeaveCommand extends BaseFactionCommand {
                         return 2;
                     }
 
-                    final FactionChangeMembershipEvent event = new FactionChangeMembershipEvent(c.getSource().source, fPlayer, null, null, FactionChangeMembershipEvent.EChangeFactionReason.LEAVE);
+                    final FactionPlayerChangeMembershipEvent event = new FactionPlayerChangeMembershipEvent(c.getSource().source, fPlayer, null, null, FactionPlayerChangeMembershipEvent.EChangeFactionReason.LEAVE);
                     MinecraftForge.EVENT_BUS.post(event);
                     if (event.isCanceled()) return 0;
 
                     final Faction newFaction = event.getNewFaction();
                     final FactionRole newRole = event.getNewRole();
 
-                    fPlayer.setFaction(newFaction != null ? newFaction.getId() : null, newRole != null ? newRole.getId() : null, FactionChangeMembershipEvent.EChangeFactionReason.LEAVE);
+                    fPlayer.setFaction(newFaction != null ? newFaction.getId() : null, newRole != null ? newRole.getId() : null, FactionPlayerChangeMembershipEvent.EChangeFactionReason.LEAVE);
 
                     c.getSource().sendSuccess(Component.literal(DatChatFormatting.TextColour.INFO + "Successfully left " + faction.getNameWithDescription(newFaction))
                     ,false);
@@ -61,5 +61,6 @@ public class FactionLeaveCommand extends BaseFactionCommand {
                 }).build();
 
         command.then(subCommand);
+        command.then(buildRedirect("quit", subCommand));
     }
 }

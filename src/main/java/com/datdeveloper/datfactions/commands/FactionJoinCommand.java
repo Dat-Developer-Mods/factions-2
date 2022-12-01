@@ -1,6 +1,6 @@
 package com.datdeveloper.datfactions.commands;
 
-import com.datdeveloper.datfactions.api.events.FactionChangeMembershipEvent;
+import com.datdeveloper.datfactions.api.events.FactionPlayerChangeMembershipEvent;
 import com.datdeveloper.datfactions.commands.util.FactionCommandUtils;
 import com.datdeveloper.datfactions.factionData.*;
 import com.datdeveloper.datfactions.factionData.permissions.FactionRole;
@@ -25,7 +25,7 @@ public class FactionJoinCommand extends BaseFactionCommand {
                     final FactionPlayer fPlayer = getPlayerOrTemplate(commandSourceStack.getPlayer());
                     return !fPlayer.hasFaction();
                 })
-                .then(Commands.argument("targetFaction", StringArgumentType.word())
+                .then(Commands.argument("Target Faction", StringArgumentType.word())
                         .suggests((context, builder) -> {
                             FactionCollection.getInstance().getAll().values().stream()
                                     .filter(faction -> faction.hasFlag(EFactionFlags.OPEN) || faction.invitedPlayer(context.getSource().getPlayer().getUUID()));
@@ -33,7 +33,7 @@ public class FactionJoinCommand extends BaseFactionCommand {
                             return builder.buildFuture();
                         })
                         .executes(c -> {
-                            final String targetName = c.getArgument("targetFaction", String.class);
+                            final String targetName = c.getArgument("Target Faction", String.class);
                             Faction target = FactionCollection.getInstance().getByName(targetName);
                             final FactionPlayer fPlayer = FPlayerCollection.getInstance().getPlayer(c.getSource().getPlayer());
                             if (target == null) {
@@ -53,12 +53,12 @@ public class FactionJoinCommand extends BaseFactionCommand {
                                 return 2;
                             }
 
-                            final FactionChangeMembershipEvent event = new FactionChangeMembershipEvent(
+                            final FactionPlayerChangeMembershipEvent event = new FactionPlayerChangeMembershipEvent(
                                     c.getSource().source,
                                     fPlayer,
                                     target,
                                     target.getRecruitRole(),
-                                    FactionChangeMembershipEvent.EChangeFactionReason.JOIN
+                                    FactionPlayerChangeMembershipEvent.EChangeFactionReason.JOIN
                             );
                             MinecraftForge.EVENT_BUS.post(event);
                             if (event.isCanceled()) return 0;
@@ -69,7 +69,7 @@ public class FactionJoinCommand extends BaseFactionCommand {
                             fPlayer.setFaction(
                                     target != null ? target.getId() : null,
                                     role != null ? role.getId() : null,
-                                    FactionChangeMembershipEvent.EChangeFactionReason.JOIN
+                                    FactionPlayerChangeMembershipEvent.EChangeFactionReason.JOIN
                             );
 
                             if (target != null) target.removeInvite(fPlayer.getId());

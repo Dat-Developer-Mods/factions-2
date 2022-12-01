@@ -1,6 +1,6 @@
 package com.datdeveloper.datfactions.factionData;
 
-import com.datdeveloper.datfactions.api.events.FactionChangeMembershipEvent;
+import com.datdeveloper.datfactions.api.events.FactionPlayerChangeMembershipEvent;
 import com.datdeveloper.datfactions.database.Database;
 import com.mojang.logging.LogUtils;
 import net.minecraft.server.level.ServerPlayer;
@@ -85,7 +85,7 @@ public class FPlayerCollection extends BaseCollection<UUID, FactionPlayer> {
      */
     public void deregisterPlayer(final UUID id) {
         final FactionPlayer player = map.remove(id);
-        player.setFaction(null, null, FactionChangeMembershipEvent.EChangeFactionReason.DELETE);
+        player.setFaction(null, null, FactionPlayerChangeMembershipEvent.EChangeFactionReason.DELETE);
         Database.instance.deletePlayer(player);
     }
 
@@ -102,7 +102,7 @@ public class FPlayerCollection extends BaseCollection<UUID, FactionPlayer> {
 
             if (player.hasFaction() && FactionCollection.getInstance().getByKey(player.getFactionId()) == null) {
                 logger.warn("Player " + player.lastName + " (" + player.id + ") belongs to a faction that no longer exists, they will be corrected to no faction");
-                player.setFaction(null, null, FactionChangeMembershipEvent.EChangeFactionReason.CREATE);
+                player.setFaction(null, null, FactionPlayerChangeMembershipEvent.EChangeFactionReason.CREATE);
             }
 
             map.put(playerId, player);

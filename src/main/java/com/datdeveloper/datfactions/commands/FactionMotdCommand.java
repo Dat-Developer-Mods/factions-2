@@ -13,26 +13,23 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraftforge.common.MinecraftForge;
 
-import java.util.function.Predicate;
-
 import static com.datdeveloper.datfactions.commands.FactionPermissions.FACTIONSETMOTD;
 
 public class FactionMotdCommand extends BaseFactionCommand {
     static void register(final LiteralArgumentBuilder<CommandSourceStack> command) {
-        final Predicate<CommandSourceStack> predicate = commandSourceStack -> {
-            if (!(commandSourceStack.isPlayer()) && DatPermissions.hasPermission(commandSourceStack.getPlayer(), FACTIONSETMOTD))
-                return false;
-            final FactionPlayer fPlayer = getPlayerOrTemplate(commandSourceStack.getPlayer());
-            return fPlayer.hasFaction() && fPlayer.getRole().hasPermission(ERolePermissions.SETMOTD);
-        };
 
         final LiteralCommandNode<CommandSourceStack> subCommand = Commands.literal("motd")
-                .requires(predicate)
-                .then(Commands.argument("motd", StringArgumentType.greedyString())
+                .requires(commandSourceStack -> {
+                    if (!(commandSourceStack.isPlayer()) && DatPermissions.hasPermission(commandSourceStack.getPlayer(), FACTIONSETMOTD))
+                        return false;
+                    final FactionPlayer fPlayer1 = getPlayerOrTemplate(commandSourceStack.getPlayer());
+                    return fPlayer1.hasFaction() && fPlayer1.getRole().hasPermission(ERolePermissions.SETMOTD);
+                })
+                .then(Commands.argument("MOTD", StringArgumentType.greedyString())
                         .executes(c -> {
                             final FactionPlayer fPlayer = FPlayerCollection.getInstance().getPlayer(c.getSource().getPlayer());
                             final Faction faction = fPlayer.getFaction();
-                            final String newMotd = c.getArgument("motd", String.class);
+                            final String newMotd = c.getArgument("MOTD", String.class);
 
                             final FactionChangeMotdEvent event = new FactionChangeMotdEvent(c.getSource().source, faction, newMotd);
                             MinecraftForge.EVENT_BUS.post(event);
@@ -44,6 +41,6 @@ public class FactionMotdCommand extends BaseFactionCommand {
                         })).build();
 
         command.then(subCommand);
-        command.then(Commands.literal("setmotd").requires(predicate).redirect(subCommand));
+        command.then(buildRedirect("setmotd", subCommand));
     }
 }

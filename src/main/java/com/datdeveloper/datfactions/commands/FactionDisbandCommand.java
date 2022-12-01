@@ -31,13 +31,13 @@ public class FactionDisbandCommand extends BaseFactionCommand {
         final LiteralCommandNode<CommandSourceStack> subCommand = Commands.literal("disband")
                 .requires(predicate)
                 .then(
-                        Commands.argument("areyousure", BoolArgumentType.bool())
+                        Commands.argument("Are you sure?", BoolArgumentType.bool())
                                 .executes(c -> {
                                     final ServerPlayer player = c.getSource().getPlayer();
                                     final FactionPlayer fPlayer = FPlayerCollection.getInstance().getPlayer(player);
                                     final Faction faction = fPlayer.getFaction();
 
-                                    final boolean areYouSure = BoolArgumentType.getBool(c, "areyousure");
+                                    final boolean areYouSure = BoolArgumentType.getBool(c, "Are you sure?");
                                     if (!areYouSure) return 2;
 
                                     final FactionDisbandEvent event = new FactionDisbandEvent(c.getSource().source, faction);

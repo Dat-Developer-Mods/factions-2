@@ -1,6 +1,6 @@
 package com.datdeveloper.datfactions.factionData;
 
-import com.datdeveloper.datfactions.api.events.FactionChangeMembershipEvent;
+import com.datdeveloper.datfactions.api.events.FactionPlayerChangeMembershipEvent;
 import com.datdeveloper.datfactions.database.DatabaseEntity;
 import com.datdeveloper.datfactions.factionData.permissions.FactionRole;
 import com.datdeveloper.datfactions.util.AgeUtil;
@@ -201,7 +201,7 @@ public class FactionPlayer extends DatabaseEntity {
      * @param roleId The new Role ID for the player
      * @param reason The reason the player left
      */
-    public void setFaction(final UUID factionId, final UUID roleId, final FactionChangeMembershipEvent.EChangeFactionReason reason) {
+    public void setFaction(final UUID factionId, final UUID roleId, final FactionPlayerChangeMembershipEvent.EChangeFactionReason reason) {
         if (Objects.equals(this.getFactionId(), factionId)) return;
 
         final Faction oldFaction = getFaction();
@@ -213,7 +213,7 @@ public class FactionPlayer extends DatabaseEntity {
         FactionIndex.getInstance().updatePlayerFaction(this);
 
         // Update Factions
-        if (reason == FactionChangeMembershipEvent.EChangeFactionReason.LEAVE) {
+        if (reason == FactionPlayerChangeMembershipEvent.EChangeFactionReason.LEAVE) {
             if (oldFaction != null) {
                 oldFaction.sendFactionWideMessage(getNameWithDescription(oldFaction)
                                 .withStyle(RelationUtil.getRelation(oldFaction, this).formatting)

@@ -1,6 +1,6 @@
 package com.datdeveloper.datfactions.factionData;
 
-import com.datdeveloper.datfactions.api.events.FactionChangeMembershipEvent;
+import com.datdeveloper.datfactions.api.events.FactionPlayerChangeMembershipEvent;
 import com.datdeveloper.datfactions.api.events.FactionLandChangeOwnerEvent;
 import com.datdeveloper.datfactions.database.Database;
 import com.datdeveloper.datfactions.factionData.permissions.FactionRole;
@@ -93,12 +93,12 @@ public class FactionCollection extends BaseCollection<UUID, Faction> {
 
         // Remove from players
         for (final FactionPlayer player : players) {
-            final FactionChangeMembershipEvent event = new FactionChangeMembershipEvent(null, player, null, null, FactionChangeMembershipEvent.EChangeFactionReason.DISBAND);
+            final FactionPlayerChangeMembershipEvent event = new FactionPlayerChangeMembershipEvent(null, player, null, null, FactionPlayerChangeMembershipEvent.EChangeFactionReason.DISBAND);
             MinecraftForge.EVENT_BUS.post(event);
 
             final Faction newFaction = event.getNewFaction();
             final FactionRole newRole = event.getNewRole();
-            player.setFaction(newFaction != null ? newFaction.getId() : null, newRole != null ? newRole.getId() : null, FactionChangeMembershipEvent.EChangeFactionReason.DISBAND);
+            player.setFaction(newFaction != null ? newFaction.getId() : null, newRole != null ? newRole.getId() : null, FactionPlayerChangeMembershipEvent.EChangeFactionReason.DISBAND);
         }
     }
 

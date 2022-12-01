@@ -23,10 +23,10 @@ public class FactionInfoCommand extends BaseFactionCommand {
         final Predicate<CommandSourceStack> predicate = FactionPermissions.hasPermission(FACTIONINFO);
         final LiteralCommandNode<CommandSourceStack> subCommand = Commands.literal("info")
                 .requires(predicate)
-                .then(Commands.argument("targetFaction", StringArgumentType.word())
+                .then(Commands.argument("Target Faction", StringArgumentType.word())
                         .suggests(DatSuggestionProviders.factionProvider)
                         .executes(c -> {
-                            final String targetName = c.getArgument("targetFaction", String.class);
+                            final String targetName = c.getArgument("Target Faction", String.class);
                             final Faction target = FactionCollection.getInstance().getByName(targetName);
                             if (target == null) {
                                 c.getSource().sendFailure(Component.literal("Cannot find a faction with that name"));
@@ -49,6 +49,8 @@ public class FactionInfoCommand extends BaseFactionCommand {
                 .build();
 
         command.then(subCommand);
+        command.then(buildRedirect("faction", subCommand));
+        command.then(buildRedirect("show", subCommand));
     }
 
     static int execute(final CommandContext<CommandSourceStack> context, final FactionPlayer from, final Faction targetFaction) {

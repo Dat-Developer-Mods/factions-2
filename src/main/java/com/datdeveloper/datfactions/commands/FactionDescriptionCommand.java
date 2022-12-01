@@ -18,26 +18,23 @@ import net.minecraft.network.chat.ComponentContents;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraftforge.common.MinecraftForge;
 
-import java.util.function.Predicate;
-
 import static com.datdeveloper.datfactions.commands.FactionPermissions.FACTIONSETDESC;
 
 public class FactionDescriptionCommand extends BaseFactionCommand {
     static void register(final LiteralArgumentBuilder<CommandSourceStack> command) {
-        final Predicate<CommandSourceStack> predicate = commandSourceStack -> {
-            if (!(commandSourceStack.isPlayer()) && DatPermissions.hasPermission(commandSourceStack.getPlayer(), FACTIONSETDESC))
-                return false;
-            final FactionPlayer fPlayer = getPlayerOrTemplate(commandSourceStack.getPlayer());
-            return fPlayer.hasFaction() && fPlayer.getRole().hasPermission(ERolePermissions.SETDESC);
-        };
         final LiteralCommandNode<CommandSourceStack> subCommand = Commands.literal("desc")
-                .requires(predicate)
-                .then(Commands.argument("description", StringArgumentType.greedyString())
+                .requires(commandSourceStack -> {
+                    if (!(commandSourceStack.isPlayer()) && DatPermissions.hasPermission(commandSourceStack.getPlayer(), FACTIONSETDESC))
+                        return false;
+                    final FactionPlayer fPlayer1 = getPlayerOrTemplate(commandSourceStack.getPlayer());
+                    return fPlayer1.hasFaction() && fPlayer1.getRole().hasPermission(ERolePermissions.SETDESC);
+                })
+                .then(Commands.argument("Description", StringArgumentType.greedyString())
                         .executes(c -> {
-                            final String newDescription = c.getArgument("description", String.class);
+                            final String newDescription = c.getArgument("Description", String.class);
 
                             if (newDescription.length() > FactionsConfig.getMaxFactionNameLength()) {
-                                c.getSource().sendFailure(Component.literal("Your faction name cannot be longer than " + FactionsConfig.getMaxFactionNameLength()));
+                                c.getSource().sendFailure(Component.literal("Your faction description cannot be longer than " + FactionsConfig.getMaxFactionDescriptionLength()));
                                 return 2;
                             }
 
@@ -56,6 +53,6 @@ public class FactionDescriptionCommand extends BaseFactionCommand {
                         })).build();
 
         command.then(subCommand);
-        command.then(Commands.literal("setdesc").requires(predicate).redirect(subCommand));
+        command.then(buildRedirect("setdesc", subCommand));
     }
 }

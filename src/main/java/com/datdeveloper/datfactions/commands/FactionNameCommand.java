@@ -16,25 +16,22 @@ import net.minecraft.network.chat.ComponentContents;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraftforge.common.MinecraftForge;
 
-import java.util.function.Predicate;
-
 import static com.datdeveloper.datfactions.commands.FactionPermissions.FACTIONSETNAME;
 
 public class FactionNameCommand extends BaseFactionCommand {
     static void register(final LiteralArgumentBuilder<CommandSourceStack> command) {
-        final Predicate<CommandSourceStack> predicate = commandSourceStack -> {
-            if (!(commandSourceStack.isPlayer()) && DatPermissions.hasPermission(commandSourceStack.getPlayer(), FACTIONSETNAME))
-                return false;
-            final FactionPlayer fPlayer = getPlayerOrTemplate(commandSourceStack.getPlayer());
-            return fPlayer.hasFaction() && fPlayer.getRole().hasPermission(ERolePermissions.SETNAME);
-        };
 
         final LiteralCommandNode<CommandSourceStack> subCommand = Commands.literal("name")
-                .requires(predicate)
-                .then(Commands.argument("name", StringArgumentType.word())
+                .requires(commandSourceStack -> {
+                    if (!(commandSourceStack.isPlayer()) && DatPermissions.hasPermission(commandSourceStack.getPlayer(), FACTIONSETNAME))
+                        return false;
+                    final FactionPlayer fPlayer1 = getPlayerOrTemplate(commandSourceStack.getPlayer());
+                    return fPlayer1.hasFaction() && fPlayer1.getRole().hasPermission(ERolePermissions.SETNAME);
+                })
+                .then(Commands.argument("New Faction Name", StringArgumentType.word())
                         .executes(c -> {
                             // Check Name
-                            final String newName = c.getArgument("name", String.class);
+                            final String newName = c.getArgument("New Faction Name", String.class);
 
                             if (newName.length() > FactionsConfig.getMaxFactionNameLength()) {
                                 c.getSource().sendFailure(Component.literal("Your faction name cannot be longer than " + FactionsConfig.getMaxFactionNameLength()));
@@ -60,6 +57,6 @@ public class FactionNameCommand extends BaseFactionCommand {
                         })).build();
 
         command.then(subCommand);
-        command.then(Commands.literal("setname").requires(predicate).redirect(subCommand));
+        command.then(buildRedirect("setname", subCommand));
     }
 }

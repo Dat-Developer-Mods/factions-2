@@ -1,7 +1,7 @@
 package com.datdeveloper.datfactions.commands;
 
 import com.datdeveloper.datfactions.FactionsConfig;
-import com.datdeveloper.datfactions.api.events.FactionChangeMembershipEvent;
+import com.datdeveloper.datfactions.api.events.FactionPlayerChangeMembershipEvent;
 import com.datdeveloper.datfactions.api.events.FactionCreateEvent;
 import com.datdeveloper.datfactions.commands.util.FactionCommandUtils;
 import com.datdeveloper.datfactions.factionData.FPlayerCollection;
@@ -30,10 +30,10 @@ public class FactionCreateCommand extends BaseFactionCommand{
                     final FactionPlayer fPlayer = getPlayerOrTemplate(commandSourceStack.getPlayer());
                     return !fPlayer.hasFaction();
                 }))
-                .then(Commands.argument("name", StringArgumentType.word())
+                .then(Commands.argument("Faction Name", StringArgumentType.word())
                         .executes(c -> {
                             // Check Name
-                            final String newName = c.getArgument("name", String.class);
+                            final String newName = c.getArgument("Faction Name", String.class);
 
                             if (newName.length() > FactionsConfig.getMaxFactionNameLength()) {
                                 c.getSource().sendFailure(Component.literal("Your faction name cannot be longer than " + FactionsConfig.getMaxFactionNameLength()));
@@ -51,10 +51,10 @@ public class FactionCreateCommand extends BaseFactionCommand{
 
                             final Faction newFaction = FactionCollection.getInstance().createFaction(event.getName());
 
-                            final FactionChangeMembershipEvent factionChangeMembershipEvent = new FactionChangeMembershipEvent(c.getSource().source, fPlayer, newFaction, newFaction.getOwnerRole(), FactionChangeMembershipEvent.EChangeFactionReason.CREATE);
-                            MinecraftForge.EVENT_BUS.post(factionChangeMembershipEvent);
+                            final FactionPlayerChangeMembershipEvent factionPlayerChangeMembershipEvent = new FactionPlayerChangeMembershipEvent(c.getSource().source, fPlayer, newFaction, newFaction.getOwnerRole(), FactionPlayerChangeMembershipEvent.EChangeFactionReason.CREATE);
+                            MinecraftForge.EVENT_BUS.post(factionPlayerChangeMembershipEvent);
 
-                            fPlayer.setFaction(newFaction.getId(), newFaction.getOwnerRole().getId(), FactionChangeMembershipEvent.EChangeFactionReason.CREATE);
+                            fPlayer.setFaction(newFaction.getId(), newFaction.getOwnerRole().getId(), FactionPlayerChangeMembershipEvent.EChangeFactionReason.CREATE);
 
                             c.getSource().sendSuccess(MutableComponent.create(ComponentContents.EMPTY)
                                     .append(DatChatFormatting.TextColour.INFO + "Successfully created faction ")
