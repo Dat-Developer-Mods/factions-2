@@ -35,7 +35,7 @@ public class FactionsConfig {
     private static ConfigValue<Integer> baseKillMaxPowerGain;
     private static ConfigValue<Float> noFactionKillPowerMultiplier;
     private static ConfigValue<Float> enemyKillPowerMultiplier;
-    private static ConfigValue<Float> rankKillPowerMultiplier;
+    private static ConfigValue<Float> roleKillPowerMultiplier;
 
     private static ConfigValue<Float> bonusPowerFlagMultiplier;
 
@@ -97,7 +97,7 @@ public class FactionsConfig {
             rolePassivePowerGainMultiplier = builder
                     .comment(
                             "The multiplier for passive power gain for being the owner of the faction",
-                            "The multiplier for other ranks is inferred from their position in the faction's rank hierarchy"
+                            "The multiplier for other roles is inferred from their position in the faction's role hierarchy"
                     )
                     .define("RolePassivePowerGainMultiplier", 2.f);
 
@@ -114,10 +114,10 @@ public class FactionsConfig {
             enemyKillPowerMultiplier = builder
                     .comment("The multiplier for the amount of power a player gains by killing a player who is in an enemy faction")
                     .define("EnemyKillPowerMultiplier", 2.f);
-            rankKillPowerMultiplier = builder
+            roleKillPowerMultiplier = builder
                 .comment(
                         "The multiplier for passive power gain for being the owner of the faction",
-                        "The multiplier for other ranks is inferred from their position in the faction's rank hierarchy"
+                        "The multiplier for other roles is inferred from their position in the faction's role hierarchy"
                 )
                 .define("RoleKillPowerMultiplier", 2.f);
 
@@ -225,8 +225,8 @@ public class FactionsConfig {
         return enemyKillPowerMultiplier.get();
     }
 
-    public static float getRankKillPowerMultiplier() {
-        return rankKillPowerMultiplier.get();
+    public static float getroleKillPowerMultiplier() {
+        return roleKillPowerMultiplier.get();
     }
 
     public static float getBonusPowerFlagMultiplier() {

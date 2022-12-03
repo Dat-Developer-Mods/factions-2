@@ -46,15 +46,15 @@ public class FactionPermissions {
     public static final PermissionNode<Boolean> FACTION_DISBAND = createNode("datfactions.faction.disband");
 
     // Roles
-    public static final PermissionNode<Boolean> FACTION_ROLE_ADD = createNode("datfactions.faction.rank.add");
-    public static final PermissionNode<Boolean> FACTION_ROLE_REMOVE = createNode("datfactions.faction.rank.remove");
-    public static final PermissionNode<Boolean> FACTION_ROLE_REORDER = createNode("datfactions.faction.rank.reorder");
-    public static final PermissionNode<Boolean> FACTION_ROLE_PERMISSIONS = createNode("datfactions.faction.rank.permissions");
+    public static final PermissionNode<Boolean> FACTION_ROLE_ADD = createNode("datfactions.faction.role.add");
+    public static final PermissionNode<Boolean> FACTION_ROLE_REMOVE = createNode("datfactions.faction.role.remove");
+    public static final PermissionNode<Boolean> FACTION_ROLE_REORDER = createNode("datfactions.faction.role.reorder");
+    public static final PermissionNode<Boolean> FACTION_ROLE_PERMISSIONS = createNode("datfactions.faction.role.permissions");
 
     // User Management
     public static final PermissionNode<Boolean> FACTION_PROMOTE = createNode("datfactions.faction.player.promote");
     public static final PermissionNode<Boolean> FACTION_DEMOTE = createNode("datfactions.faction.player.demote");
-    public static final PermissionNode<Boolean> FACTION_SET_RANK = createNode("datfactions.faction.player.setRank");
+    public static final PermissionNode<Boolean> FACTION_SET_ROLE = createNode("datfactions.faction.player.setrole");
     public static final PermissionNode<Boolean> FACTION_KICK = createNode("datfactions.faction.player.kick");
     public static final PermissionNode<Boolean> FACTION_INVITE = createNode("datfactions.faction.player.invite");
     public static final PermissionNode<Boolean> FACTION_UNINVITE = createNode("datfactions.faction.player.invite");
@@ -108,7 +108,7 @@ public class FactionPermissions {
                 FACTION_ROLE_PERMISSIONS,
                 FACTION_PROMOTE,
                 FACTION_DEMOTE,
-                FACTION_SET_RANK,
+                FACTION_SET_ROLE,
                 FACTION_KICK,
                 FACTION_INVITE,
                 FACTION_UNINVITE,
