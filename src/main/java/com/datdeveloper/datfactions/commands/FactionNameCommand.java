@@ -16,14 +16,14 @@ import net.minecraft.network.chat.ComponentContents;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraftforge.common.MinecraftForge;
 
-import static com.datdeveloper.datfactions.commands.FactionPermissions.FACTIONSETNAME;
+import static com.datdeveloper.datfactions.commands.FactionPermissions.FACTION_SET_NAME;
 
 public class FactionNameCommand extends BaseFactionCommand {
     static void register(final LiteralArgumentBuilder<CommandSourceStack> command) {
 
         final LiteralCommandNode<CommandSourceStack> subCommand = Commands.literal("name")
                 .requires(commandSourceStack -> {
-                    if (!(commandSourceStack.isPlayer()) && DatPermissions.hasPermission(commandSourceStack.getPlayer(), FACTIONSETNAME))
+                    if (!(commandSourceStack.isPlayer()) && DatPermissions.hasPermission(commandSourceStack.getPlayer(), FACTION_SET_NAME))
                         return false;
                     final FactionPlayer fPlayer1 = getPlayerOrTemplate(commandSourceStack.getPlayer());
                     return fPlayer1.hasFaction() && fPlayer1.getRole().hasPermission(ERolePermissions.SETNAME);

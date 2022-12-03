@@ -19,13 +19,13 @@ import net.minecraft.commands.arguments.GameProfileArgument;
 import net.minecraft.network.chat.Component;
 import net.minecraftforge.common.MinecraftForge;
 
-import static com.datdeveloper.datfactions.commands.FactionPermissions.FACTIONINVITE;
+import static com.datdeveloper.datfactions.commands.FactionPermissions.FACTION_INVITE;
 
 public class FactionInviteCommand extends BaseFactionCommand {
     static void register(final LiteralArgumentBuilder<CommandSourceStack> command) {
         final LiteralCommandNode<CommandSourceStack> subCommand = Commands.literal("invite")
                 .requires(commandSourceStack -> {
-                    if (!(commandSourceStack.isPlayer() && DatPermissions.hasPermission(commandSourceStack.getPlayer(), FACTIONINVITE))) return false;
+                    if (!(commandSourceStack.isPlayer() && DatPermissions.hasPermission(commandSourceStack.getPlayer(), FACTION_INVITE))) return false;
                     final FactionPlayer fPlayer = getPlayerOrTemplate(commandSourceStack.getPlayer());
                     return fPlayer.hasFaction() && fPlayer.getRole().hasPermission(ERolePermissions.INVITE);
                 })

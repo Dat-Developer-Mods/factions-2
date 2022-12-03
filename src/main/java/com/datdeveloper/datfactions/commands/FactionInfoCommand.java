@@ -16,11 +16,11 @@ import net.minecraft.network.chat.Component;
 
 import java.util.function.Predicate;
 
-import static com.datdeveloper.datfactions.commands.FactionPermissions.FACTIONINFO;
+import static com.datdeveloper.datfactions.commands.FactionPermissions.FACTION_INFO;
 
 public class FactionInfoCommand extends BaseFactionCommand {
     static void register(final LiteralArgumentBuilder<CommandSourceStack> command) {
-        final Predicate<CommandSourceStack> predicate = FactionPermissions.hasPermission(FACTIONINFO);
+        final Predicate<CommandSourceStack> predicate = FactionPermissions.hasPermission(FACTION_INFO);
         final LiteralCommandNode<CommandSourceStack> subCommand = Commands.literal("info")
                 .requires(predicate)
                 .then(Commands.argument("Target Faction", StringArgumentType.word())

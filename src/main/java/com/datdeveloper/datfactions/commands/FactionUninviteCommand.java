@@ -17,13 +17,13 @@ import net.minecraft.commands.arguments.GameProfileArgument;
 import net.minecraft.network.chat.Component;
 import net.minecraftforge.common.MinecraftForge;
 
-import static com.datdeveloper.datfactions.commands.FactionPermissions.FACTIONUNINVITE;
+import static com.datdeveloper.datfactions.commands.FactionPermissions.FACTION_UNINVITE;
 
 public class FactionUninviteCommand extends BaseFactionCommand {
     static void register(final LiteralArgumentBuilder<CommandSourceStack> command) {
         final LiteralCommandNode<CommandSourceStack> subCommand = Commands.literal("uninvite")
                 .requires(commandSourceStack -> {
-                    if (!(commandSourceStack.isPlayer() && DatPermissions.hasPermission(commandSourceStack.getPlayer(), FACTIONUNINVITE))) return false;
+                    if (!(commandSourceStack.isPlayer() && DatPermissions.hasPermission(commandSourceStack.getPlayer(), FACTION_UNINVITE))) return false;
                     final FactionPlayer fPlayer = getPlayerOrTemplate(commandSourceStack.getPlayer());
                     return fPlayer.hasFaction() && fPlayer.getRole().hasPermission(ERolePermissions.UNINVITE);
                 })

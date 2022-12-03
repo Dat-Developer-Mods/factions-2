@@ -15,12 +15,12 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.stream.Collectors;
 
-import static com.datdeveloper.datfactions.commands.FactionPermissions.FACTIONLIST;
+import static com.datdeveloper.datfactions.commands.FactionPermissions.FACTION_LIST;
 
 public class FactionListCommand extends BaseFactionCommand {
     static void register(final LiteralArgumentBuilder<CommandSourceStack> command) {
         final LiteralCommandNode<CommandSourceStack> subCommand = Commands.literal("list")
-                .requires(FactionPermissions.hasPermission(FACTIONLIST))
+                .requires(FactionPermissions.hasPermission(FACTION_LIST))
                 .then(Commands.argument("Page", IntegerArgumentType.integer(0))
                         .executes(c -> execute(c, c.getArgument("Page", Integer.class))))
                 .executes(c -> execute(c, 1))

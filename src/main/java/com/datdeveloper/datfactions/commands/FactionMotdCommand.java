@@ -13,14 +13,14 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraftforge.common.MinecraftForge;
 
-import static com.datdeveloper.datfactions.commands.FactionPermissions.FACTIONSETMOTD;
+import static com.datdeveloper.datfactions.commands.FactionPermissions.FACTION_SET_MOTD;
 
 public class FactionMotdCommand extends BaseFactionCommand {
     static void register(final LiteralArgumentBuilder<CommandSourceStack> command) {
 
         final LiteralCommandNode<CommandSourceStack> subCommand = Commands.literal("motd")
                 .requires(commandSourceStack -> {
-                    if (!(commandSourceStack.isPlayer()) && DatPermissions.hasPermission(commandSourceStack.getPlayer(), FACTIONSETMOTD))
+                    if (!(commandSourceStack.isPlayer()) && DatPermissions.hasPermission(commandSourceStack.getPlayer(), FACTION_SET_MOTD))
                         return false;
                     final FactionPlayer fPlayer1 = getPlayerOrTemplate(commandSourceStack.getPlayer());
                     return fPlayer1.hasFaction() && fPlayer1.getRole().hasPermission(ERolePermissions.SETMOTD);

@@ -15,13 +15,13 @@ import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
 import net.minecraftforge.common.MinecraftForge;
 
-import static com.datdeveloper.datfactions.commands.FactionPermissions.FACTIONJOIN;
+import static com.datdeveloper.datfactions.commands.FactionPermissions.FACTION_JOIN;
 
 public class FactionJoinCommand extends BaseFactionCommand {
     static void register(final LiteralArgumentBuilder<CommandSourceStack> command) {
         final LiteralCommandNode<CommandSourceStack> subCommand = Commands.literal("join")
                 .requires(commandSourceStack -> {
-                    if (!(commandSourceStack.isPlayer() && DatPermissions.hasPermission(commandSourceStack.getPlayer(), FACTIONJOIN))) return false;
+                    if (!(commandSourceStack.isPlayer() && DatPermissions.hasPermission(commandSourceStack.getPlayer(), FACTION_JOIN))) return false;
                     final FactionPlayer fPlayer = getPlayerOrTemplate(commandSourceStack.getPlayer());
                     return !fPlayer.hasFaction();
                 })

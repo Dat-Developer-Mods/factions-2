@@ -27,7 +27,7 @@ import java.util.Objects;
 /**
  * Events pertaining to the players
  */
-@Mod.EventBusSubscriber(modid = Datfactions.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
+@Mod.EventBusSubscriber(modid = Datfactions.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class PlayerEvents {
     private static final Logger logger = LogUtils.getLogger();
 

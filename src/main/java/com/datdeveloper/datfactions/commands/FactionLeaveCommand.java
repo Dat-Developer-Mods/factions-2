@@ -19,12 +19,12 @@ import net.minecraftforge.common.MinecraftForge;
 
 import java.util.function.Predicate;
 
-import static com.datdeveloper.datfactions.commands.FactionPermissions.FACTIONLEAVE;
+import static com.datdeveloper.datfactions.commands.FactionPermissions.FACTION_LEAVE;
 
 public class FactionLeaveCommand extends BaseFactionCommand {
     static void register(final LiteralArgumentBuilder<CommandSourceStack> command) {
         final Predicate<CommandSourceStack> predicate = commandSourceStack -> {
-            if (!(commandSourceStack.isPlayer()) && DatPermissions.hasPermission(commandSourceStack.getPlayer(), FACTIONLEAVE))
+            if (!(commandSourceStack.isPlayer()) && DatPermissions.hasPermission(commandSourceStack.getPlayer(), FACTION_LEAVE))
                 return false;
             final FactionPlayer fPlayer = getPlayerOrTemplate(commandSourceStack.getPlayer());
             return fPlayer.hasFaction();

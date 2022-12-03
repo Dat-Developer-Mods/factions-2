@@ -8,7 +8,7 @@ import net.minecraftforge.fml.common.Mod;
 /**
  * Events fired by the Infiniverse mod
  */
-@Mod.EventBusSubscriber(modid = Datfactions.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
+@Mod.EventBusSubscriber(modid = Datfactions.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class InfiniverseEvents {
 
     /**

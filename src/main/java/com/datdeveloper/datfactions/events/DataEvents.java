@@ -29,7 +29,7 @@ import java.nio.file.Path;
 /**
  * Events for dealing with faction, player, and level data
  */
-@Mod.EventBusSubscriber(modid = Datfactions.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
+@Mod.EventBusSubscriber(modid = Datfactions.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class DataEvents {
     private static final Logger logger = LogUtils.getLogger();
 

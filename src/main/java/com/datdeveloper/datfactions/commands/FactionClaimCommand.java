@@ -24,7 +24,7 @@ public class FactionClaimCommand extends BaseFactionCommand {
 
         final LiteralCommandNode<CommandSourceStack> claimCommand = Commands.literal("claim")
                 .requires(commandSourceStack1 -> {
-                    if (!(commandSourceStack1.isPlayer()) && DatPermissions.hasAnyPermissions(commandSourceStack1.source, FactionPermissions.FACTIONCLAIMONE, FactionPermissions.FACTIONCLAIMSQUARE, FactionPermissions.FACTIONCLAIMAUTO))
+                    if (!(commandSourceStack1.isPlayer()) && DatPermissions.hasAnyPermissions(commandSourceStack1.source, FactionPermissions.FACTION_CLAIM_ONE, FactionPermissions.FACTION_CLAIM_SQUARE, FactionPermissions.FACTION_CLAIM_AUTO))
                         return false;
                     final FactionPlayer fPlayer1 = getPlayerOrTemplate(commandSourceStack1.getPlayer());
                     return fPlayer1.hasFaction() && fPlayer1.getRole().hasAnyPermissions(List.of(ERolePermissions.CLAIMONE, ERolePermissions.CLAIMSQUARE, ERolePermissions.AUTOCLAIM));
@@ -34,7 +34,7 @@ public class FactionClaimCommand extends BaseFactionCommand {
                                 .requires(commandSourceStack -> {
                                     final ServerPlayer player = commandSourceStack.getPlayer();
                                     final FactionPlayer fPlayer = getPlayerOrTemplate(player);
-                                    return DatPermissions.hasPermission(player, FactionPermissions.FACTIONCLAIMONE) && fPlayer.getRole().hasPermission(ERolePermissions.CLAIMONE);
+                                    return DatPermissions.hasPermission(player, FactionPermissions.FACTION_CLAIM_ONE) && fPlayer.getRole().hasPermission(ERolePermissions.CLAIMONE);
                                 })
                                 .executes(c -> {
                                     final ServerPlayer player = c.getSource().getPlayer();
@@ -48,7 +48,7 @@ public class FactionClaimCommand extends BaseFactionCommand {
                                 .requires(commandSourceStack -> {
                                     final ServerPlayer player = commandSourceStack.getPlayer();
                                     final FactionPlayer fPlayer = getPlayerOrTemplate(player);
-                                    return DatPermissions.hasPermission(player, FactionPermissions.FACTIONCLAIMSQUARE) && fPlayer.getRole().hasPermission(ERolePermissions.CLAIMSQUARE);
+                                    return DatPermissions.hasPermission(player, FactionPermissions.FACTION_CLAIM_SQUARE) && fPlayer.getRole().hasPermission(ERolePermissions.CLAIMSQUARE);
                                 })
                                 .then(
                                         Commands.argument("radius", IntegerArgumentType.integer(1))
@@ -85,7 +85,7 @@ public class FactionClaimCommand extends BaseFactionCommand {
                                 .requires(commandSourceStack -> {
                                     final ServerPlayer player = commandSourceStack.getPlayer();
                                     final FactionPlayer fPlayer = getPlayerOrTemplate(player);
-                                    return DatPermissions.hasPermission(player, FactionPermissions.FACTIONCLAIMAUTO) && fPlayer.getRole().hasPermission(ERolePermissions.AUTOCLAIM);
+                                    return DatPermissions.hasPermission(player, FactionPermissions.FACTION_CLAIM_AUTO) && fPlayer.getRole().hasPermission(ERolePermissions.AUTOCLAIM);
                                 })
                                 .executes(c -> {
                                     final ServerPlayer player = c.getSource().getPlayer();

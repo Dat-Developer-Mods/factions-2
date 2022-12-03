@@ -20,13 +20,13 @@ import net.minecraft.network.chat.ComponentContents;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraftforge.common.MinecraftForge;
 
-import static com.datdeveloper.datfactions.commands.FactionPermissions.FACTIONCREATE;
+import static com.datdeveloper.datfactions.commands.FactionPermissions.FACTION_CREATE;
 
 public class FactionCreateCommand extends BaseFactionCommand{
     static void register(final LiteralArgumentBuilder<CommandSourceStack> command) {
         command.then(Commands.literal("create")
                 .requires((commandSourceStack -> {
-                    if (!(commandSourceStack.isPlayer() && DatPermissions.hasPermission(commandSourceStack.getPlayer(), FACTIONCREATE))) return false;
+                    if (!(commandSourceStack.isPlayer() && DatPermissions.hasPermission(commandSourceStack.getPlayer(), FACTION_CREATE))) return false;
                     final FactionPlayer fPlayer = getPlayerOrTemplate(commandSourceStack.getPlayer());
                     return !fPlayer.hasFaction();
                 }))

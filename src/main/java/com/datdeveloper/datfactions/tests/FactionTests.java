@@ -11,7 +11,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.gametest.GameTestHolder;
 import net.minecraftforge.gametest.PrefixGameTestTemplate;
 
-@GameTestHolder(Datfactions.MODID)
+@GameTestHolder(Datfactions.MOD_ID)
 public class FactionTests extends BaseTest {
     @GameTest(template = "empty")
     @PrefixGameTestTemplate(false)

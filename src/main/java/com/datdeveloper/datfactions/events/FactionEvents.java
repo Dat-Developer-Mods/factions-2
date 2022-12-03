@@ -22,7 +22,7 @@ import java.util.*;
 /**
  * An EventBusSubscriber for subscribing to our own events
  */
-@Mod.EventBusSubscriber(modid = Datfactions.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
+@Mod.EventBusSubscriber(modid = Datfactions.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class FactionEvents {
     static void sendSourceMessage(final CommandSource source, final Component message) {
         if (source != null) {

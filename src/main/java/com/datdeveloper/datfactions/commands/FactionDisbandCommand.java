@@ -17,12 +17,12 @@ import net.minecraftforge.common.MinecraftForge;
 
 import java.util.function.Predicate;
 
-import static com.datdeveloper.datfactions.commands.FactionPermissions.FACTIONDISBAND;
+import static com.datdeveloper.datfactions.commands.FactionPermissions.FACTION_DISBAND;
 
 public class FactionDisbandCommand extends BaseFactionCommand {
     static void register(final LiteralArgumentBuilder<CommandSourceStack> command) {
         final Predicate<CommandSourceStack> predicate = commandSourceStack -> {
-            if (!(commandSourceStack.isPlayer()) && DatPermissions.hasPermission(commandSourceStack.getPlayer(), FACTIONDISBAND))
+            if (!(commandSourceStack.isPlayer()) && DatPermissions.hasPermission(commandSourceStack.getPlayer(), FACTION_DISBAND))
                 return false;
             final FactionPlayer fPlayer = getPlayerOrTemplate(commandSourceStack.getPlayer());
             return fPlayer.hasFaction() && fPlayer.getRole().hasPermission(ERolePermissions.DISBAND);

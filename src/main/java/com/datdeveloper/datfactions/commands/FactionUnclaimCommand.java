@@ -27,7 +27,7 @@ public class FactionUnclaimCommand extends BaseFactionCommand {
 
         final LiteralCommandNode<CommandSourceStack> claimCommand = Commands.literal("unclaim")
                 .requires(commandSourceStack1 -> {
-                    if (!(commandSourceStack1.isPlayer()) && DatPermissions.hasAnyPermissions(commandSourceStack1.source, FactionPermissions.FACTIONUNCLAIMONE, FactionPermissions.FACTIONUNCLAIMSQUARE, FactionPermissions.FACTIONUNCLAIMLEVEL, FactionPermissions.FACTIONUNCLAIMALL))
+                    if (!(commandSourceStack1.isPlayer()) && DatPermissions.hasAnyPermissions(commandSourceStack1.source, FactionPermissions.FACTION_UNCLAIM_ONE, FactionPermissions.FACTION_UNCLAIM_SQUARE, FactionPermissions.FACTION_UNCLAIM_LEVEL, FactionPermissions.FACTION_UNCLAIM_ALL))
                         return false;
                     final FactionPlayer fPlayer1 = getPlayerOrTemplate(commandSourceStack1.getPlayer());
                     return fPlayer1.hasFaction() && fPlayer1.getRole().hasAnyPermissions(List.of(ERolePermissions.UNCLAIMONE, ERolePermissions.UNCLAIMSQUARE, ERolePermissions.UNCLAIMLEVEL, ERolePermissions.UNCLAIMALL));
@@ -37,7 +37,7 @@ public class FactionUnclaimCommand extends BaseFactionCommand {
                                 .requires(commandSourceStack -> {
                                     final ServerPlayer player = commandSourceStack.getPlayer();
                                     final FactionPlayer fPlayer = getPlayerOrTemplate(player);
-                                    return DatPermissions.hasPermission(player, FactionPermissions.FACTIONUNCLAIMONE) && fPlayer.getRole().hasPermission(ERolePermissions.UNCLAIMONE);
+                                    return DatPermissions.hasPermission(player, FactionPermissions.FACTION_UNCLAIM_ONE) && fPlayer.getRole().hasPermission(ERolePermissions.UNCLAIMONE);
                                 })
                                 .executes(c -> {
                                     final ServerPlayer player = c.getSource().getPlayer();
@@ -59,7 +59,7 @@ public class FactionUnclaimCommand extends BaseFactionCommand {
                                 .requires(commandSourceStack -> {
                                     final ServerPlayer player = commandSourceStack.getPlayer();
                                     final FactionPlayer fPlayer = getPlayerOrTemplate(player);
-                                    return DatPermissions.hasPermission(player, FactionPermissions.FACTIONUNCLAIMSQUARE) && fPlayer.getRole().hasPermission(ERolePermissions.UNCLAIMSQUARE);
+                                    return DatPermissions.hasPermission(player, FactionPermissions.FACTION_UNCLAIM_SQUARE) && fPlayer.getRole().hasPermission(ERolePermissions.UNCLAIMSQUARE);
                                 })
                                 .then(
                                         Commands.argument("radius", IntegerArgumentType.integer(1))
@@ -106,7 +106,7 @@ public class FactionUnclaimCommand extends BaseFactionCommand {
                                 .requires(commandSourceStack -> {
                                     final ServerPlayer player = commandSourceStack.getPlayer();
                                     final FactionPlayer fPlayer = getPlayerOrTemplate(player);
-                                    return DatPermissions.hasPermission(player, FactionPermissions.FACTIONUNCLAIMLEVEL) && fPlayer.getRole().hasPermission(ERolePermissions.UNCLAIMLEVEL);
+                                    return DatPermissions.hasPermission(player, FactionPermissions.FACTION_UNCLAIM_LEVEL) && fPlayer.getRole().hasPermission(ERolePermissions.UNCLAIMLEVEL);
                                 })
                                 .then(
                                         Commands.argument("areyousure", BoolArgumentType.bool())
@@ -163,7 +163,7 @@ public class FactionUnclaimCommand extends BaseFactionCommand {
                                 .requires(commandSourceStack -> {
                                     final ServerPlayer player = commandSourceStack.getPlayer();
                                     final FactionPlayer fPlayer = getPlayerOrTemplate(player);
-                                    return DatPermissions.hasPermission(player, FactionPermissions.FACTIONUNCLAIMALL) && fPlayer.getRole().hasPermission(ERolePermissions.UNCLAIMALL);
+                                    return DatPermissions.hasPermission(player, FactionPermissions.FACTION_UNCLAIM_ALL) && fPlayer.getRole().hasPermission(ERolePermissions.UNCLAIMALL);
                                 })
                                 .then(
                                         Commands.argument("areyousure", BoolArgumentType.bool())

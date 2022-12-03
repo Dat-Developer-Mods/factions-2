@@ -18,13 +18,13 @@ import net.minecraft.network.chat.ComponentContents;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraftforge.common.MinecraftForge;
 
-import static com.datdeveloper.datfactions.commands.FactionPermissions.FACTIONSETDESC;
+import static com.datdeveloper.datfactions.commands.FactionPermissions.FACTION_SET_DESC;
 
 public class FactionDescriptionCommand extends BaseFactionCommand {
     static void register(final LiteralArgumentBuilder<CommandSourceStack> command) {
         final LiteralCommandNode<CommandSourceStack> subCommand = Commands.literal("desc")
                 .requires(commandSourceStack -> {
-                    if (!(commandSourceStack.isPlayer()) && DatPermissions.hasPermission(commandSourceStack.getPlayer(), FACTIONSETDESC))
+                    if (!(commandSourceStack.isPlayer()) && DatPermissions.hasPermission(commandSourceStack.getPlayer(), FACTION_SET_DESC))
                         return false;
                     final FactionPlayer fPlayer1 = getPlayerOrTemplate(commandSourceStack.getPlayer());
                     return fPlayer1.hasFaction() && fPlayer1.getRole().hasPermission(ERolePermissions.SETDESC);
