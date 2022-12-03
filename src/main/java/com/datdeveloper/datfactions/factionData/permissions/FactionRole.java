@@ -99,8 +99,8 @@ public class FactionRole extends DatabaseEntity {
      * @param permissionTests The permissions to test for
      * @return True if the role has any of the given permissions
      */
-    public boolean hasAnyPermissions(final List<ERolePermissions> permissionTests) {
-        return administrator || permissionTests.stream().anyMatch(permissions::contains);
+    public boolean hasAnyPermissions(final ERolePermissions... permissionTests) {
+        return administrator || Arrays.stream(permissionTests).anyMatch(permissions::contains);
     }
 
     /**
@@ -108,8 +108,8 @@ public class FactionRole extends DatabaseEntity {
      * @param permissionTests The permissions to test for
      * @return True if the role has all the given permissions
      */
-    public boolean hadAllPermissions(final List<ERolePermissions> permissionTests) {
-        return administrator || permissions.containsAll(permissionTests);
+    public boolean hadAllPermissions(final ERolePermissions... permissionTests) {
+        return administrator || permissions.containsAll(List.of(permissionTests));
     }
 
     /**

@@ -19,21 +19,18 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.common.MinecraftForge;
 
-import java.util.function.Predicate;
-
 import static com.datdeveloper.datfactions.commands.FactionPermissions.FACTION_HOME;
 
 public class FactionHomeCommand extends BaseFactionCommand {
     static void register(final LiteralArgumentBuilder<CommandSourceStack> command) {
-        final Predicate<CommandSourceStack> predicate = commandSourceStack -> {
-            if (!(commandSourceStack.isPlayer()) && DatPermissions.hasPermission(commandSourceStack.getPlayer(), FACTION_HOME))
-                return false;
-            final FactionPlayer fPlayer = getPlayerOrTemplate(commandSourceStack.getPlayer());
-            return fPlayer.hasFaction() && fPlayer.getRole().hasPermission(ERolePermissions.HOME);
-        };
 
         final LiteralCommandNode<CommandSourceStack> subCommand = Commands.literal("home")
-                .requires(predicate)
+                .requires(commandSourceStack -> {
+                    if (!(commandSourceStack.isPlayer()) && DatPermissions.hasPermission(commandSourceStack.getPlayer(), FACTION_HOME))
+                        return false;
+                    final FactionPlayer fPlayer1 = getPlayerOrTemplate(commandSourceStack.getPlayer());
+                    return fPlayer1.hasFaction() && fPlayer1.getRole().hasPermission(ERolePermissions.HOME);
+                })
                 .executes(c -> {
                     final ServerPlayer player = c.getSource().getPlayer();
                     final FactionPlayer fPlayer = FPlayerCollection.getInstance().getPlayer(player);
