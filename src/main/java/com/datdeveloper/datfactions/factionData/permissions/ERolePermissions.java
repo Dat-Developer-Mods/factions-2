@@ -49,9 +49,13 @@ public enum ERolePermissions {
     ALLYCHAT("Allows the player to use the faction's ally chat"),
 
     // Role
-    CREATEROLE("Allows the player to create new roles in the faction"),
-    REMOVEROLE("Allows the player to remove roles that are below their own from the faction"),
-    MODIFYROLE("Allows the player to modify the permissions of a role (Only with permissions that their role has"),
+    ROLECREATE("Allows the player to create new roles in the faction"),
+    ROLEREMOVE("Allows the player to remove roles that are below their own from the faction"),
+    ROLELIST("Allows the player to list the roles in the faction"),
+    ROLEINFO("Allows the player to get the info of the roles in the faction"),
+    ROLEMODIFYPERMISSIONS("Allows the player to modify the permissions of a role (Only roles that are below the player's current role and only with permissions that their role has"),
+    ROLERENAME("Allows the player to rename roles (Only roles that are below the player's current role"),
+    ROLEREORDER("Allows the player to reorder the roles (Only roles that are below the player's current role)"),
 
     // Misc
     HOME("Allows the player to go to the faction's home"),
@@ -69,8 +73,13 @@ public enum ERolePermissions {
      * Get a chat component that contains the name of the permission and shows its description on hover
      * @return a chat component representing the permission
      */
-    MutableComponent getChatComponent() {
-        final MutableComponent component = MutableComponent.create(Component.literal(this.name().toLowerCase()).getContents());
-        return component.withStyle(Style.EMPTY.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal(description))));
+    public MutableComponent getChatComponent() {
+        return Component.literal(this.name().toLowerCase())
+                .withStyle(Style.EMPTY
+                        .withHoverEvent(new HoverEvent(
+                                HoverEvent.Action.SHOW_TEXT,
+                                Component.literal(description)
+                        ))
+                );
     }
 }

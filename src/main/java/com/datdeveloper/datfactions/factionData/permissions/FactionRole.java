@@ -3,6 +3,9 @@ package com.datdeveloper.datfactions.factionData.permissions;
 import com.datdeveloper.datfactions.database.DatabaseEntity;
 import com.datdeveloper.datfactions.factionData.Faction;
 import com.datdeveloper.datfactions.factionData.FactionCollection;
+import com.datdeveloper.datmoddingapi.util.DatChatFormatting;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.*;
 
 import java.util.*;
 
@@ -75,10 +78,12 @@ public class FactionRole extends DatabaseEntity {
 
     public void setName(final String name) {
         this.name = name;
+        markDirty();
     }
 
     public void setAdministrator(final boolean administrator) {
         this.administrator = administrator;
+        markDirty();
     }
 
     /* ========================================= */
@@ -108,7 +113,7 @@ public class FactionRole extends DatabaseEntity {
      * @param permissionTests The permissions to test for
      * @return True if the role has all the given permissions
      */
-    public boolean hadAllPermissions(final ERolePermissions... permissionTests) {
+    public boolean hasAllPermissions(final ERolePermissions... permissionTests) {
         return administrator || permissions.containsAll(List.of(permissionTests));
     }
 
@@ -119,6 +124,7 @@ public class FactionRole extends DatabaseEntity {
      */
     public void addPermission(final ERolePermissions permission) {
         this.permissions.add(permission);
+        markDirty();
     }
 
     /**
@@ -128,6 +134,86 @@ public class FactionRole extends DatabaseEntity {
      */
     public void removePermission(final ERolePermissions permission) {
         this.permissions.remove(permission);
+        markDirty();
+    }
+
+    /* ========================================= */
+    /* Chat Summaries
+    /* ========================================= */
+
+    public MutableComponent getChatSummary() {
+        final MutableComponent message = Component.literal(DatChatFormatting.TextColour.HEADER + "____===")
+                .append(Component.literal(getName())
+                        .withStyle(Style.EMPTY
+                                .withClickEvent(new ClickEvent(
+                                        ClickEvent.Action.SUGGEST_COMMAND,
+                                        "/f role info " + getName()
+                                ))
+                        )
+                )
+                .append(DatChatFormatting.TextColour.HEADER +"===____");
+
+        if (isAdministrator()) {
+            message.append("\n")
+                    .append(
+                        Component.literal("Admin")
+                                .withStyle(ChatFormatting.DARK_PURPLE)
+                    );
+        }
+
+        if (!permissions.isEmpty()) {
+            final List<MutableComponent> permissions = getPermissions().stream()
+                    .sorted()
+                    .map(ERolePermissions::getChatComponent
+                    )
+                    .toList();
+            message.append("\n")
+                    .append(
+                            Component.literal("Permissions: ")
+                                    .withStyle(DatChatFormatting.TextColour.INFO)
+                    )
+                    .append(ChatFormatting.WHITE.toString())
+                    .append(ComponentUtils.formatList(permissions, ComponentUtils.DEFAULT_SEPARATOR));
+        }
+
+        return message;
+    }
+
+    public MutableComponent getNameWithDescription() {
+        return Component.literal(getName())
+                .withStyle(
+                        Style.EMPTY
+                                .withClickEvent(new ClickEvent(
+                                        ClickEvent.Action.SUGGEST_COMMAND,
+                                        "/f role info " + getName()
+                                ))
+                                .withHoverEvent(new HoverEvent(
+                                        HoverEvent.Action.SHOW_TEXT,
+                                        getShortDescription()
+                                ))
+                );
+    }
+
+    public MutableComponent getShortDescription() {
+        final MutableComponent component = Component.empty();
+
+        if (isAdministrator()) {
+            component.append(
+                    Component.literal("Faction Administrator")
+                            .withStyle(ChatFormatting.DARK_PURPLE)
+            );
+        } else {
+            final List<MutableComponent> permissions = getPermissions().stream()
+                    .sorted()
+                    .map(permission ->
+                            Component.literal(permission.name().toLowerCase())
+                    )
+                    .toList();
+            component.append(DatChatFormatting.TextColour.INFO + "Permissions: ").append("\n")
+                    .append(ComponentUtils.formatList(permissions, Component.literal("\n")));
+        }
+
+        return component;
     }
 
     /* ========================================= */
@@ -175,12 +261,17 @@ public class FactionRole extends DatabaseEntity {
         final FactionRole officer = new FactionRole("Officer");
 
         officer.permissions = new HashSet<>(Arrays.asList(
+                // Member Management
                 ERolePermissions.INVITE,
                 ERolePermissions.UNINVITE,
                 ERolePermissions.KICK,
                 ERolePermissions.SETROLE,
                 ERolePermissions.PROMOTE,
                 ERolePermissions.DEMOTE,
+
+                // Roles
+                ERolePermissions.ROLELIST,
+                ERolePermissions.ROLEINFO,
 
                 // Land
                 ERolePermissions.CLAIMONE,
@@ -200,7 +291,6 @@ public class FactionRole extends DatabaseEntity {
                 ERolePermissions.ALLY,
                 ERolePermissions.TRUCE,
                 ERolePermissions.NEUTRAL,
-
 
                 // Chat
                 ERolePermissions.FACTIONCHAT,
@@ -227,6 +317,10 @@ public class FactionRole extends DatabaseEntity {
                 // Land
                 ERolePermissions.CLAIMONE,
                 ERolePermissions.UNCLAIMONE,
+
+                // Roles
+                ERolePermissions.ROLELIST,
+                ERolePermissions.ROLEINFO,
 
                 // Land Access
                 ERolePermissions.CONTAINERS,
@@ -271,6 +365,6 @@ public class FactionRole extends DatabaseEntity {
 
     @Override
     public boolean equals(final Object obj) {
-        return (obj instanceof UUID uuid) && id.equals(uuid);
+        return (obj instanceof FactionRole role) && role.id.equals(this.id);
     }
 }

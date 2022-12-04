@@ -48,8 +48,11 @@ public class FactionPermissions {
     // Roles
     public static final PermissionNode<Boolean> FACTION_ROLE_ADD = createNode("datfactions.faction.role.add");
     public static final PermissionNode<Boolean> FACTION_ROLE_REMOVE = createNode("datfactions.faction.role.remove");
+    public static final PermissionNode<Boolean> FACTION_ROLE_RENAME = createNode("datfactions.faction.role.rename");
+    public static final PermissionNode<Boolean> FACTION_ROLE_LIST = createNode("datfactions.faction.role.list");
+    public static final PermissionNode<Boolean> FACTION_ROLE_INFO = createNode("datfactions.faction.role.info");
     public static final PermissionNode<Boolean> FACTION_ROLE_REORDER = createNode("datfactions.faction.role.reorder");
-    public static final PermissionNode<Boolean> FACTION_ROLE_PERMISSIONS = createNode("datfactions.faction.role.permissions");
+    public static final PermissionNode<Boolean> FACTION_ROLE_MODIFY_PERMISSIONS = createNode("datfactions.faction.role.permissions");
 
     // User Management
     public static final PermissionNode<Boolean> FACTION_PROMOTE = createNode("datfactions.faction.player.promote");
@@ -57,7 +60,7 @@ public class FactionPermissions {
     public static final PermissionNode<Boolean> FACTION_SET_ROLE = createNode("datfactions.faction.player.setrole");
     public static final PermissionNode<Boolean> FACTION_KICK = createNode("datfactions.faction.player.kick");
     public static final PermissionNode<Boolean> FACTION_INVITE = createNode("datfactions.faction.player.invite");
-    public static final PermissionNode<Boolean> FACTION_UNINVITE = createNode("datfactions.faction.player.invite");
+    public static final PermissionNode<Boolean> FACTION_UNINVITE = createNode("datfactions.faction.player.uninvite");
 
     // Claims
     public static final PermissionNode<Boolean> FACTION_CLAIM_ONE = createNode("datfactions.faction.claim.one");
@@ -93,25 +96,34 @@ public class FactionPermissions {
                 FACTION_INFO,
                 FACTION_PLAYER_INFO,
                 FACTION_MAP,
+
                 FACTION_JOIN,
-                FACTION_LEAVE,
                 FACTION_HOME,
+                FACTION_LEAVE,
+
                 FACTION_CREATE,
                 FACTION_SET_NAME,
                 FACTION_SET_DESC,
                 FACTION_SET_MOTD,
                 FACTION_SET_HOME,
                 FACTION_DISBAND,
+
                 FACTION_ROLE_ADD,
                 FACTION_ROLE_REMOVE,
+                FACTION_ROLE_RENAME,
+                FACTION_ROLE_LIST,
+                FACTION_ROLE_INFO,
                 FACTION_ROLE_REORDER,
-                FACTION_ROLE_PERMISSIONS,
+                FACTION_ROLE_MODIFY_PERMISSIONS,
+
                 FACTION_PROMOTE,
                 FACTION_DEMOTE,
                 FACTION_SET_ROLE,
+
                 FACTION_KICK,
                 FACTION_INVITE,
                 FACTION_UNINVITE,
+
                 FACTION_CLAIM_ONE,
                 FACTION_CLAIM_AUTO,
                 FACTION_CLAIM_SQUARE,

@@ -13,7 +13,7 @@ import org.jetbrains.annotations.Nullable;
  * Cancellable, and changes to newRoleName and newRoleParent will be reflected
  */
 @Cancelable
-public class FactionCreateRoleEvent extends FactionEvent {
+public class FactionRoleCreateEvent extends FactionEvent {
     /**
      * The name of the new role
      */
@@ -30,7 +30,7 @@ public class FactionCreateRoleEvent extends FactionEvent {
      * @param newRoleName The name of the new role
      * @param newRoleParent The parent of the role
      */
-    public FactionCreateRoleEvent(@Nullable final CommandSource instigator, @NotNull final Faction faction, final String newRoleName, final FactionRole newRoleParent) {
+    public FactionRoleCreateEvent(@Nullable final CommandSource instigator, @NotNull final Faction faction, final String newRoleName, final FactionRole newRoleParent) {
         super(instigator, faction);
         this.newRoleName = newRoleName;
         this.newRoleParent = newRoleParent;

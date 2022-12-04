@@ -26,9 +26,12 @@ public class FactionsCommand {
         FactionDescriptionCommand.register(command);
         FactionMotdCommand.register(command);
         FactionSetHomeCommand.register(command);
+        FactionDisbandCommand.register(command);
+
+        FactionRoleCommand.register(command);
+
         FactionInviteCommand.register(command);
         FactionUninviteCommand.register(command);
-        FactionDisbandCommand.register(command);
 
         FactionClaimCommand.register(command);
         FactionUnclaimCommand.register(command);

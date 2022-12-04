@@ -339,20 +339,20 @@ public class Faction extends DatabaseEntity {
      * @param roleParent The parent of the new role
      * @return the new role
      */
-    public FactionRole createNewRole(final String roleName, final String roleParent) {
+    public FactionRole createNewRole(final String roleName, final FactionRole roleParent) {
         if (getRoleByName(roleName) != null) {
             return null;
         }
 
-        final int parentIndex = getRoleIndexByName(roleParent);
+        final int parentIndex = roles.indexOf(roleParent);
         if (parentIndex == -1) {
             return null;
         }
 
         final FactionRole newRole = new FactionRole(roleName);
+        newRole.markDirty();
         this.roles.add(parentIndex, newRole);
 
-        markDirty();
         return newRole;
     }
 
@@ -381,7 +381,7 @@ public class Faction extends DatabaseEntity {
         }
 
         roles.remove(role);
-        final int newIndex = roles.indexOf(newParentRole);
+        final int newIndex = roles.indexOf(newParentRole) + 1;
         roles.add(newIndex, role);
 
         markDirty();
@@ -389,10 +389,9 @@ public class Faction extends DatabaseEntity {
 
     /**
      * Remove the roll with the given ID
-     * @param roleId the ID of the role to remove
+     * @param role The role to remove
      */
-    public void removeRole(final UUID roleId) {
-        final FactionRole role = getRole(roleId);
+    public void removeRole(final FactionRole role) {
         if (role == null) {
             return;
         }
@@ -520,9 +519,14 @@ public class Faction extends DatabaseEntity {
     public Component getChatSummary(@Nullable final Faction from) {
         // Title
         final MutableComponent message = Component.literal(DatChatFormatting.TextColour.HEADER + "____===")
-                .append(MutableComponent.create(Component.literal(getName()).getContents())
+                .append(Component.literal(getName())
                         .withStyle(RelationUtil.getRelation(from, this).formatting)
-                        .withStyle(Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/factions info " + getName()))))
+                        .withStyle(Style.EMPTY
+                                .withClickEvent(new ClickEvent(
+                                        ClickEvent.Action.SUGGEST_COMMAND,
+                                        "/factions info " + getName())
+                                ))
+                )
                 .append(DatChatFormatting.TextColour.HEADER +"===____");
 
         // Description

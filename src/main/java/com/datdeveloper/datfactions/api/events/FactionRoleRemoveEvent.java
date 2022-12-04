@@ -13,13 +13,13 @@ import org.jetbrains.annotations.Nullable;
  * Cancellable
  */
 @Cancelable
-public class FactionRemoveRoleEvent extends FactionRoleEvent {
+public class FactionRoleRemoveEvent extends FactionRoleEvent {
     /**
      * @param instigator The CommandSource that instigated the event
      * @param faction The faction the event is about
      * @param role The role being removed
      */
-    public FactionRemoveRoleEvent(@Nullable final CommandSource instigator, @NotNull final Faction faction, @NotNull final FactionRole role) {
+    public FactionRoleRemoveEvent(@Nullable final CommandSource instigator, @NotNull final Faction faction, @NotNull final FactionRole role) {
         super(instigator, faction, role);
     }
 }

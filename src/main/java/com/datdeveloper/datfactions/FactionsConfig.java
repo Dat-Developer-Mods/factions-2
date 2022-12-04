@@ -13,6 +13,7 @@ public class FactionsConfig {
     private static ConfigValue<Integer> maxFactionDescriptionLength;
     private static ConfigValue<Integer> maxFactionMotdLength;
 
+    private static ConfigValue<Integer> maxFactionRoleNameLength;
     private static ConfigValue<Integer> maxFactionRoles;
 
     private static ConfigValue<Integer> globalMaxFactionLandCount;
@@ -56,6 +57,10 @@ public class FactionsConfig {
             maxFactionMotdLength = builder
                     .comment("The maximum length a faction's MOTD can be")
                     .defineInRange("MaxFactionMotdLength", 120, 0, Integer.MAX_VALUE);
+
+            maxFactionRoleNameLength = builder
+                    .comment("The maximum length a faction role's name can be")
+                    .defineInRange("MaxFactionRoleNameLength", 20, 0, Integer.MAX_VALUE);
             maxFactionRoles = builder
                     .comment("The maximum amount of roles a faction can have")
                     .defineInRange("MaxFactionRoles", 120, 0, Integer.MAX_VALUE);
@@ -164,6 +169,10 @@ public class FactionsConfig {
 
     public static int getMaxFactionMotdLength() {
         return maxFactionMotdLength.get();
+    }
+
+    public static int getMaxFactionRoleNameLength() {
+        return maxFactionRoleNameLength.get();
     }
 
     public static int getMaxFactionRoles() {

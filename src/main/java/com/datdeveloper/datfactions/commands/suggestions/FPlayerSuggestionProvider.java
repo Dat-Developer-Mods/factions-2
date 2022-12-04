@@ -13,6 +13,9 @@ import net.minecraft.server.level.ServerPlayer;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
+/**
+ * A suggestion provider for faction player names
+ */
 public class FPlayerSuggestionProvider implements SuggestionProvider<CommandSourceStack> {
     /**
      * Exclude the player that called the command

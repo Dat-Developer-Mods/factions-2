@@ -254,9 +254,15 @@ public class FactionPlayer extends DatabaseEntity {
         // Title
 
         final MutableComponent message = Component.literal(DatChatFormatting.TextColour.HEADER + "____===[")
-                .append(MutableComponent.create(Component.literal(getLastName()).getContents())
+                .append(Component.literal(getLastName())
                         .withStyle(RelationUtil.getRelation(from, this).formatting)
-                        .withStyle(Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/factions player " + getLastName()))))
+                        .withStyle(Style.EMPTY
+                                .withClickEvent(new ClickEvent(
+                                        ClickEvent.Action.SUGGEST_COMMAND,
+                                        "/factions player " + getLastName()
+                                ))
+                        )
+                )
                 .append(DatChatFormatting.TextColour.HEADER +"]===____");
 
 
