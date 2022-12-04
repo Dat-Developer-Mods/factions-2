@@ -33,6 +33,8 @@ public class FactionsCommand {
         FactionInviteCommand.register(command);
         FactionUninviteCommand.register(command);
 
+        FactionRelationCommand.register(command);
+
         FactionClaimCommand.register(command);
         FactionUnclaimCommand.register(command);
 

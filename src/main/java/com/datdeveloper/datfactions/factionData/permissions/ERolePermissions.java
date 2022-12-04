@@ -37,11 +37,12 @@ public enum ERolePermissions {
     SETMOTD("Allows the player to set the Faction's MOTD"),
     DISBAND("Allows the player to disband the faction"),
 
-    // RELATION
-    ENEMY("Allows the player to declare enemies"),
-    ALLY("Allows the player to declare allies"),
-    TRUCE("ALLows the player to declare truces with other factions"),
-    NEUTRAL("Allows the player to declare other factions as neutral"),
+    // Relation
+    RELATIONWISHES("Allows the player to list the faction's reciprocated relations"),
+    RELATIONALLY("Allows the player to declare allies"),
+    RELATIONTRUCE("ALLows the player to declare truces with other factions"),
+    RELATIONNEUTRAL("Allows the player to declare other factions as neutral"),
+    RELATIONENEMY("Allows the player to declare enemies"),
 
 
     // Chat

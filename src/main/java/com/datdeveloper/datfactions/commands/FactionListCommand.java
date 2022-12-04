@@ -21,7 +21,7 @@ public class FactionListCommand extends BaseFactionCommand {
     static void register(final LiteralArgumentBuilder<CommandSourceStack> command) {
         final LiteralCommandNode<CommandSourceStack> subCommand = Commands.literal("list")
                 .requires(FactionPermissions.hasPermission(FACTION_LIST))
-                .then(Commands.argument("Page", IntegerArgumentType.integer(0))
+                .then(Commands.argument("Page", IntegerArgumentType.integer(1))
                         .executes(c -> execute(c, c.getArgument("Page", Integer.class))))
                 .executes(c -> execute(c, 1))
                 .build();

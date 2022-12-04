@@ -287,10 +287,11 @@ public class FactionRole extends DatabaseEntity {
                 ERolePermissions.SETMOTD,
 
                 // RELATION
-                ERolePermissions.ENEMY,
-                ERolePermissions.ALLY,
-                ERolePermissions.TRUCE,
-                ERolePermissions.NEUTRAL,
+                ERolePermissions.RELATIONWISHES,
+                ERolePermissions.RELATIONALLY,
+                ERolePermissions.RELATIONTRUCE,
+                ERolePermissions.RELATIONNEUTRAL,
+                ERolePermissions.RELATIONENEMY,
 
                 // Chat
                 ERolePermissions.FACTIONCHAT,

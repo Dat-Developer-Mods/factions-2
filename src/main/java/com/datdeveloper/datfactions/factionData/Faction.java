@@ -483,7 +483,8 @@ public class Faction extends DatabaseEntity {
     }
 
     public FactionRelation getRelation(final Faction otherFaction) {
-        return getRelation(otherFaction.id);
+        if (otherFaction == null) return null;
+        return getRelation(otherFaction.getId());
     }
 
     /**
@@ -561,7 +562,7 @@ public class Faction extends DatabaseEntity {
                     .collect(Collectors.toMap(
                             level -> level,
                             level -> {
-                                final int landAmount = level.getClaimsCount(id);
+                                final int landAmount = level.getClaimsCount(getId());
                                 final int landWorth = landAmount * level.getSettings().landWorth;
                                 total.setLeftHand(total.getLeftHand() + landWorth);
                                 total.setRightHand(total.getRightHand() + landAmount);
@@ -845,7 +846,7 @@ public class Faction extends DatabaseEntity {
 
     @Override
     public int hashCode() {
-        return this.id.hashCode();
+        return this.getId().hashCode();
     }
 
     @Override
