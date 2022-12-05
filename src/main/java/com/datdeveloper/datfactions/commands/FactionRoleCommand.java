@@ -384,7 +384,7 @@ public class FactionRoleCommand extends BaseFactionCommand {
                                     {
                                         final int result = checkPlayerCanModifyRole(c.getSource(), fPlayer, roleName, true);
                                         if (result != 0) {
-                                            return result;
+                                            return result + 1;
                                         }
                                     }
                                     final FactionRole role = faction.getRoleByName(roleName);
@@ -395,16 +395,16 @@ public class FactionRoleCommand extends BaseFactionCommand {
                                         permission = ERolePermissions.valueOf(permissionName.toUpperCase());
                                     } catch (final IllegalArgumentException ignored) {
                                         c.getSource().sendFailure(Component.literal("Unknown role permission: " + permissionName));
-                                        return 5;
+                                        return 6;
                                     }
 
                                     // Check they have permission to use the permission
                                     if (!fPlayer.getRole().hasPermission(permission)) {
                                         c.getSource().sendFailure(Component.literal("You may only give role permissions you already have"));
-                                        return 6;
+                                        return 7;
                                     } else if (role.hasPermission(permission)) {
                                         c.getSource().sendFailure(Component.literal("That role already has that permission"));
-                                        return 6;
+                                        return 8;
                                     }
 
                                     final FactionRoleAddPermissionsEvent event = new FactionRoleAddPermissionsEvent(c.getSource().source, faction, role, new HashSet<>(Set.of(permission)));
@@ -439,7 +439,7 @@ public class FactionRoleCommand extends BaseFactionCommand {
                                     {
                                         final int result = checkPlayerCanModifyRole(c.getSource(), fPlayer, roleName, true);
                                         if (result != 0) {
-                                            return result;
+                                            return result + 1;
                                         }
                                     }
                                     final FactionRole role = faction.getRoleByName(roleName);
@@ -450,16 +450,16 @@ public class FactionRoleCommand extends BaseFactionCommand {
                                         permission = ERolePermissions.valueOf(permissionName.toUpperCase());
                                     } catch (final IllegalArgumentException ignored) {
                                         c.getSource().sendFailure(Component.literal("Unknown role permission: " + permissionName));
-                                        return 5;
+                                        return 6;
                                     }
 
                                     // Check they have permission to use the permission
                                     if (!fPlayer.getRole().hasPermission(permission)) {
                                         c.getSource().sendFailure(Component.literal("You may only remove role permissions you already have"));
-                                        return 6;
+                                        return 7;
                                     } else if (!role.hasPermission(permission)) {
                                         c.getSource().sendFailure(Component.literal("That role doesn't have that permission to remove"));
-                                        return 7;
+                                        return 8;
                                     }
 
                                     final FactionRoleRemovePermissionsEvent event = new FactionRoleRemovePermissionsEvent(c.getSource().source, faction, role, new HashSet<>(Set.of(permission)));
@@ -498,7 +498,7 @@ public class FactionRoleCommand extends BaseFactionCommand {
                                     {
                                         final int result = checkPlayerCanModifyRole(c.getSource(), fPlayer, roleName, true);
                                         if (result != 0) {
-                                            return result;
+                                            return result + 1;
                                         }
                                     }
                                     final FactionRole role = faction.getRoleByName(roleName);
@@ -549,7 +549,7 @@ public class FactionRoleCommand extends BaseFactionCommand {
                                                     {
                                                         final int result = checkPlayerCanModifyRole(c.getSource(), fPlayer, roleName, false);
                                                         if (result != 0) {
-                                                            return result;
+                                                            return result + 1;
                                                         }
                                                     }
                                                     final FactionRole role = faction.getRoleByName(roleName);
@@ -557,13 +557,13 @@ public class FactionRoleCommand extends BaseFactionCommand {
                                                     final String parentRoleName = c.getArgument("New Parent", String.class);
                                                     {
                                                         final int result = checkPlayerCanUseParent(c.getSource(), fPlayer, parentRoleName);
-                                                        if (result != 0) return result + 4;
+                                                        if (result != 0) return result + 5;
                                                     }
                                                     FactionRole newParentRole = faction.getRoleByName(parentRoleName);
 
                                                     if (newParentRole.equals(role)) {
                                                         c.getSource().sendFailure(Component.literal("A role cannot be it's own parent"));
-                                                        return 8;
+                                                        return 9;
                                                     }
 
                                                     final FactionRoleChangeOrderEvent event = new FactionRoleChangeOrderEvent(c.getSource().source, faction, role, newParentRole);
