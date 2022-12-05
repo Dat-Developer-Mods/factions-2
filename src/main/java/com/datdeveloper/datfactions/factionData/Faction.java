@@ -506,7 +506,86 @@ public class Faction extends DatabaseEntity {
         final FactionRelation factionRelation = new FactionRelation(otherFaction.getId(), newRelation);
         relations.put(otherFaction.getId(), factionRelation);
 
+        markDirty();
+
         return factionRelation;
+    }
+
+    /**
+     * Inform a faction about a relation that's just been created
+     * @param otherFaction The faction that created the relation
+     * @param fromRelation The relation that's been created
+     */
+    public void informRelation(final Faction otherFaction, final EFactionRelation fromRelation) {
+        final FactionRelation toRelation = getRelation(otherFaction);
+        final EFactionRelation toRelationType = toRelation != null ? toRelation.relation : EFactionRelation.NEUTRAL;
+        final MutableComponent message = Component.empty();
+        message
+                .append(
+                        otherFaction.getNameWithDescription(this)
+                                .withStyle(RelationUtil.getRelation(this, otherFaction).formatting)
+                )
+                .append(DatChatFormatting.TextColour.INFO.toString());
+        switch (fromRelation){
+            case ALLY -> {
+                message.append(EFactionRelation.ALLY.formatting + " has declared you an ally, ");
+                switch (toRelationType) {
+                    case ALLY:
+                        message.append(EFactionRelation.ALLY.formatting + "you can now both speak privately in ally chat and are prevented from dealing pvp damage with each other");
+                        break;
+                    case TRUCE:
+                        message.append(EFactionRelation.TRUCE.formatting + "you still have a truce with them and are prevented from dealing pvp damage with each other, ");
+                    case NEUTRAL:
+                        message.append(EFactionRelation.NEUTRAL.formatting + "you can add them as an ally with")
+                                .append(FactionCommandUtils.wrapCommand("/faction ally " + otherFaction.getName()));
+                        break;
+                    case ENEMY:
+                        message.append(EFactionRelation.ENEMY.formatting + "but you still regard them as an enemy");
+                        break;
+                }
+            }
+            case TRUCE -> {
+                message.append(EFactionRelation.TRUCE.formatting + " has declared a truce with you, ");
+                switch (toRelationType) {
+                    case ALLY -> message.append(EFactionRelation.ALLY.formatting + "you still regard them as allies");
+                    case TRUCE ->
+                            message.append(EFactionRelation.TRUCE.formatting + "you are now both at truce and are prevented from dealing pvp damage with each other, ");
+                    case NEUTRAL -> message.append(EFactionRelation.NEUTRAL.formatting + "you can also declare a truce with them with ")
+                            .append(FactionCommandUtils.wrapCommand("/faction truce " + otherFaction.getName()));
+                    case ENEMY -> message.append(EFactionRelation.ENEMY.formatting + "but you still regard them as an enemy");
+                }
+            }
+            case ENEMY -> {
+                message.append(EFactionRelation.ENEMY.formatting + " has declared you an enemy, ");
+                switch (toRelationType) {
+                    case ALLY:
+                        message.append(EFactionRelation.ALLY.formatting + "you still regard them as allies, but are not protected from pvp with them");
+                        break;
+                    case TRUCE:
+                        message.append(EFactionRelation.TRUCE.formatting + "you are currently at truce with them, but are not protected from pvp with them ");
+                    case NEUTRAL:
+                        message.append(EFactionRelation.NEUTRAL.formatting + "you can also declare them as enemies with them with ")
+                                .append(FactionCommandUtils.wrapCommand("/faction enemy " + otherFaction.getName()));
+                        break;
+                    case ENEMY:
+                        message.append(EFactionRelation.ENEMY.formatting + "you are now hostile factions");
+                        break;
+                }
+            }
+            case NEUTRAL -> {
+                message.append(EFactionRelation.NEUTRAL.formatting + " have removed their relation with you, ");
+                switch (toRelationType) {
+                    case ALLY ->
+                            message.append(EFactionRelation.ALLY.formatting + "you still regard them as allies, but are not protected from pvp with them");
+                    case TRUCE ->
+                            message.append(EFactionRelation.TRUCE.formatting + "you are currently at truce with them, but are not protected from pvp with them");
+                    case NEUTRAL -> message.append(EFactionRelation.NEUTRAL.formatting + "you already did not have a relation with them");
+                    case ENEMY -> message.append(EFactionRelation.ENEMY.formatting + "you still regard them as an enemy");
+                }
+            }
+        }
+
+        sendFactionWideMessage(message);
     }
 
     /* ========================================= */
@@ -701,79 +780,6 @@ public class Faction extends DatabaseEntity {
     /* ========================================= */
     /* Misc
     /* ========================================= */
-
-    /**
-     * Inform a faction about a relation that's just been created
-     * @param otherFaction The faction that created the relation
-     * @param fromRelation The relation that's been created
-     */
-    public void informRelation(final Faction otherFaction, final EFactionRelation fromRelation) {
-        final FactionRelation toRelation = getRelation(otherFaction);
-        final EFactionRelation toRelationType = toRelation != null ? toRelation.relation : EFactionRelation.NEUTRAL;
-        final MutableComponent message = otherFaction.getNameWithDescription(this)
-                .withStyle(RelationUtil.getRelation(this, otherFaction).formatting);
-        message.append(DatChatFormatting.TextColour.INFO.toString());
-        switch (fromRelation){
-            case ALLY -> {
-                message.append(" has declared you an ally, ");
-                switch (toRelationType) {
-                    case ALLY:
-                        message.append("you can now both speak privately in ally chat and are prevented from dealing pvp damage with each other");
-                        break;
-                    case TRUCE:
-                        message.append("you still have a truce with them and are prevented from dealing pvp damage with each other, ");
-                    case NEUTRAL:
-                        message.append("you can add them as an ally with")
-                                .append(FactionCommandUtils.wrapCommand("/faction ally " + otherFaction.getName()));
-                        break;
-                    case ENEMY:
-                        message.append("but you still regard them as an enemy");
-                        break;
-                }
-            }
-            case TRUCE -> {
-                message.append(" has declared a truce with you, ");
-                switch (toRelationType) {
-                    case ALLY -> message.append("you still regard them as allies");
-                    case TRUCE ->
-                            message.append("you are now both at truce and are prevented from dealing pvp damage with each other, ");
-                    case NEUTRAL -> message.append("you can also declare a truce with them with ")
-                            .append(FactionCommandUtils.wrapCommand("/faction truce " + otherFaction.getName()));
-                    case ENEMY -> message.append("but you still regard them as an enemy");
-                }
-            }
-            case ENEMY -> {
-                message.append(" has declared you an enemy");
-                switch (toRelationType) {
-                    case ALLY:
-                        message.append("you still regard them as allies, but are not protected from pvp with them");
-                        break;
-                    case TRUCE:
-                        message.append("you are currently at truce with them, but are not protected from pvp with them ");
-                    case NEUTRAL:
-                        message.append("you can also declare them as enemies with them with ")
-                                .append(FactionCommandUtils.wrapCommand("/faction enemy " + otherFaction.getName()));
-                        break;
-                    case ENEMY:
-                        message.append("you are now hostile factions");
-                        break;
-                }
-            }
-            case NEUTRAL -> {
-                message.append(" have removed their relation with you, ");
-                switch (toRelationType) {
-                    case ALLY ->
-                            message.append("you still regard them as allies, but are not protected from pvp with them");
-                    case TRUCE ->
-                            message.append("you are currently at truce with them, but are not protected from pvp with them");
-                    case NEUTRAL -> message.append("you already did not have a relation with them");
-                    case ENEMY -> message.append("you still regard them as an enemy");
-                }
-            }
-        }
-
-        sendFactionWideMessage(message);
-    }
 
     /**
      * Check the faction's home is still valid
