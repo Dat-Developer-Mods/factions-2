@@ -73,6 +73,12 @@ public class FactionRelationCommand extends BaseFactionCommand {
                         return (relationFrom != null && (relationTo == null || relationTo.getRelation() != relationFrom.getRelation()));
                     })
                     .toList();
+
+            if (values.isEmpty()) {
+                sourceStack.sendFailure(Component.literal("There are no reciprocated relations towards your faction"));
+                return;
+            }
+
             final Pager<Faction> pager = new Pager<>(
                     "/f relation wishes",
                     "Relation wishes",
@@ -88,9 +94,9 @@ public class FactionRelationCommand extends BaseFactionCommand {
 
                             final MutableComponent fromComponent;
                             switch (relationFrom.getRelation()) {
-                                case ALLY -> fromComponent = Component.literal(" regard us as an ally");
-                                case TRUCE -> fromComponent = Component.literal(" wants a truce with us");
-                                case ENEMY -> fromComponent = Component.literal(" regard us as an enemy");
+                                case ALLY -> fromComponent = Component.literal(" regard us as an ally,");
+                                case TRUCE -> fromComponent = Component.literal(" wants a truce with us,");
+                                case ENEMY -> fromComponent = Component.literal(" regard us as an enemy,");
                                 default ->
                                         throw new IllegalStateException("Unexpected value: " + relationFrom.getRelation());
                             }

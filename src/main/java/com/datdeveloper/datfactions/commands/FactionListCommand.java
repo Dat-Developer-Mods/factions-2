@@ -10,6 +10,7 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
+import net.minecraft.network.chat.Component;
 
 import java.util.Collection;
 import java.util.Comparator;
@@ -36,6 +37,11 @@ public class FactionListCommand extends BaseFactionCommand {
                     .filter(faction -> !faction.hasFlag(EFactionFlags.DEFAULT))
                     .sorted(Comparator.comparing(Faction::getName))
                     .collect(Collectors.toList());
+
+            if (factions.isEmpty()) {
+                context.getSource().sendFailure(Component.literal("This server has no factions"));
+                return;
+            }
 
             final Pager<Faction> pager = new Pager<>("/f list", "Factions", factions, (faction) ->
                     faction.getNameWithDescription(player.getFaction())
