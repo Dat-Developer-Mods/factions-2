@@ -22,15 +22,15 @@ import static com.datdeveloper.datfactions.commands.FactionPermissions.FACTION_D
 
 public class FactionDisbandCommand extends BaseFactionCommand {
     static void register(final LiteralArgumentBuilder<CommandSourceStack> command) {
-        final Predicate<CommandSourceStack> predicate = commandSourceStack -> {
-            if (!(commandSourceStack.isPlayer()) && DatPermissions.hasPermission(commandSourceStack.getPlayer(), FACTION_DISBAND))
-                return false;
-            final FactionPlayer fPlayer = getPlayerOrTemplate(commandSourceStack.getPlayer());
-            return fPlayer.hasFaction() && fPlayer.getRole().hasPermission(ERolePermissions.DISBAND);
-        };
 
         final LiteralCommandNode<CommandSourceStack> subCommand = Commands.literal("disband")
-                .requires(predicate)
+                .requires(commandSourceStack -> {
+                    if (!(commandSourceStack.isPlayer()) && DatPermissions.hasPermission(commandSourceStack.getPlayer(), FACTION_DISBAND))
+                        return false;
+                    final FactionPlayer fPlayer = getPlayerOrTemplate(commandSourceStack.getPlayer());
+                    final Faction faction = fPlayer.getFaction();
+                    return faction != null && !faction.hasFlag(EFactionFlags.PERMANENT) && fPlayer.getRole().hasPermission(ERolePermissions.DISBAND);
+                })
                 .then(
                         Commands.argument("Are you sure?", BoolArgumentType.bool())
                                 .executes(c -> {

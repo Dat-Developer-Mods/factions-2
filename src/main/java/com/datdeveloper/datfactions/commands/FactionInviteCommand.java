@@ -3,6 +3,7 @@ package com.datdeveloper.datfactions.commands;
 import com.datdeveloper.datfactions.api.events.FactionInvitePlayerEvent;
 import com.datdeveloper.datfactions.commands.suggestions.FPlayerSuggestionProvider;
 import com.datdeveloper.datfactions.commands.util.FactionCommandUtils;
+import com.datdeveloper.datfactions.factionData.EFactionFlags;
 import com.datdeveloper.datfactions.factionData.FPlayerCollection;
 import com.datdeveloper.datfactions.factionData.Faction;
 import com.datdeveloper.datfactions.factionData.FactionPlayer;
@@ -27,7 +28,8 @@ public class FactionInviteCommand extends BaseFactionCommand {
                 .requires(commandSourceStack -> {
                     if (!(commandSourceStack.isPlayer() && DatPermissions.hasPermission(commandSourceStack.getPlayer(), FACTION_INVITE))) return false;
                     final FactionPlayer fPlayer = getPlayerOrTemplate(commandSourceStack.getPlayer());
-                    return fPlayer.hasFaction() && fPlayer.getRole().hasPermission(ERolePermissions.INVITE);
+                    final Faction faction = fPlayer.getFaction();
+                    return faction != null && !faction.hasFlag(EFactionFlags.OPEN) && fPlayer.getRole().hasPermission(ERolePermissions.INVITE);
                 })
                 .then(Commands.argument("Target Player", GameProfileArgument.gameProfile())
                         .suggests(new FPlayerSuggestionProvider(true))

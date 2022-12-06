@@ -351,7 +351,7 @@ public class FactionPlayer extends DatabaseEntity {
     /**
      * Update the commands that the player has available to them
      */
-    private void updateCommands() {
+    public void updateCommands() {
         final ServerPlayer serverPlayer = getServerPlayer();
         if (serverPlayer == null) return;
 

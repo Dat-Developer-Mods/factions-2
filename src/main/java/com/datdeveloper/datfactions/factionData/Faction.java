@@ -406,7 +406,17 @@ public class Faction extends DatabaseEntity {
             return;
         }
 
+        UUID newRole = getRoles().get(getRoleIndex(role.getId()) - 1).getId();
+        for (FactionPlayer fPlayer : getPlayers()) {
+            if (!fPlayer.getRoleId().equals(role.getId())) {
+                continue;
+            }
+
+            fPlayer.setRole(newRole);
+        }
+
         roles.remove(role);
+
         markDirty();
     }
 
@@ -457,6 +467,8 @@ public class Faction extends DatabaseEntity {
         if (flags.contains(flag)) return;
 
         flags.add(flag);
+        updateAllPlayersCommands();
+
         markDirty();
     }
 
@@ -468,6 +480,7 @@ public class Faction extends DatabaseEntity {
         if (!flags.contains(flag)) return;
 
         flags.remove(flag);
+        updateAllPlayersCommands();
 
         markDirty();
     }
@@ -830,6 +843,15 @@ public class Faction extends DatabaseEntity {
         }
 
         return false;
+    }
+
+    /**
+     * Update the available commands for every player
+     * <br>
+     * Required when a role is updated or a flag is changed
+     */
+    public void updateAllPlayersCommands() {
+        getPlayers().forEach(FactionPlayer::updateCommands);
     }
 
     /* ========================================= */

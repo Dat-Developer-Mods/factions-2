@@ -6,6 +6,7 @@ import com.datdeveloper.datfactions.factionData.*;
 import com.datdeveloper.datfactions.factionData.permissions.ERolePermissions;
 import com.datdeveloper.datfactions.factionData.relations.EFactionRelation;
 import com.datdeveloper.datfactions.factionData.relations.FactionRelation;
+import com.datdeveloper.datfactions.util.RelationUtil;
 import com.datdeveloper.datmoddingapi.asyncTask.AsyncHandler;
 import com.datdeveloper.datmoddingapi.command.util.Pager;
 import com.datdeveloper.datmoddingapi.permissions.DatPermissions;
@@ -33,7 +34,8 @@ public class FactionRelationCommand extends BaseFactionCommand {
                     if (!(commandSourceStack.isPlayer()) && DatPermissions.hasAnyPermissions(commandSourceStack.getPlayer(), FACTION_RELATION_WISHES, FACTION_RELATION_ALLY, FACTION_RELATION_TRUCE, FACTION_RELATION_NEUTRAL, FACTION_RELATION_ENEMY))
                         return false;
                     final FactionPlayer fPlayer = getPlayerOrTemplate(commandSourceStack.getPlayer());
-                    return fPlayer.hasFaction() && fPlayer.getRole().hasAnyPermissions(ERolePermissions.RELATIONWISHES, ERolePermissions.RELATIONALLY, ERolePermissions.RELATIONTRUCE, ERolePermissions.RELATIONNEUTRAL, ERolePermissions.RELATIONENEMY);
+                    final Faction faction = fPlayer.getFaction();
+                    return faction != null && !faction.hasFlag(EFactionFlags.UNRELATEABLE) && fPlayer.getRole().hasAnyPermissions(ERolePermissions.RELATIONWISHES, ERolePermissions.RELATIONALLY, ERolePermissions.RELATIONTRUCE, ERolePermissions.RELATIONNEUTRAL, ERolePermissions.RELATIONENEMY);
                 })
                 .then(buildRelationWishesCommand())
                 .then(buildRelationAllyCommand())
@@ -221,6 +223,15 @@ public class FactionRelationCommand extends BaseFactionCommand {
                     Component.literal("You cannot make a relation with yourself")
             );
             return 3;
+        } else if (target.hasFlag(EFactionFlags.UNRELATEABLE)) {
+            c.getSource().sendFailure(
+                    Component.literal("You cannot make relations with ")
+                            .append(
+                                    target.getNameWithDescription(faction)
+                                            .withStyle(RelationUtil.getRelation(faction, target).formatting)
+                            )
+            );
+            return 4;
         }
 
         final FactionRelation currentRelation = faction.getRelation(target);
@@ -232,7 +243,7 @@ public class FactionRelationCommand extends BaseFactionCommand {
                                             .withStyle(currentRelation.getRelation().formatting)
                             )
             );
-            return 4;
+            return 5;
         }
 
         final FactionChangeRelationEvent event = new FactionChangeRelationEvent(c.getSource().source, faction, target, relation);
