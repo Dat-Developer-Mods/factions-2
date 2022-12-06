@@ -9,13 +9,16 @@ import net.minecraft.network.chat.Style;
  * The available permissions for a role in a faction
  */
 public enum ERolePermissions {
-    // Player Management
-    INVITE("Allows the player to invite players to the faction"),
-    UNINVITE("Allows the player to uninvite players from the faction"),
+    // Player Management,
     KICK("Allows the player to kick members below their role from the faction"),
     SETROLE("Allows the player to set the role of other players below their role up to their role (they cannot set players to their role or any higher roles)"),
     PROMOTE("Allows the player to promote other players up to the role below their own"),
     DEMOTE("Allows the player to demote other players below their role"),
+
+    // Invites
+    INVITE("Allows the player to invite players to the faction"),
+    UNINVITE("Allows the player to uninvite players from the faction"),
+    INVITELIST("Allows the player to list invites the faction has sent"),
 
     // Land
     CLAIMONE("Allows the player to claim single chunks"),
