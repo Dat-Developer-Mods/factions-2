@@ -3,6 +3,8 @@ package com.datdeveloper.datfactions.factionData;
 import com.datdeveloper.datfactions.commands.util.FactionCommandUtils;
 import com.datdeveloper.datfactions.database.DatabaseEntity;
 import com.datdeveloper.datfactions.factionData.permissions.FactionRole;
+import com.datdeveloper.datfactions.factionData.relations.EFactionRelation;
+import com.datdeveloper.datfactions.factionData.relations.FactionRelation;
 import com.datdeveloper.datfactions.util.AgeUtil;
 import com.datdeveloper.datfactions.util.RelationUtil;
 import com.datdeveloper.datmoddingapi.collections.Pair;
@@ -496,7 +498,7 @@ public class Faction extends DatabaseEntity {
     public FactionRelation setRelation(@NotNull final Faction otherFaction, final EFactionRelation newRelation) {
         final FactionRelation relation = getRelation(otherFaction);
         if ((relation == null && newRelation == EFactionRelation.NEUTRAL)
-                || (relation != null && relation.relation == newRelation)) return relation;
+                || (relation != null && relation.getRelation() == newRelation)) return relation;
 
         if (newRelation == EFactionRelation.NEUTRAL) {
             relations.remove(otherFaction.getId());
@@ -518,7 +520,7 @@ public class Faction extends DatabaseEntity {
      */
     public void informRelation(final Faction otherFaction, final EFactionRelation fromRelation) {
         final FactionRelation toRelation = getRelation(otherFaction);
-        final EFactionRelation toRelationType = toRelation != null ? toRelation.relation : EFactionRelation.NEUTRAL;
+        final EFactionRelation toRelationType = toRelation != null ? toRelation.getRelation() : EFactionRelation.NEUTRAL;
         final MutableComponent message = Component.empty();
         message
                 .append(

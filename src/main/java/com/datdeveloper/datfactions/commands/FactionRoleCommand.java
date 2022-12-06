@@ -4,7 +4,7 @@ import com.datdeveloper.datfactions.FactionsConfig;
 import com.datdeveloper.datfactions.api.events.*;
 import com.datdeveloper.datfactions.commands.suggestions.DatSuggestionProviders;
 import com.datdeveloper.datfactions.commands.suggestions.FactionRoleSuggestionProvider;
-import com.datdeveloper.datfactions.factionData.EFactionRelation;
+import com.datdeveloper.datfactions.factionData.relations.EFactionRelation;
 import com.datdeveloper.datfactions.factionData.FPlayerCollection;
 import com.datdeveloper.datfactions.factionData.Faction;
 import com.datdeveloper.datfactions.factionData.FactionPlayer;

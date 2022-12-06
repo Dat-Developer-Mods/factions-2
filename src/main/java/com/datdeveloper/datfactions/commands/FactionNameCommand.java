@@ -4,6 +4,7 @@ import com.datdeveloper.datfactions.FactionsConfig;
 import com.datdeveloper.datfactions.api.events.FactionChangeNameEvent;
 import com.datdeveloper.datfactions.factionData.*;
 import com.datdeveloper.datfactions.factionData.permissions.ERolePermissions;
+import com.datdeveloper.datfactions.factionData.relations.EFactionRelation;
 import com.datdeveloper.datmoddingapi.permissions.DatPermissions;
 import com.datdeveloper.datmoddingapi.util.DatChatFormatting;
 import com.mojang.brigadier.arguments.StringArgumentType;

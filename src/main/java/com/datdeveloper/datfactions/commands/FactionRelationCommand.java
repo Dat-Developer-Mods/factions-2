@@ -4,6 +4,8 @@ import com.datdeveloper.datfactions.api.events.FactionChangeRelationEvent;
 import com.datdeveloper.datfactions.commands.suggestions.DatSuggestionProviders;
 import com.datdeveloper.datfactions.factionData.*;
 import com.datdeveloper.datfactions.factionData.permissions.ERolePermissions;
+import com.datdeveloper.datfactions.factionData.relations.EFactionRelation;
+import com.datdeveloper.datfactions.factionData.relations.FactionRelation;
 import com.datdeveloper.datmoddingapi.asyncTask.AsyncHandler;
 import com.datdeveloper.datmoddingapi.command.util.Pager;
 import com.datdeveloper.datmoddingapi.permissions.DatPermissions;

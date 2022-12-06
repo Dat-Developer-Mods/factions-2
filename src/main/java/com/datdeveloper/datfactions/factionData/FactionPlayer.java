@@ -3,6 +3,7 @@ package com.datdeveloper.datfactions.factionData;
 import com.datdeveloper.datfactions.api.events.FactionPlayerChangeMembershipEvent;
 import com.datdeveloper.datfactions.database.DatabaseEntity;
 import com.datdeveloper.datfactions.factionData.permissions.FactionRole;
+import com.datdeveloper.datfactions.factionData.relations.EFactionRelation;
 import com.datdeveloper.datfactions.util.AgeUtil;
 import com.datdeveloper.datfactions.util.RelationUtil;
 import com.datdeveloper.datmoddingapi.util.DatChatFormatting;

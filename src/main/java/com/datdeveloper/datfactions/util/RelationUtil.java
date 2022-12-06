@@ -1,9 +1,9 @@
 package com.datdeveloper.datfactions.util;
 
-import com.datdeveloper.datfactions.factionData.EFactionRelation;
+import com.datdeveloper.datfactions.factionData.relations.EFactionRelation;
 import com.datdeveloper.datfactions.factionData.Faction;
 import com.datdeveloper.datfactions.factionData.FactionPlayer;
-import com.datdeveloper.datfactions.factionData.FactionRelation;
+import com.datdeveloper.datfactions.factionData.relations.FactionRelation;
 
 /**
  * Utilities for getting relations between players and factions

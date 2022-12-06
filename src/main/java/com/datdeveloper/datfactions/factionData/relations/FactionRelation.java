@@ -1,4 +1,7 @@
-package com.datdeveloper.datfactions.factionData;
+package com.datdeveloper.datfactions.factionData.relations;
+
+import com.datdeveloper.datfactions.factionData.Faction;
+import com.datdeveloper.datfactions.factionData.FactionCollection;
 
 import java.util.UUID;
 
@@ -10,15 +13,16 @@ public class FactionRelation {
      * The ID of the faction the relation is with
      */
     final UUID factionID;
+
     /**
      * The type of relation
      */
-    EFactionRelation relation;
+    final EFactionRelation relation;
 
     /**
      * The timestamp of when the relation was made
      */
-    long relationCreation;
+    final long relationCreation;
 
     public FactionRelation(final UUID factionId, final EFactionRelation relation) {
         this.factionID = factionId;
@@ -46,19 +50,7 @@ public class FactionRelation {
         return relation;
     }
 
-    /* ========================================= */
-    /* Setters
-    /* ========================================= */
-
     public long getRelationCreation() {
         return relationCreation;
-    }
-
-    public void setRelation(final EFactionRelation relation) {
-        this.relation = relation;
-    }
-
-    public void setRelationCreation(final long relationCreation) {
-        this.relationCreation = relationCreation;
     }
 }

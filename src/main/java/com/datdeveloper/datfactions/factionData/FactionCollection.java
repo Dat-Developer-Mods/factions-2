@@ -4,6 +4,7 @@ import com.datdeveloper.datfactions.api.events.FactionPlayerChangeMembershipEven
 import com.datdeveloper.datfactions.api.events.FactionLandChangeOwnerEvent;
 import com.datdeveloper.datfactions.database.Database;
 import com.datdeveloper.datfactions.factionData.permissions.FactionRole;
+import com.datdeveloper.datfactions.factionData.relations.EFactionRelation;
 import com.datdeveloper.datmoddingapi.util.DatChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.ChunkPos;
