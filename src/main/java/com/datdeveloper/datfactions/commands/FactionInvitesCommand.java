@@ -1,14 +1,15 @@
 package com.datdeveloper.datfactions.commands;
 
-import com.datdeveloper.datfactions.api.events.FactionChangeRelationEvent;
+import com.datdeveloper.datfactions.api.events.FactionInvitePlayerEvent;
+import com.datdeveloper.datfactions.api.events.FactionUninvitePlayerEvent;
 import com.datdeveloper.datfactions.commands.suggestions.DatSuggestionProviders;
+import com.datdeveloper.datfactions.commands.util.FactionCommandUtils;
 import com.datdeveloper.datfactions.factionData.EFactionFlags;
+import com.datdeveloper.datfactions.factionData.FPlayerCollection;
 import com.datdeveloper.datfactions.factionData.Faction;
-import com.datdeveloper.datfactions.factionData.FactionCollection;
 import com.datdeveloper.datfactions.factionData.FactionPlayer;
 import com.datdeveloper.datfactions.factionData.permissions.ERolePermissions;
 import com.datdeveloper.datfactions.factionData.relations.EFactionRelation;
-import com.datdeveloper.datfactions.factionData.relations.FactionRelation;
 import com.datdeveloper.datfactions.util.RelationUtil;
 import com.datdeveloper.datmoddingapi.asyncTask.AsyncHandler;
 import com.datdeveloper.datmoddingapi.command.util.Pager;
@@ -17,14 +18,13 @@ import com.datdeveloper.datmoddingapi.util.DatChatFormatting;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.common.MinecraftForge;
 
+import java.util.Comparator;
 import java.util.List;
 
 import static com.datdeveloper.datfactions.commands.FactionPermissions.*;
@@ -51,8 +51,8 @@ public class FactionInvitesCommand extends BaseFactionCommand {
     /* Invite list
     /* ========================================= */
 
-    static LiteralArgumentBuilder<CommandSourceStack> buildRelationWishesCommand() {
-        return Commands.literal("wishes")
+    static LiteralArgumentBuilder<CommandSourceStack> buildInviteListCommand() {
+        return Commands.literal("list")
                 .requires(commandSourceStack -> {
                     final ServerPlayer player = commandSourceStack.getPlayer();
                     final FactionPlayer fPlayer = getPlayerOrTemplate(player);
@@ -60,66 +60,43 @@ public class FactionInvitesCommand extends BaseFactionCommand {
                 })
                 .then(
                         Commands.argument("Page", IntegerArgumentType.integer(1))
-                                .executes(c -> executeWishes(c.getSource(), c.getArgument("Page", Integer.class)))
+                                .executes(c -> executeList(c.getSource(), c.getArgument("Page", Integer.class)))
                 )
-                .executes(c -> executeWishes(c.getSource(), 1));
+                .executes(c -> executeList(c.getSource(), 1));
     }
 
-    private static int executeWishes(final CommandSourceStack sourceStack, final int page) {
+    private static int executeList(final CommandSourceStack sourceStack, final int page) {
         final ServerPlayer player = sourceStack.getPlayer();
         final FactionPlayer fPlayer = getPlayerOrTemplate(player);
         final Faction faction = fPlayer.getFaction();
 
         AsyncHandler.runAsyncTask(() -> {
-            final List<Faction> values = FactionCollection.getInstance().getAll().values().stream()
-                    .filter(factionEl -> {
-                        final FactionRelation relationFrom = factionEl.getRelation(faction);
-                        final FactionRelation relationTo = faction.getRelation(factionEl);
-                        return (relationFrom != null && (relationTo == null || relationTo.getRelation() != relationFrom.getRelation()));
-                    })
+            final List<FactionPlayer> values = faction.getPlayerInvites().stream()
+                    .map(playerId -> FPlayerCollection.getInstance().getByKey(playerId))
+                    .sorted(Comparator.comparing(FactionPlayer::getName))
                     .toList();
 
             if (values.isEmpty()) {
-                sourceStack.sendFailure(Component.literal("There are no reciprocated relations towards your faction"));
+                sourceStack.sendFailure(
+                        Component.empty()
+                                .append(
+                                        faction.getNameWithDescription(faction)
+                                                .withStyle(EFactionRelation.SELF.formatting)
+                                )
+                                .append(" has not invited any players")
+                );
                 return;
             }
 
-            final Pager<Faction> pager = new Pager<>(
-                    "/f relation wishes",
-                    "Relation wishes",
+            final Pager<FactionPlayer> pager = new Pager<>(
+                    "/f invites list",
+                    "Player invites",
                     values,
-                    (factionEl -> {
-                            final FactionRelation relationFrom = factionEl.getRelation(faction);
-                            final FactionRelation relationTo = faction.getRelation(factionEl);
-                            final MutableComponent component = Component.empty()
-                                    .append(
-                                            factionEl.getNameWithDescription(faction)
-                                                    .withStyle(EFactionRelation.NEUTRAL.formatting)
-                                    );
-
-                            final MutableComponent fromComponent;
-                            switch (relationFrom.getRelation()) {
-                                case ALLY -> fromComponent = Component.literal(" regard us as an ally,");
-                                case TRUCE -> fromComponent = Component.literal(" wants a truce with us,");
-                                case ENEMY -> fromComponent = Component.literal(" regard us as an enemy,");
-                                default ->
-                                        throw new IllegalStateException("Unexpected value: " + relationFrom.getRelation());
-                            }
-                            component.append(fromComponent.append(", ").withStyle(relationFrom.getRelation().formatting));
-
-                            final EFactionRelation eRelationTo = relationTo != null ? relationTo.getRelation() : EFactionRelation.NEUTRAL;
-
-                            final MutableComponent toComponent = Component.literal("but ");
-                            switch (eRelationTo) {
-                                case ALLY -> toComponent.append("we think of them as an ally");
-                                case TRUCE -> toComponent.append("we want a truce with them");
-                                case NEUTRAL -> toComponent.append("we are neutral with them");
-                                case ENEMY -> toComponent.append("we think of them as an enemy");
-                            }
-                            component.append(toComponent.withStyle(eRelationTo.formatting));
-
-                            return component;
-                    })
+                    (playerEl -> Component.empty()
+                            .append(
+                                    playerEl.getNameWithDescription(faction)
+                                            .withStyle(RelationUtil.getRelation(faction, playerEl).formatting)
+                            ))
             );
             pager.sendPage(page, sourceStack.source);
         });
@@ -128,158 +105,148 @@ public class FactionInvitesCommand extends BaseFactionCommand {
     }
 
     /* ========================================= */
-    /* Relation Ally
+    /* Invite
     /* ========================================= */
 
-    static LiteralArgumentBuilder<CommandSourceStack> buildRelationAllyCommand() {
-        return Commands.literal("ally")
+    static LiteralArgumentBuilder<CommandSourceStack> buildInviteCommand() {
+        return Commands.literal("add")
                 .requires(commandSourceStack -> {
                     final ServerPlayer player = commandSourceStack.getPlayer();
                     final FactionPlayer fPlayer = getPlayerOrTemplate(player);
-                    return DatPermissions.hasPermission(player, FACTION_RELATION_ALLY) && fPlayer.getRole().hasPermission(ERolePermissions.RELATIONALLY);
+                    return DatPermissions.hasPermission(player, FACTION_INVITE) && fPlayer.getRole().hasPermission(ERolePermissions.INVITE);
                 })
                 .then(
-                        Commands.argument("Target Faction", StringArgumentType.word())
-                                .suggests(DatSuggestionProviders.factionProvider)
-                                .executes(c -> executeRelation(c, EFactionRelation.ALLY))
+                        Commands.argument("Target Player", StringArgumentType.word())
+                                .suggests(DatSuggestionProviders.fPlayerProvider)
+                                .executes(c -> {
+                                    final ServerPlayer player = c.getSource().getPlayer();
+                                    final FactionPlayer fPlayer = getPlayerOrTemplate(player);
+                                    final Faction faction = fPlayer.getFaction();
+
+                                    final String targetName = c.getArgument("Target Player", String.class);
+                                    final FactionPlayer target = FPlayerCollection.getInstance().getByName(targetName);
+                                    if (target == null) {
+                                        c.getSource().sendFailure(Component.literal("Cannot find a player with that name"));
+                                        return 2;
+                                    } else if (faction.getPlayers().contains(target)) {
+                                        c.getSource().sendFailure(
+                                                Component.literal("You cannot invite players that are already in your faction")
+                                        );
+                                        return 3;
+                                    } else if (faction.getPlayerInvites().contains(target.getId())) {
+                                        c.getSource().sendFailure(
+                                                Component.empty()
+                                                        .append(
+                                                                target.getNameWithDescription(faction)
+                                                                        .withStyle(RelationUtil.getRelation(faction, target).formatting)
+                                                        )
+                                                        .append(DatChatFormatting.TextColour.ERROR + " already has an invite from you")
+                                        );
+                                        return 4;
+                                    }
+
+                                    final FactionInvitePlayerEvent event = new FactionInvitePlayerEvent(
+                                            c.getSource().source,
+                                            faction,
+                                            target
+                                    );
+                                    MinecraftForge.EVENT_BUS.post(event);
+                                    if (event.isCanceled()) return 0;
+
+                                    faction.addInvite(target.getId());
+                                    c.getSource().sendSuccess(
+                                            Component.literal(DatChatFormatting.TextColour.INFO + "Successfully invited ")
+                                                    .append(
+                                                            target.getNameWithDescription(faction)
+                                                                    .withStyle(RelationUtil.getRelation(faction, target).formatting)
+                                                    ).append(DatChatFormatting.TextColour.INFO + " to the faction"),
+                                            true
+                                    );
+
+                                    if (target.isPlayerOnline()) {
+                                        target.getServerPlayer().sendSystemMessage(
+                                                Component.literal(DatChatFormatting.TextColour.INFO + "You have been invited to join ")
+                                                        .append(
+                                                                faction.getNameWithDescription(target.getFaction())
+                                                                        .withStyle(RelationUtil.getRelation(target, faction).formatting)
+                                                        ).append("\n")
+                                                        .append(DatChatFormatting.TextColour.INFO + "You can accept using ")
+                                                        .append(FactionCommandUtils.wrapCommand("/f join " + faction.getName()))
+                                        );
+                                    }
+
+                                    return 1;
+                                })
                 );
     }
 
     /* ========================================= */
-    /* Relation Truce
+    /* Uninvite
     /* ========================================= */
 
-    static LiteralArgumentBuilder<CommandSourceStack> buildRelationTruceCommand() {
-        return Commands.literal("truce")
+    static LiteralArgumentBuilder<CommandSourceStack> buildUninviteCommand() {
+        return Commands.literal("remove")
                 .requires(commandSourceStack -> {
                     final ServerPlayer player = commandSourceStack.getPlayer();
                     final FactionPlayer fPlayer = getPlayerOrTemplate(player);
-                    return DatPermissions.hasPermission(player, FACTION_RELATION_TRUCE) && fPlayer.getRole().hasPermission(ERolePermissions.RELATIONTRUCE);
+                    return DatPermissions.hasPermission(player, FACTION_UNINVITE) && fPlayer.getRole().hasPermission(ERolePermissions.UNINVITE);
                 })
                 .then(
-                        Commands.argument("Target Faction", StringArgumentType.word())
-                                .suggests(DatSuggestionProviders.factionProvider)
-                                .executes(c -> executeRelation(c, EFactionRelation.TRUCE))
+                        Commands.argument("Target Player", StringArgumentType.word())
+                                .suggests(DatSuggestionProviders.fPlayerProvider)
+                                .executes(c -> {
+                                    final ServerPlayer player = c.getSource().getPlayer();
+                                    final FactionPlayer fPlayer = getPlayerOrTemplate(player);
+                                    final Faction faction = fPlayer.getFaction();
+
+                                    final String targetName = c.getArgument("Target Player", String.class);
+                                    final FactionPlayer target = FPlayerCollection.getInstance().getByName(targetName);
+                                    if (target == null) {
+                                        c.getSource().sendFailure(Component.literal("Cannot find a player with that name"));
+                                        return 2;
+                                    } else if (!faction.getPlayerInvites().contains(target.getId())) {
+                                        c.getSource().sendFailure(
+                                                Component.empty()
+                                                        .append(
+                                                                target.getNameWithDescription(faction)
+                                                                        .withStyle(RelationUtil.getRelation(faction, target).formatting)
+                                                        )
+                                                        .append(DatChatFormatting.TextColour.ERROR + " does not have an invite from you")
+                                        );
+                                        return 3;
+                                    }
+
+                                    final FactionUninvitePlayerEvent event = new FactionUninvitePlayerEvent(
+                                            c.getSource().source,
+                                            faction,
+                                            target
+                                    );
+                                    MinecraftForge.EVENT_BUS.post(event);
+                                    if (event.isCanceled()) return 0;
+
+                                    faction.addInvite(target.getId());
+                                    c.getSource().sendSuccess(
+                                            Component.literal(DatChatFormatting.TextColour.INFO + "Successfully revoked ")
+                                                    .append(
+                                                            target.getNameWithDescription(faction)
+                                                                    .withStyle(RelationUtil.getRelation(faction, target).formatting)
+                                                    ).append(DatChatFormatting.TextColour.INFO + " invite to the faction"),
+                                            true
+                                    );
+
+                                    if (target.isPlayerOnline()) {
+                                        target.getServerPlayer().sendSystemMessage(
+                                                Component.literal(DatChatFormatting.TextColour.ERROR + "Your invitation to join ")
+                                                        .append(
+                                                                faction.getNameWithDescription(target.getFaction())
+                                                                        .withStyle(RelationUtil.getRelation(target, faction).formatting)
+                                                        )
+                                                        .append(DatChatFormatting.TextColour.ERROR + " has been revoked")
+                                        );
+                                    }
+
+                                    return 1;
+                                })
                 );
-    }
-
-    /* ========================================= */
-    /* Relation Neutral
-    /* ========================================= */
-
-    static LiteralArgumentBuilder<CommandSourceStack> buildRelationNeutralCommand() {
-        return Commands.literal("neutral")
-                .requires(commandSourceStack -> {
-                    final ServerPlayer player = commandSourceStack.getPlayer();
-                    final FactionPlayer fPlayer = getPlayerOrTemplate(player);
-                    return DatPermissions.hasPermission(player, FACTION_RELATION_NEUTRAL) && fPlayer.getRole().hasPermission(ERolePermissions.RELATIONNEUTRAL);
-                })
-                .then(
-                        Commands.argument("Target Faction", StringArgumentType.word())
-                                .suggests(DatSuggestionProviders.factionProvider)
-                                .executes(c -> executeRelation(c, EFactionRelation.NEUTRAL))
-                );
-    }
-
-    /* ========================================= */
-    /* Relation Enemy
-    /* ========================================= */
-
-    static LiteralArgumentBuilder<CommandSourceStack> buildRelationEnemyCommand() {
-        return Commands.literal("enemy")
-                .requires(commandSourceStack -> {
-                    final ServerPlayer player = commandSourceStack.getPlayer();
-                    final FactionPlayer fPlayer = getPlayerOrTemplate(player);
-                    return DatPermissions.hasPermission(player, FACTION_RELATION_ENEMY) && fPlayer.getRole().hasPermission(ERolePermissions.RELATIONENEMY);
-                })
-                .then(
-                        Commands.argument("Target Faction", StringArgumentType.word())
-                                .suggests(DatSuggestionProviders.factionProvider)
-                                .executes(c -> executeRelation(c, EFactionRelation.ENEMY))
-                );
-    }
-
-    /* ========================================= */
-    /* Util
-    /* ========================================= */
-
-    /**
-     * Execute relation change
-     * @param c The command context
-     * @param relation The new relation
-     * @return the return code representing the result
-     */
-    private static int executeRelation(final CommandContext<CommandSourceStack> c, EFactionRelation relation) {
-        final ServerPlayer player = c.getSource().getPlayer();
-        final FactionPlayer fPlayer = getPlayerOrTemplate(player);
-        final Faction faction = fPlayer.getFaction();
-
-        final String targetName = c.getArgument("Target Faction", String.class);
-        final Faction target = FactionCollection.getInstance().getByName(targetName);
-        if (target == null) {
-            c.getSource().sendFailure(Component.literal("Cannot find a faction with that name"));
-            return 2;
-        } else if (target.equals(faction)) {
-            c.getSource().sendFailure(
-                    Component.literal("You cannot make a relation with yourself")
-            );
-            return 3;
-        } else if (target.hasFlag(EFactionFlags.UNRELATEABLE)) {
-            c.getSource().sendFailure(
-                    Component.literal("You cannot make relations with ")
-                            .append(
-                                    target.getNameWithDescription(faction)
-                                            .withStyle(RelationUtil.getRelation(faction, target).formatting)
-                            )
-            );
-            return 4;
-        }
-
-        final FactionRelation currentRelation = faction.getRelation(target);
-        if (currentRelation != null && currentRelation.getRelation() == relation) {
-            c.getSource().sendFailure(
-                    Component.literal("You are already " + relation.adjective + " with ")
-                            .append(
-                                    target.getNameWithDescription(faction)
-                                            .withStyle(currentRelation.getRelation().formatting)
-                            )
-            );
-            return 5;
-        }
-
-        final FactionChangeRelationEvent event = new FactionChangeRelationEvent(c.getSource().source, faction, target, relation);
-        MinecraftForge.EVENT_BUS.post(event);
-        if (event.isCanceled()) return 0;
-
-        relation = event.getNewRelation();
-        faction.setRelation(target, relation);
-        target.informRelation(faction, relation);
-        final MutableComponent message = Component.literal(DatChatFormatting.TextColour.INFO + "Successfully ");
-
-        switch (relation) {
-            case ALLY, ENEMY -> message.append("declared ")
-                    .append(
-                            target.getNameWithDescription(faction)
-                                    .withStyle(relation.formatting)
-                    )
-                    .append(" an " + relation.name().toLowerCase());
-            case TRUCE -> message.append("declared a truce with ")
-                    .append(
-                            target.getNameWithDescription(faction)
-                                    .withStyle(relation.formatting)
-                    );
-            case NEUTRAL -> message.append("removed relation with ")
-                    .append(
-                            target.getNameWithDescription(faction)
-                                    .withStyle(relation.formatting)
-                    );
-        }
-
-        c.getSource().sendSuccess(
-                message,
-                true
-        );
-
-        return 1;
     }
 }
