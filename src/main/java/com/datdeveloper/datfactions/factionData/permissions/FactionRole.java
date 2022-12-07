@@ -141,6 +141,10 @@ public class FactionRole extends DatabaseEntity {
     /* Chat Summaries
     /* ========================================= */
 
+    /**
+     * Get a summary of the role for chat
+     * @return a summary of the role for chat
+     */
     public MutableComponent getChatSummary() {
         final MutableComponent message = Component.literal(DatChatFormatting.TextColour.HEADER + "____===")
                 .append(Component.literal(getName())
@@ -179,6 +183,10 @@ public class FactionRole extends DatabaseEntity {
         return message;
     }
 
+    /**
+     * Get a chat component containing the role name and with a hover event showing a short description of the role
+     * @return A chat component representing the role
+     */
     public MutableComponent getNameWithDescription() {
         return Component.literal(getName())
                 .withStyle(
@@ -194,6 +202,10 @@ public class FactionRole extends DatabaseEntity {
                 );
     }
 
+    /**
+     * Get a short version of the role description
+     * @return A short description of the role
+     */
     public MutableComponent getShortDescription() {
         final MutableComponent component = Component.empty();
 

@@ -50,10 +50,11 @@ public class RelationUtil {
      */
     public static EFactionRelation getRelation(final Faction from, final Faction to) {
         if (from == null || to == null) return EFactionRelation.NEUTRAL;
+        else if (from.equals(to)) return EFactionRelation.SELF;
 
         final FactionRelation relation = from.getRelation(to);
         if (relation != null) return relation.getRelation();
 
-        return EFactionRelation.SELF;
+        return EFactionRelation.NEUTRAL;
     }
 }
