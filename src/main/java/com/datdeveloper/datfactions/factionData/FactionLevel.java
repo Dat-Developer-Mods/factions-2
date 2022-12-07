@@ -16,6 +16,7 @@ import net.minecraftforge.server.ServerLifecycleHooks;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * A representation of the level storing the claims in that level and level specific config
@@ -106,25 +107,30 @@ public class FactionLevel extends DatabaseEntity {
 
         if (faction == null || faction.getId().equals(getSettings().defaultOwner)) {
             claims.remove(chunk);
-            return;
+        } else {
+            claims.put(chunk, new ChunkClaim(faction.getId()));
         }
-
-        claims.put(chunk, new ChunkClaim(faction.getId()));
-
-        oldOwner.validateHome();
+        if (oldOwner != null) oldOwner.validateHome();
 
         markDirty();
     }
 
 
     public void setChunksOwner(final Collection<ChunkPos> chunks, final Faction faction) {
+        final Set<Faction> owners = chunks.stream()
+                .map(this::getChunkOwningFaction)
+                .collect(Collectors.toSet());
         if (faction == null || faction.getId().equals(getSettings().defaultOwner)) {
             claims.keySet().removeAll(chunks);
-            return;
+        } else {
+            for (final ChunkPos chunk : chunks) {
+                claims.put(chunk, new ChunkClaim(faction.getId()));
+            }
         }
 
-        for (final ChunkPos chunk : chunks) {
-            claims.put(chunk, new ChunkClaim(faction.getId()));
+        for (final Faction owner : owners) {
+            // Null check required as it can be null when disbanding a faction
+            if (owner != null) owner.validateHome();
         }
 
         markDirty();

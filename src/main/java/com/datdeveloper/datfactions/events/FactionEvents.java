@@ -66,6 +66,8 @@ public class FactionEvents {
             final ChunkPos chunk = iterator.next();
             final Faction owner = FactionCollection.getInstance().getByKey(level.getChunkOwner(chunk));
 
+            if (owner == null) continue;
+
             // Weak borders check happens first to avoid the cost of comparing power
             if (owner.hasFlag(EFactionFlags.WEAKBORDERS)) {
                 continue;
