@@ -686,6 +686,7 @@ public class Faction extends DatabaseEntity {
         if (!hasFlag(EFactionFlags.ANONYMOUS)) {
             final Set<FactionPlayer> players = getPlayers();
             final List<MutableComponent> playersComponents = players.stream()
+                    .limit(20)
                     .map(player -> player.getNameWithDescription(from).withStyle(player.isPlayerOnline() ? DatChatFormatting.PlayerColour.ONLINE : DatChatFormatting.PlayerColour.OFFLINE))
                     .toList();
             final Component playersComponent = ComponentUtils.formatList(playersComponents, ComponentUtils.DEFAULT_SEPARATOR);
@@ -693,6 +694,8 @@ public class Faction extends DatabaseEntity {
             message.append("\n")
                     .append(DatChatFormatting.TextColour.INFO + "Players: ")
                     .append(playersComponent);
+
+            if (players.size() > 20) message.append("...");
         }
 
         // Relations
@@ -700,6 +703,7 @@ public class Faction extends DatabaseEntity {
             final Collection<FactionRelation> relationList = getRelations().values();
             final List<MutableComponent> relationsComponents = relationList.stream()
                     .sorted(Comparator.comparingInt(relation -> relation.getRelation().ordinal()))
+                    .limit(20)
                     .map(relation -> {
                         final Faction otherFaction = relation.getFaction();
                         return otherFaction.getNameWithDescription(this).withStyle(relation.getRelation().formatting);
@@ -709,6 +713,7 @@ public class Faction extends DatabaseEntity {
             message.append("\n")
                     .append(DatChatFormatting.TextColour.INFO + "Relations: ")
                     .append(relationsComponent);
+            if (relationList.size() > 20) message.append("...");
         }
 
         // Flags
