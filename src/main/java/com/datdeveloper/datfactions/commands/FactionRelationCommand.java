@@ -79,7 +79,13 @@ public class FactionRelationCommand extends BaseFactionCommand {
                     .toList();
 
             if (values.isEmpty()) {
-                sourceStack.sendFailure(Component.literal("There are no reciprocated relations towards your faction"));
+                sourceStack.sendFailure(
+                        Component.literal("There are no non-reciprocated relations towards")
+                                .append(
+                                        faction.getNameWithDescription(faction)
+                                                .withStyle(EFactionRelation.SELF.formatting)
+                                )
+                );
                 return;
             }
 

@@ -30,6 +30,7 @@ public class FactionPermissions {
     public static final PermissionNode<Boolean> FACTION_LIST = createNode("datfactions.list");
     public static final PermissionNode<Boolean> FACTION_INFO = createNode("datfactions.info");
     public static final PermissionNode<Boolean> FACTION_PLAYER_INFO = createNode("datfactions.playerInfo");
+    public static final PermissionNode<Boolean> FACTION_PLAYER_INVITES = createNode("datfactions.playerInvites");
     public static final PermissionNode<Boolean> FACTION_MAP = createNode("datfactions.map");
 
     // Basic Faction
@@ -105,6 +106,7 @@ public class FactionPermissions {
                 FACTION_LIST,
                 FACTION_INFO,
                 FACTION_PLAYER_INFO,
+                FACTION_PLAYER_INVITES,
                 FACTION_MAP,
 
                 FACTION_JOIN,
