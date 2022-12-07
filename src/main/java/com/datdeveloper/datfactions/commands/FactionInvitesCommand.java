@@ -56,7 +56,7 @@ public class FactionInvitesCommand extends BaseFactionCommand {
                 .requires(commandSourceStack -> {
                     final ServerPlayer player = commandSourceStack.getPlayer();
                     final FactionPlayer fPlayer = getPlayerOrTemplate(player);
-                    return DatPermissions.hasPermission(player, FACTION_RELATION_WISHES) && fPlayer.getRole().hasPermission(ERolePermissions.RELATIONWISHES);
+                    return DatPermissions.hasPermission(player, FACTION_INVITE_LIST_FACTION) && fPlayer.getRole().hasPermission(ERolePermissions.INVITELIST);
                 })
                 .then(
                         Commands.argument("Page", IntegerArgumentType.integer(1))
