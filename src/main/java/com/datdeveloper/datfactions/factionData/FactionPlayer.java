@@ -260,7 +260,7 @@ public class FactionPlayer extends DatabaseEntity {
                         .withStyle(Style.EMPTY
                                 .withClickEvent(new ClickEvent(
                                         ClickEvent.Action.SUGGEST_COMMAND,
-                                        "/factions player " + getLastName()
+                                        "/factions pinfo " + getLastName()
                                 ))
                         )
                 )
@@ -296,7 +296,7 @@ public class FactionPlayer extends DatabaseEntity {
     public MutableComponent getNameWithDescription(@Nullable final Faction from) {
         final String name = getName();
         final MutableComponent component = Component.literal(name);
-        component.withStyle(Style.EMPTY.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, getShortDescription(from))).withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/factions player " + name)));
+        component.withStyle(Style.EMPTY.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, getShortDescription(from))).withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/factions pinfo " + name)));
 
         return component;
     }

@@ -17,7 +17,7 @@ import static com.datdeveloper.datfactions.commands.FactionPermissions.FACTION_P
 
 public class FactionPlayerInfoCommand extends BaseFactionCommand {
     static void register(final LiteralArgumentBuilder<CommandSourceStack> command) {
-        final LiteralCommandNode<CommandSourceStack> subCommand = Commands.literal("player")
+        final LiteralCommandNode<CommandSourceStack> subCommand = Commands.literal("playerinfo")
                 .requires(FactionPermissions.hasPermission(FACTION_PLAYER_INFO))
                 .then(Commands.argument("Target Player", GameProfileArgument.gameProfile())
                         .suggests(DatSuggestionProviders.fPlayerProvider)
