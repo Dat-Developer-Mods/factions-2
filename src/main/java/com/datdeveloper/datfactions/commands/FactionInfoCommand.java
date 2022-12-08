@@ -14,15 +14,12 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
 
-import java.util.function.Predicate;
-
 import static com.datdeveloper.datfactions.commands.FactionPermissions.FACTION_INFO;
 
 public class FactionInfoCommand extends BaseFactionCommand {
     static void register(final LiteralArgumentBuilder<CommandSourceStack> command) {
-        final Predicate<CommandSourceStack> predicate = FactionPermissions.hasPermission(FACTION_INFO);
         final LiteralCommandNode<CommandSourceStack> subCommand = Commands.literal("info")
-                .requires(predicate)
+                .requires(FactionPermissions.hasPermission(FACTION_INFO))
                 .then(Commands.argument("Target Faction", StringArgumentType.word())
                         .suggests(DatSuggestionProviders.factionProvider)
                         .executes(c -> {

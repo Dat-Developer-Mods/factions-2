@@ -15,21 +15,18 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraftforge.common.MinecraftForge;
 
-import java.util.function.Predicate;
-
 import static com.datdeveloper.datfactions.commands.FactionPermissions.FACTION_SET_HOME;
 
 public class FactionSetHomeCommand extends BaseFactionCommand {
     static void register(final LiteralArgumentBuilder<CommandSourceStack> command) {
-        final Predicate<CommandSourceStack> predicate = commandSourceStack -> {
-            if (!(commandSourceStack.isPlayer()) && DatPermissions.hasPermission(commandSourceStack.getPlayer(), FACTION_SET_HOME))
-                return false;
-            final FactionPlayer fPlayer = getPlayerOrTemplate(commandSourceStack.getPlayer());
-            return fPlayer.hasFaction() && fPlayer.getRole().hasPermission(ERolePermissions.SETHOME);
-        };
 
         final LiteralCommandNode<CommandSourceStack> subCommand = Commands.literal("sethome")
-                .requires(predicate)
+                .requires(commandSourceStack -> {
+                    if (!(commandSourceStack.isPlayer()) && DatPermissions.hasPermission(commandSourceStack.getPlayer(), FACTION_SET_HOME))
+                        return false;
+                    final FactionPlayer fPlayer1 = getPlayerOrTemplate(commandSourceStack.getPlayer());
+                    return fPlayer1.hasFaction() && fPlayer1.getRole().hasPermission(ERolePermissions.SETHOME);
+                })
                 .executes(c -> {
                     final ServerPlayer player = c.getSource().getPlayer();
                     final FactionPlayer fPlayer = FPlayerCollection.getInstance().getPlayer(player);

@@ -17,21 +17,18 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.common.MinecraftForge;
 
-import java.util.function.Predicate;
-
 import static com.datdeveloper.datfactions.commands.FactionPermissions.FACTION_LEAVE;
 
 public class FactionLeaveCommand extends BaseFactionCommand {
     static void register(final LiteralArgumentBuilder<CommandSourceStack> command) {
-        final Predicate<CommandSourceStack> predicate = commandSourceStack -> {
-            if (!(commandSourceStack.isPlayer()) && DatPermissions.hasPermission(commandSourceStack.getPlayer(), FACTION_LEAVE))
-                return false;
-            final FactionPlayer fPlayer = getPlayerOrTemplate(commandSourceStack.getPlayer());
-            return fPlayer.hasFaction();
-        };
 
         final LiteralCommandNode<CommandSourceStack> subCommand = Commands.literal("leave")
-                .requires(predicate)
+                .requires(commandSourceStack -> {
+                    if (!(commandSourceStack.isPlayer()) && DatPermissions.hasPermission(commandSourceStack.getPlayer(), FACTION_LEAVE))
+                        return false;
+                    final FactionPlayer fPlayer1 = getPlayerOrTemplate(commandSourceStack.getPlayer());
+                    return fPlayer1.hasFaction();
+                })
                 .executes(c -> {
                     final ServerPlayer player = c.getSource().getPlayer();
                     final FactionPlayer fPlayer = FPlayerCollection.getInstance().getPlayer(player);
