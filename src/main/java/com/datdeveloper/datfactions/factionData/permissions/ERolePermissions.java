@@ -41,7 +41,8 @@ public enum ERolePermissions {
     DISBAND("Allows the player to disband the faction"),
 
     // Relation
-    RELATIONWISHES("Allows the player to list the faction's reciprocated relations"),
+    RELATIONLIST("Allows the player to list the faction's relations"),
+    RELATIONWISHES("Allows the player to list un-reciprocated relations towards your faction"),
     RELATIONALLY("Allows the player to declare allies"),
     RELATIONTRUCE("ALLows the player to declare truces with other factions"),
     RELATIONNEUTRAL("Allows the player to declare other factions as neutral"),

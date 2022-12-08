@@ -298,7 +298,8 @@ public class FactionRole extends DatabaseEntity {
                 // Faction Management
                 ERolePermissions.SETMOTD,
 
-                // RELATION
+                // Relations
+                ERolePermissions.RELATIONLIST,
                 ERolePermissions.RELATIONWISHES,
                 ERolePermissions.RELATIONALLY,
                 ERolePermissions.RELATIONTRUCE,

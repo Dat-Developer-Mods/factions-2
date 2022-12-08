@@ -47,6 +47,7 @@ public class FactionPermissions {
     public static final PermissionNode<Boolean> FACTION_DISBAND = createNode("datfactions.faction.disband");
 
     // Relations
+    public static final PermissionNode<Boolean> FACTION_RELATION_LIST = createNode("datfactions.faction.relation.list");
     public static final PermissionNode<Boolean> FACTION_RELATION_WISHES = createNode("datfactions.faction.relation.wishes");
     public static final PermissionNode<Boolean> FACTION_RELATION_ALLY = createNode("datfactions.faction.relation.ally");
     public static final PermissionNode<Boolean> FACTION_RELATION_TRUCE = createNode("datfactions.faction.relation.truce");
@@ -106,8 +107,9 @@ public class FactionPermissions {
                 FACTION_LIST,
                 FACTION_INFO,
                 FACTION_PLAYER_INFO,
-                FACTION_PLAYER_INVITES,
                 FACTION_MAP,
+
+                FACTION_PLAYER_INVITES,
 
                 FACTION_JOIN,
                 FACTION_HOME,
@@ -133,10 +135,11 @@ public class FactionPermissions {
                 FACTION_SET_ROLE,
                 FACTION_KICK,
 
+                FACTION_INVITE_LIST_FACTION,
                 FACTION_INVITE,
                 FACTION_UNINVITE,
-                FACTION_INVITE_LIST_FACTION,
 
+                FACTION_RELATION_LIST,
                 FACTION_RELATION_WISHES,
                 FACTION_RELATION_ALLY,
                 FACTION_RELATION_TRUCE,

@@ -2,7 +2,10 @@ package com.datdeveloper.datfactions.commands;
 
 import com.datdeveloper.datfactions.api.events.FactionChangeRelationEvent;
 import com.datdeveloper.datfactions.commands.suggestions.DatSuggestionProviders;
-import com.datdeveloper.datfactions.factionData.*;
+import com.datdeveloper.datfactions.factionData.EFactionFlags;
+import com.datdeveloper.datfactions.factionData.Faction;
+import com.datdeveloper.datfactions.factionData.FactionCollection;
+import com.datdeveloper.datfactions.factionData.FactionPlayer;
 import com.datdeveloper.datfactions.factionData.permissions.ERolePermissions;
 import com.datdeveloper.datfactions.factionData.relations.EFactionRelation;
 import com.datdeveloper.datfactions.factionData.relations.FactionRelation;
@@ -31,12 +34,13 @@ public class FactionRelationCommand extends BaseFactionCommand {
 
         final LiteralArgumentBuilder<CommandSourceStack> subCommand = Commands.literal("relations")
                 .requires(commandSourceStack -> {
-                    if (!(commandSourceStack.isPlayer()) && DatPermissions.hasAnyPermissions(commandSourceStack.getPlayer(), FACTION_RELATION_WISHES, FACTION_RELATION_ALLY, FACTION_RELATION_TRUCE, FACTION_RELATION_NEUTRAL, FACTION_RELATION_ENEMY))
+                    if (!(commandSourceStack.isPlayer()) && DatPermissions.hasAnyPermissions(commandSourceStack.getPlayer(), FACTION_RELATION_LIST, FACTION_RELATION_WISHES, FACTION_RELATION_ALLY, FACTION_RELATION_TRUCE, FACTION_RELATION_NEUTRAL, FACTION_RELATION_ENEMY))
                         return false;
                     final FactionPlayer fPlayer = getPlayerOrTemplate(commandSourceStack.getPlayer());
                     final Faction faction = fPlayer.getFaction();
                     return faction != null && !faction.hasFlag(EFactionFlags.UNRELATEABLE) && fPlayer.getRole().hasAnyPermissions(ERolePermissions.RELATIONWISHES, ERolePermissions.RELATIONALLY, ERolePermissions.RELATIONTRUCE, ERolePermissions.RELATIONNEUTRAL, ERolePermissions.RELATIONENEMY);
                 })
+                .then(buildRelationListCommand())
                 .then(buildRelationWishesCommand())
                 .then(buildRelationAllyCommand())
                 .then(buildRelationTruceCommand())
@@ -44,6 +48,91 @@ public class FactionRelationCommand extends BaseFactionCommand {
                 .then(buildRelationEnemyCommand());
 
         command.then(subCommand.build());
+    }
+
+    /* ========================================= */
+    /* Relation List
+    /* ========================================= */
+
+    static LiteralArgumentBuilder<CommandSourceStack> buildRelationListCommand() {
+        return Commands.literal("list")
+                .requires(commandSourceStack -> {
+                    final ServerPlayer player = commandSourceStack.getPlayer();
+                    final FactionPlayer fPlayer = getPlayerOrTemplate(player);
+                    return DatPermissions.hasPermission(player, FACTION_RELATION_LIST) && fPlayer.getRole().hasPermission(ERolePermissions.RELATIONLIST);
+                })
+                .then(
+                        Commands.argument("Page", IntegerArgumentType.integer(1))
+                                .executes(c -> executeList(c.getSource(), c.getArgument("Page", Integer.class)))
+                )
+                .executes(c -> executeList(c.getSource(), 1));
+    }
+
+    private static int executeList(final CommandSourceStack sourceStack, final int page) {
+        final ServerPlayer player = sourceStack.getPlayer();
+        final FactionPlayer fPlayer = getPlayerOrTemplate(player);
+        final Faction faction = fPlayer.getFaction();
+
+        AsyncHandler.runAsyncTask(() -> {
+            final List<Faction> values = faction.getRelations().keySet().stream()
+                    .map(uuid -> FactionCollection.getInstance().getByKey(uuid))
+                    .toList();
+
+            if (values.isEmpty()) {
+                sourceStack.sendFailure(
+                        Component.literal("Your faction has not made any relations")
+                );
+                return;
+            }
+
+            final Pager<Faction> pager = new Pager<>(
+                    "/f relation list",
+                    "Relations",
+                    values,
+                    (factionEl -> {
+                        final FactionRelation relationTo = faction.getRelation(factionEl);
+                        final FactionRelation relationFrom = factionEl.getRelation(faction);
+                        final EFactionRelation eFromRelation = relationFrom != null ? relationFrom.getRelation() : EFactionRelation.NEUTRAL;
+                        final MutableComponent component = Component.empty();
+                        final MutableComponent otherFactionComponent = factionEl.getNameWithDescription(faction)
+                                .withStyle(eFromRelation.formatting);
+
+                        final MutableComponent fromComponent;
+                        switch (relationTo.getRelation()) {
+                            case ALLY -> fromComponent = Component.literal("We regard ")
+                                    .append(otherFactionComponent)
+                                    .append(" as an ally");
+                            case TRUCE -> fromComponent = Component.literal("We declare a truce with ")
+                                    .append(otherFactionComponent);
+                            case ENEMY -> fromComponent = Component.literal("We regard ")
+                                    .append(otherFactionComponent)
+                                    .append(" as an enemy");
+                            default ->
+                                    throw new IllegalStateException("Unexpected value: " + relationTo.getRelation());
+                        }
+                        fromComponent.withStyle(relationTo.getRelation().formatting);
+                        component.append(fromComponent);
+
+                        if (eFromRelation != relationTo.getRelation() ) {
+                            fromComponent.append(", ");
+
+                            final MutableComponent toComponent = Component.literal("but ");
+                            switch (eFromRelation) {
+                                case ALLY -> toComponent.append("they think of us as an ally");
+                                case TRUCE -> toComponent.append("they want a truce with us");
+                                case NEUTRAL -> toComponent.append("they are neutral with us");
+                                case ENEMY -> toComponent.append("they think of us as an enemy");
+                            }
+                            component.append(toComponent.withStyle(eFromRelation.formatting));
+                        }
+
+                        return component;
+                    })
+            );
+            pager.sendPage(page, sourceStack.source);
+        });
+
+        return 1;
     }
 
     /* ========================================= */
@@ -104,9 +193,9 @@ public class FactionRelationCommand extends BaseFactionCommand {
 
                             final MutableComponent fromComponent;
                             switch (relationFrom.getRelation()) {
-                                case ALLY -> fromComponent = Component.literal(" regard us as an ally,");
-                                case TRUCE -> fromComponent = Component.literal(" wants a truce with us,");
-                                case ENEMY -> fromComponent = Component.literal(" regard us as an enemy,");
+                                case ALLY -> fromComponent = Component.literal(" regard us as an ally");
+                                case TRUCE -> fromComponent = Component.literal(" wants a truce with us");
+                                case ENEMY -> fromComponent = Component.literal(" regard us as an enemy");
                                 default ->
                                         throw new IllegalStateException("Unexpected value: " + relationFrom.getRelation());
                             }
