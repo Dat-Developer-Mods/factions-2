@@ -1,10 +1,7 @@
 package com.datdeveloper.datfactions.commands.util;
 
 import com.datdeveloper.datmoddingapi.util.DatChatFormatting;
-import net.minecraft.network.chat.ClickEvent;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.*;
 
 public class FactionCommandUtils {
     /**
@@ -27,6 +24,10 @@ public class FactionCommandUtils {
     public static MutableComponent wrapCommand(final String display, final String actualCommand) {
         return MutableComponent.create(Component.literal(display).getContents())
                 .withStyle(DatChatFormatting.TextColour.COMMAND)
-                .withStyle(Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, actualCommand)));
+                .withStyle(
+                        Style.EMPTY
+                                .withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, actualCommand))
+                                .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal(actualCommand).withStyle(DatChatFormatting.TextColour.COMMAND)))
+                );
     }
 }
