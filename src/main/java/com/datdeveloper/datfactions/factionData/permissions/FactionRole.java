@@ -273,13 +273,16 @@ public class FactionRole extends DatabaseEntity {
         final FactionRole officer = new FactionRole("Officer");
 
         officer.permissions = new HashSet<>(Arrays.asList(
-                // Member Management
-                ERolePermissions.INVITE,
-                ERolePermissions.UNINVITE,
+                // Player
                 ERolePermissions.KICK,
                 ERolePermissions.SETROLE,
                 ERolePermissions.PROMOTE,
                 ERolePermissions.DEMOTE,
+
+                // Invites
+                ERolePermissions.INVITELIST,
+                ERolePermissions.INVITE,
+                ERolePermissions.UNINVITE,
 
                 // Roles
                 ERolePermissions.ROLELIST,
@@ -340,6 +343,10 @@ public class FactionRole extends DatabaseEntity {
                 ERolePermissions.CONTAINERS,
                 ERolePermissions.BUILD,
                 ERolePermissions.INTERACT,
+
+                // Relations
+                ERolePermissions.RELATIONLIST,
+                ERolePermissions.RELATIONWISHES,
 
                 // Chat
                 ERolePermissions.FACTIONCHAT,
