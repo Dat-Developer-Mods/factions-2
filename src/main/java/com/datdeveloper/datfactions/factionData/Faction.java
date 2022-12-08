@@ -552,7 +552,7 @@ public class Faction extends DatabaseEntity {
                         message.append(EFactionRelation.TRUCE.formatting + "you still have a truce with them and are prevented from dealing pvp damage with each other, ");
                     case NEUTRAL:
                         message.append(EFactionRelation.NEUTRAL.formatting + "you can add them as an ally with")
-                                .append(FactionCommandUtils.wrapCommand("/faction ally " + otherFaction.getName()));
+                                .append(FactionCommandUtils.wrapCommand("/factions relations ally " + otherFaction.getName()));
                         break;
                     case ENEMY:
                         message.append(EFactionRelation.ENEMY.formatting + "but you still regard them as an enemy");
@@ -566,7 +566,7 @@ public class Faction extends DatabaseEntity {
                     case TRUCE ->
                             message.append(EFactionRelation.TRUCE.formatting + "you are now both at truce and are prevented from dealing pvp damage with each other, ");
                     case NEUTRAL -> message.append(EFactionRelation.NEUTRAL.formatting + "you can also declare a truce with them with ")
-                            .append(FactionCommandUtils.wrapCommand("/faction truce " + otherFaction.getName()));
+                            .append(FactionCommandUtils.wrapCommand("/factions relations truce " + otherFaction.getName()));
                     case ENEMY -> message.append(EFactionRelation.ENEMY.formatting + "but you still regard them as an enemy");
                 }
             }
@@ -579,8 +579,8 @@ public class Faction extends DatabaseEntity {
                     case TRUCE:
                         message.append(EFactionRelation.TRUCE.formatting + "you are currently at truce with them, but are not protected from pvp with them ");
                     case NEUTRAL:
-                        message.append(EFactionRelation.NEUTRAL.formatting + "you can also declare them as enemies with them with ")
-                                .append(FactionCommandUtils.wrapCommand("/faction enemy " + otherFaction.getName()));
+                        message.append(EFactionRelation.NEUTRAL.formatting + "you can also declare them as enemies with ")
+                                .append(FactionCommandUtils.wrapCommand("/factions relations enemy " + otherFaction.getName()));
                         break;
                     case ENEMY:
                         message.append(EFactionRelation.ENEMY.formatting + "you are now hostile factions");
