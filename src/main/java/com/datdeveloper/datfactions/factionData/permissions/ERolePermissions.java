@@ -9,7 +9,8 @@ import net.minecraft.network.chat.Style;
  * The available permissions for a role in a faction
  */
 public enum ERolePermissions {
-    // Player Management,
+    // Player Management
+    LISTPLAYERS("Allows the player to list the members of the faction"),
     KICK("Allows the player to kick members below their role from the faction"),
     SETROLE("Allows the player to set the role of other players below their role up to their role (they cannot set players to their role or any higher roles)"),
     PROMOTE("Allows the player to promote other players up to the role below their own"),

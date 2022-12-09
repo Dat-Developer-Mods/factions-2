@@ -39,7 +39,7 @@ public class FactionLeaveCommand extends BaseFactionCommand {
                                 Component.literal(DatChatFormatting.TextColour.ERROR + "You cannot leave the faction when you are the owner, disband the faction with ")
                                         .append(FactionCommandUtils.wrapCommand("/f disband"))
                                         .append(DatChatFormatting.TextColour.ERROR + ", or set a new owner with ")
-                                        .append(FactionCommandUtils.wrapCommand("/f setowner <player>", "/f setowner "))
+                                        .append(FactionCommandUtils.wrapCommand("/f players setowner <player>", "/f players setowner "))
                         );
                         return 2;
                     }

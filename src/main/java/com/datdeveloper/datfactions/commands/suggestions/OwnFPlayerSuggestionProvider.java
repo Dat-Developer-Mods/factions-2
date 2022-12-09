@@ -4,7 +4,6 @@ import com.datdeveloper.datfactions.factionData.FPlayerCollection;
 import com.datdeveloper.datfactions.factionData.FactionPlayer;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.mojang.brigadier.suggestion.SuggestionProvider;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import net.minecraft.commands.CommandSourceStack;
@@ -14,24 +13,21 @@ import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 /**
- * A suggestion provider for faction player names
+ * A suggestion provider for faction player names in the same faction as the caller
  */
-public class FPlayerSuggestionProvider implements SuggestionProvider<CommandSourceStack> {
-    /**
-     * Exclude the player that called the command
-     */
-    protected final boolean excludeCaller;
-
+public class OwnFPlayerSuggestionProvider extends FPlayerSuggestionProvider {
     /**
      * @param excludeCaller Exclude the player that called the command
      */
-    public FPlayerSuggestionProvider(final boolean excludeCaller) {
-        this.excludeCaller = excludeCaller;
+    public OwnFPlayerSuggestionProvider(final boolean excludeCaller) {
+        super(excludeCaller);
     }
+
     @Override
     public CompletableFuture<Suggestions> getSuggestions(final CommandContext<CommandSourceStack> context, final SuggestionsBuilder builder) throws CommandSyntaxException {
         final ServerPlayer player = context.getSource().getPlayer();
-        FPlayerCollection.getInstance().getAll().values().stream()
+        final FactionPlayer fPlayer = FPlayerCollection.getInstance().getPlayer(player);
+        fPlayer.getFaction().getPlayers().stream()
                 .filter(factionPlayer -> !excludeCaller || !Objects.equals(player != null ? player.getUUID() : null, factionPlayer.getId()))
                 .map(FactionPlayer::getName)
                 .forEach(builder::suggest);

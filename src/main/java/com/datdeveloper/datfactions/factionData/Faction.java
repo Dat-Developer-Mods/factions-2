@@ -1,5 +1,6 @@
 package com.datdeveloper.datfactions.factionData;
 
+import com.datdeveloper.datfactions.api.events.FactionPlayerChangeRoleEvent;
 import com.datdeveloper.datfactions.commands.util.FactionCommandUtils;
 import com.datdeveloper.datfactions.database.DatabaseEntity;
 import com.datdeveloper.datfactions.factionData.permissions.FactionRole;
@@ -16,6 +17,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.common.MinecraftForge;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -406,13 +408,16 @@ public class Faction extends DatabaseEntity {
             return;
         }
 
-        UUID newRole = getRoles().get(getRoleIndex(role.getId()) - 1).getId();
-        for (FactionPlayer fPlayer : getPlayers()) {
+        final UUID newRole = getRoles().get(getRoleIndex(role.getId()) - 1).getId();
+        for (final FactionPlayer fPlayer : getPlayers()) {
             if (!fPlayer.getRoleId().equals(role.getId())) {
                 continue;
             }
 
-            fPlayer.setRole(newRole);
+            final FactionPlayerChangeRoleEvent event = new FactionPlayerChangeRoleEvent(null, fPlayer, this, getRole(newRole), FactionPlayerChangeRoleEvent.EChangeRoleReason.REMOVED);
+            MinecraftForge.EVENT_BUS.post(event);
+
+            fPlayer.setRole(event.getNewRole().getId());
         }
 
         roles.remove(role);

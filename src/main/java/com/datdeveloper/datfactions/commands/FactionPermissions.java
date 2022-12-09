@@ -64,9 +64,11 @@ public class FactionPermissions {
     public static final PermissionNode<Boolean> FACTION_ROLE_MODIFY_PERMISSIONS = createNode("datfactions.faction.role.permissions");
 
     // User Management
+    public static final PermissionNode<Boolean> FACTION_LIST_PLAYERS = createNode("datfactions.faction.player.list");
     public static final PermissionNode<Boolean> FACTION_PROMOTE = createNode("datfactions.faction.player.promote");
     public static final PermissionNode<Boolean> FACTION_DEMOTE = createNode("datfactions.faction.player.demote");
     public static final PermissionNode<Boolean> FACTION_SET_ROLE = createNode("datfactions.faction.player.setrole");
+    public static final PermissionNode<Boolean> FACTION_SET_OWNER = createNode("datfactions.faction.player.setowner");
     public static final PermissionNode<Boolean> FACTION_KICK = createNode("datfactions.faction.player.kick");
 
     // Invites
@@ -108,7 +110,6 @@ public class FactionPermissions {
                 FACTION_INFO,
                 FACTION_PLAYER_INFO,
                 FACTION_MAP,
-
                 FACTION_PLAYER_INVITES,
 
                 FACTION_JOIN,
@@ -130,9 +131,11 @@ public class FactionPermissions {
                 FACTION_ROLE_REORDER,
                 FACTION_ROLE_MODIFY_PERMISSIONS,
 
+                FACTION_LIST_PLAYERS,
                 FACTION_PROMOTE,
                 FACTION_DEMOTE,
                 FACTION_SET_ROLE,
+                FACTION_SET_OWNER,
                 FACTION_KICK,
 
                 FACTION_INVITE_LIST_FACTION,
