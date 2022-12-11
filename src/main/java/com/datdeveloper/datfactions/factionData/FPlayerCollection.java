@@ -69,12 +69,14 @@ public class FPlayerCollection extends BaseCollection<UUID, FactionPlayer> {
      * Register a new player to the factions system
      * @param player the player to register
      */
-    public void registerNewPlayer(final ServerPlayer player) {
+    public FactionPlayer registerNewPlayer(final ServerPlayer player) {
         final FactionPlayer newPlayer = new FactionPlayer(player, template);
         map.put(player.getUUID(), newPlayer);
         Database.instance.storePlayer(newPlayer);
         FactionIndex.getInstance().updatePlayerFaction(newPlayer);
         logger.info("Registered new factions player: " + player.getName().getString());
+
+        return newPlayer;
     }
 
     /**

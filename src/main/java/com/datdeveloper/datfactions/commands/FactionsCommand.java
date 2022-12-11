@@ -36,6 +36,8 @@ public class FactionsCommand {
 
         FactionPlayersCommand.register(command);
 
+        FactionFlagsCommand.register(command);
+
         FactionClaimCommand.register(command);
         FactionUnclaimCommand.register(command);
 

@@ -71,6 +71,12 @@ public class FactionPermissions {
     public static final PermissionNode<Boolean> FACTION_SET_OWNER = createNode("datfactions.faction.player.setowner");
     public static final PermissionNode<Boolean> FACTION_KICK = createNode("datfactions.faction.player.kick");
 
+    // Flags
+
+    public static final PermissionNode<Boolean> FACTION_FLAG_LIST = createNode("datfactions.faction.flags.list");
+    public static final PermissionNode<Boolean> FACTION_FLAG_ADD = createNode("datfactions.faction.flags.add");
+    public static final PermissionNode<Boolean> FACTION_FLAG_REMOVE = createNode("datfactions.faction.flags.remove");
+
     // Invites
     public static final PermissionNode<Boolean> FACTION_INVITE = createNode("datfactions.faction.invite.invite");
     public static final PermissionNode<Boolean> FACTION_UNINVITE = createNode("datfactions.faction.invite.uninvite");
@@ -148,6 +154,10 @@ public class FactionPermissions {
                 FACTION_RELATION_TRUCE,
                 FACTION_RELATION_NEUTRAL,
                 FACTION_RELATION_ENEMY,
+
+                FACTION_FLAG_LIST,
+                FACTION_FLAG_ADD,
+                FACTION_FLAG_REMOVE,
 
                 FACTION_CLAIM_ONE,
                 FACTION_CLAIM_AUTO,

@@ -5,4 +5,5 @@ public class DatSuggestionProviders {
     public static final FPlayerSuggestionProvider fPlayerProvider = new FPlayerSuggestionProvider(false);
     public static final OwnFPlayerSuggestionProvider ownFPlayerProvider = new OwnFPlayerSuggestionProvider(false);
     public static final FactionPermissionSuggestionProvider permissionProvider = new FactionPermissionSuggestionProvider();
+    public static final FactionFlagSuggestionProvider flagSuggestionProvider = new FactionFlagSuggestionProvider(false);
 }

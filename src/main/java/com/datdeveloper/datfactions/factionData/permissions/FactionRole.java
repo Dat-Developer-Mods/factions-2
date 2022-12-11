@@ -313,6 +313,11 @@ public class FactionRole extends DatabaseEntity {
                 ERolePermissions.FACTIONCHAT,
                 ERolePermissions.ALLYCHAT,
 
+                // Flags
+                ERolePermissions.FLAGLIST,
+                ERolePermissions.FLAGADD,
+                ERolePermissions.FLAGREMOVE,
+
                 // Misc
                 ERolePermissions.HOME,
                 ERolePermissions.SETHOME

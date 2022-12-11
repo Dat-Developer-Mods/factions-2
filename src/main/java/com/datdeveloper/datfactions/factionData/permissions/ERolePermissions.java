@@ -49,6 +49,11 @@ public enum ERolePermissions {
     RELATIONNEUTRAL("Allows the player to declare other factions as neutral"),
     RELATIONENEMY("Allows the player to declare enemies"),
 
+    // Flags
+    FLAGLIST("Allows the player to list the flags the faction has"),
+    FLAGADD("Allows the player to add flags to the faction"),
+    FLAGREMOVE("Allows the player to remove flags from the faction"),
+
 
     // Chat
     FACTIONCHAT("Allows the player to use the faction's private chat"),

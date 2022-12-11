@@ -728,6 +728,7 @@ public class Faction extends DatabaseEntity {
                     .toList();
             final Component flagComponent = ComponentUtils.formatList(flagComponents, ComponentUtils.DEFAULT_SEPARATOR);
             message.append("\n")
+                    .append(DatChatFormatting.TextColour.INFO + "Flags: ")
                     .append(flagComponent);
         }
 

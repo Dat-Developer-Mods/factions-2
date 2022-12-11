@@ -9,6 +9,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.datdeveloper.datfactions.Datfactions.logger;
+
 public class FLevelCollection extends BaseCollection<ResourceKey<Level>, FactionLevel>{
     private static final FLevelCollection instance = new FLevelCollection();
 
@@ -32,9 +34,10 @@ public class FLevelCollection extends BaseCollection<ResourceKey<Level>, Faction
         if (level == null) {
             level = new FactionLevel(levelId);
             Database.instance.storeLevel(level);
+            logger.info("Created new FactionLevel for " + level.getName());
         }
-
-        return map.put(levelId, level);
+        map.put(levelId, level);
+        return level;
     }
 
     /**

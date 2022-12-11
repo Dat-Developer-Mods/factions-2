@@ -43,7 +43,7 @@ public enum EFactionFlags {
      * Get a chat component that contains the name of the flag and shows its description on hover
      * @return a chat component representing the flag
      */
-    MutableComponent getChatComponent() {
+    public MutableComponent getChatComponent() {
         final MutableComponent component = MutableComponent.create(Component.literal(this.name().toLowerCase()).getContents());
         return component.withStyle(Style.EMPTY.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal(description))));
     }
