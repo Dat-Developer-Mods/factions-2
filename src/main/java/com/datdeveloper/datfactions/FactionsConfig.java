@@ -145,7 +145,7 @@ public class FactionsConfig {
         {
             validateEmptyFactions = builder
                     .comment(
-                            "How to handle factions without the DEFAULT flag that have no members"
+                            "How to handle factions without the PERMANENT flag that have no members"
                     )
                     .defineEnum("ValidateFactionMembers", EValidationType.WARN);
 

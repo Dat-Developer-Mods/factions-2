@@ -24,7 +24,6 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.UUID;
 
 import static com.datdeveloper.datfactions.Datfactions.logger;
 
@@ -53,17 +52,16 @@ public class DataEvents {
         // Validate empty factions
         if (FactionsConfig.getValidateEmptyFactions() != FactionsConfig.EValidationType.IGNORE) {
             final List<Faction> emptyFactions = FactionCollection.getInstance().getAll().values().stream()
-                    .filter(faction -> faction.getPlayers().isEmpty() && !faction.hasFlag(EFactionFlags.DEFAULT))
+                    .filter(faction -> faction.getPlayers().isEmpty() && !faction.hasFlag(EFactionFlags.PERMANENT))
                     .toList();
 
             if (!emptyFactions.isEmpty()) {
                 if (FactionsConfig.getValidateEmptyFactions() == FactionsConfig.EValidationType.REMOVE) {
-                    final Map<UUID, Faction> factionMap = FactionCollection.getInstance().getAll();
                     emptyFactions.forEach(faction -> FactionCollection.getInstance().disbandFaction(faction.getId()));
 
-                    logger.warn("Found and removed " + emptyFactions.size() + " empty non-default factions");
+                    logger.warn("Found and removed " + emptyFactions.size() + " empty non-permanent factions");
                 } else {
-                    logger.warn("Found " + emptyFactions.size() + " empty non-default factions, if these were not manually created then they probably need removing");
+                    logger.warn("Found " + emptyFactions.size() + " empty non-permanent factions, if these were not manually created then they probably need removing");
                 }
             }
         }
