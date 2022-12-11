@@ -43,9 +43,9 @@ public class FLevelCollection extends BaseCollection<ResourceKey<Level>, Faction
      * @return A map of levels to chunks the faction owns
      */
     public Map<FactionLevel, List<ChunkPos>> getAllFactionChunks(final Faction faction) {
-        HashMap<FactionLevel, List<ChunkPos>> levelChunks = new HashMap<>();
-        for (FactionLevel level : getAll().values()) {
-            List<ChunkPos> chunks = level.getFactionChunks(faction);
+        final HashMap<FactionLevel, List<ChunkPos>> levelChunks = new HashMap<>();
+        for (final FactionLevel level : getAll().values()) {
+            final List<ChunkPos> chunks = level.getFactionChunks(faction);
             if (!chunks.isEmpty()) {
                 levelChunks.put(level, chunks);
             }

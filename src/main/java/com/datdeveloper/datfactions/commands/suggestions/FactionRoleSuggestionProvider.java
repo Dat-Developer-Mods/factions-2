@@ -5,7 +5,6 @@ import com.datdeveloper.datfactions.factionData.Faction;
 import com.datdeveloper.datfactions.factionData.FactionPlayer;
 import com.datdeveloper.datfactions.factionData.permissions.FactionRole;
 import com.mojang.brigadier.context.CommandContext;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
@@ -33,7 +32,7 @@ public class FactionRoleSuggestionProvider implements SuggestionProvider<Command
     }
 
     @Override
-    public CompletableFuture<Suggestions> getSuggestions(final CommandContext<CommandSourceStack> context, final SuggestionsBuilder builder) throws CommandSyntaxException {
+    public CompletableFuture<Suggestions> getSuggestions(final CommandContext<CommandSourceStack> context, final SuggestionsBuilder builder) {
         final FactionPlayer fPlayer = FPlayerCollection.getInstance().getPlayer(context.getSource().getPlayer());
         final Faction faction = fPlayer.getFaction();
         final int playerRoleIndex = faction.getRoleIndex(fPlayer.getRoleId());

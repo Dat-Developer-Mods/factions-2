@@ -9,7 +9,6 @@ import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.slf4j.Logger;
 
@@ -25,9 +24,6 @@ public class Datfactions {
     public Datfactions() {
         final IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
 
-        // Register the commonSetup method for modloading
-        modEventBus.addListener(this::commonSetup);
-
         // Compat with Infiniverse
         if (ModList.get().isLoaded("infiniverse")) {
             MinecraftForge.EVENT_BUS.register(InfiniverseEvents.class);
@@ -40,9 +36,5 @@ public class Datfactions {
         //noinspection InstantiationOfUtilityClass
         final FactionsConfig config = new FactionsConfig(builder);
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, builder.build());
-    }
-
-    private void commonSetup(final FMLCommonSetupEvent event) {
-        // Some common setup code
     }
 }

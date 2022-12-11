@@ -147,7 +147,6 @@ public class FactionEvents {
                 sendSourceMessage(source, Component.literal(DatChatFormatting.TextColour.ERROR + "You don't have enough power to claim that much more land in ")
                         .append(level.getNameWithDescription(faction).withStyle(ChatFormatting.AQUA)));
                 event.setCanceled(true);
-                return;
             }
         }
     }

@@ -78,6 +78,7 @@ public class FactionLevelSettings extends DatabaseEntity {
 
         this.allowClaiming = true;
         this.requireConnect = true;
+        this.homeRequiresOwnedChunk = true;
         this.maxLand = Integer.MAX_VALUE;
         this.landWorth = 10;
         this.maxClaimRadius = 3;
@@ -95,6 +96,7 @@ public class FactionLevelSettings extends DatabaseEntity {
 
         this.allowClaiming = template.allowClaiming;
         this.requireConnect = template.requireConnect;
+        this.homeRequiresOwnedChunk = template.homeRequiresOwnedChunk;
         this.maxLand = template.maxLand;
         this.landWorth = template.landWorth;
         this.maxClaimRadius = template.maxClaimRadius;

@@ -3,7 +3,6 @@ package com.datdeveloper.datfactions.commands.suggestions;
 import com.datdeveloper.datfactions.factionData.FPlayerCollection;
 import com.datdeveloper.datfactions.factionData.FactionPlayer;
 import com.mojang.brigadier.context.CommandContext;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import net.minecraft.commands.CommandSourceStack;
@@ -24,7 +23,7 @@ public class OwnFPlayerSuggestionProvider extends FPlayerSuggestionProvider {
     }
 
     @Override
-    public CompletableFuture<Suggestions> getSuggestions(final CommandContext<CommandSourceStack> context, final SuggestionsBuilder builder) throws CommandSyntaxException {
+    public CompletableFuture<Suggestions> getSuggestions(final CommandContext<CommandSourceStack> context, final SuggestionsBuilder builder) {
         final ServerPlayer player = context.getSource().getPlayer();
         final FactionPlayer fPlayer = FPlayerCollection.getInstance().getPlayer(player);
         fPlayer.getFaction().getPlayers().stream()

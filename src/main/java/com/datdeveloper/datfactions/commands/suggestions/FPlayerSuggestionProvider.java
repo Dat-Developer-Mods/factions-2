@@ -3,7 +3,6 @@ package com.datdeveloper.datfactions.commands.suggestions;
 import com.datdeveloper.datfactions.factionData.FPlayerCollection;
 import com.datdeveloper.datfactions.factionData.FactionPlayer;
 import com.mojang.brigadier.context.CommandContext;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
@@ -29,7 +28,7 @@ public class FPlayerSuggestionProvider implements SuggestionProvider<CommandSour
         this.excludeCaller = excludeCaller;
     }
     @Override
-    public CompletableFuture<Suggestions> getSuggestions(final CommandContext<CommandSourceStack> context, final SuggestionsBuilder builder) throws CommandSyntaxException {
+    public CompletableFuture<Suggestions> getSuggestions(final CommandContext<CommandSourceStack> context, final SuggestionsBuilder builder) {
         final ServerPlayer player = context.getSource().getPlayer();
         FPlayerCollection.getInstance().getAll().values().stream()
                 .filter(factionPlayer -> !excludeCaller || !Objects.equals(player != null ? player.getUUID() : null, factionPlayer.getId()))

@@ -48,7 +48,7 @@ public class FPlayerCollection extends BaseCollection<UUID, FactionPlayer> {
      * @param name The name of the player
      * @return the FactionPlayer
      */
-    public FactionPlayer getByName(String name) {
+    public FactionPlayer getByName(final String name) {
         return map.values().stream()
                 .filter(player -> name.equals(player.getName()))
                 .findFirst()

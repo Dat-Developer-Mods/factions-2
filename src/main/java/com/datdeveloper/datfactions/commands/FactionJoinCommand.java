@@ -30,9 +30,7 @@ public class FactionJoinCommand extends BaseFactionCommand {
                         .suggests((context, builder) -> {
                             FactionCollection.getInstance().getAll().values().stream()
                                     .filter(faction -> faction.hasFlag(EFactionFlags.OPEN) || faction.hasInvitedPlayer(context.getSource().getPlayer().getUUID()))
-                                    .forEach(faction -> {
-                                        builder.suggest(faction.getName());
-                                    });
+                                    .forEach(faction -> builder.suggest(faction.getName()));
                             // Get factions
                             return builder.buildFuture();
                         })

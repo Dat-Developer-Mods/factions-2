@@ -20,7 +20,7 @@ public class MapUtil {
             {CompassDirection.SW, CompassDirection.S, CompassDirection.SE}
     };
 
-    final static Component DEFAULTCHAR = Component.literal("-").withStyle(ChatFormatting.DARK_GRAY);;
+    final static Component DEFAULTCHAR = Component.literal("-").withStyle(ChatFormatting.DARK_GRAY);
 
     final static char[] SYMBOLS = "/\\#?!%$&*£[]{}abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789".toCharArray();
 
@@ -31,7 +31,7 @@ public class MapUtil {
     private final FactionLevel level;
     private final FactionPlayer from;
 
-    Map<Faction, MutableComponent> symbolMap = new HashMap<>();
+    final Map<Faction, MutableComponent> symbolMap = new HashMap<>();
     int currentSymbol;
 
     public MapUtil(final ChunkPos centre, final float rotation, final ResourceKey<Level> level, final FactionPlayer from) {
@@ -145,7 +145,7 @@ public class MapUtil {
         return component;
     }
 
-    private static enum CompassDirection {
+    private enum CompassDirection {
         S("S"),
         SW("/"),
         W("W"),
