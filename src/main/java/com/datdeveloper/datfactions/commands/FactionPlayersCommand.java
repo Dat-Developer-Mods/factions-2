@@ -1,12 +1,10 @@
 package com.datdeveloper.datfactions.commands;
 
-import com.datdeveloper.datfactions.api.events.FactionInvitePlayerEvent;
+import com.datdeveloper.datfactions.api.events.FactionChangeOwnerEvent;
+import com.datdeveloper.datfactions.api.events.FactionPlayerChangeMembershipEvent;
 import com.datdeveloper.datfactions.api.events.FactionPlayerChangeRoleEvent;
-import com.datdeveloper.datfactions.api.events.FactionUninvitePlayerEvent;
-import com.datdeveloper.datfactions.commands.suggestions.DatSuggestionProviders;
 import com.datdeveloper.datfactions.commands.suggestions.FactionRoleSuggestionProvider;
 import com.datdeveloper.datfactions.commands.suggestions.OwnFPlayerSuggestionProvider;
-import com.datdeveloper.datfactions.commands.util.FactionCommandUtils;
 import com.datdeveloper.datfactions.factionData.FPlayerCollection;
 import com.datdeveloper.datfactions.factionData.Faction;
 import com.datdeveloper.datfactions.factionData.FactionPlayer;
@@ -37,9 +35,9 @@ import static com.datdeveloper.datfactions.commands.FactionPermissions.*;
 public class FactionPlayersCommand extends BaseFactionCommand {
     static void register(final LiteralArgumentBuilder<CommandSourceStack> command) {
 
-        final LiteralArgumentBuilder<CommandSourceStack> subCommand = Commands.literal("invites")
+        final LiteralArgumentBuilder<CommandSourceStack> subCommand = Commands.literal("players")
                 .requires(commandSourceStack -> {
-                    if (!(commandSourceStack.isPlayer()) && DatPermissions.hasAnyPermissions(commandSourceStack.getPlayer(), FACTION_LIST_PLAYERS, FACTION_PROMOTE, FACTION_DEMOTE, FACTION_SET_ROLE, FACTION_KICK))
+                    if (!(commandSourceStack.isPlayer()) && DatPermissions.hasAnyPermissions(commandSourceStack.getPlayer(), FACTION_LIST_PLAYERS, FACTION_PROMOTE, FACTION_DEMOTE, FACTION_SET_ROLE, FACTION_SET_OWNER, FACTION_KICK))
                         return false;
                     final FactionPlayer fPlayer = getPlayerOrTemplate(commandSourceStack.getPlayer());
                     final Faction faction = fPlayer.getFaction();
@@ -49,6 +47,7 @@ public class FactionPlayersCommand extends BaseFactionCommand {
                 .then(buildPromoteCommand())
                 .then(buildDemoteCommand())
                 .then(buildSetRoleCommand())
+                .then(buildSetOwnerCommand())
                 .then(buildKickCommand());
 
         command.then(subCommand.build());
@@ -154,15 +153,68 @@ public class FactionPlayersCommand extends BaseFactionCommand {
                                         newRole = faction.getRoles().get(newRoleIndex);
                                     }
 
-                                    executeSetRole(c, faction, target, newRole, FactionPlayerChangeRoleEvent.EChangeRoleReason.PROMOTE);
-
-                                    return 1;
+                                    return executeSetRole(c, faction, target, newRole, FactionPlayerChangeRoleEvent.EChangeRoleReason.PROMOTE, true);
                                 })
                 );
     }
 
     /* ========================================= */
     /* Demote
+    /* ========================================= */
+
+    static LiteralArgumentBuilder<CommandSourceStack> buildDemoteCommand() {
+        return Commands.literal("demote")
+                .requires(commandSourceStack -> {
+                    final ServerPlayer player = commandSourceStack.getPlayer();
+                    final FactionPlayer fPlayer = getPlayerOrTemplate(player);
+                    return DatPermissions.hasPermission(player, FACTION_DEMOTE) && fPlayer.getRole().hasPermission(ERolePermissions.DEMOTE);
+                })
+                .then(
+                        Commands.argument("Target Player", StringArgumentType.word())
+                                .suggests(new OwnFPlayerSuggestionProvider(true))
+                                .executes(c -> {
+                                    final ServerPlayer player = c.getSource().getPlayer();
+                                    final FactionPlayer fPlayer = getPlayerOrTemplate(player);
+                                    final Faction faction = fPlayer.getFaction();
+
+                                    final String targetName = c.getArgument("Target Player", String.class);
+                                    final FactionPlayer target = FPlayerCollection.getInstance().getByName(targetName);
+                                    if (target == null) {
+                                        c.getSource().sendFailure(Component.literal("Cannot find a player with that name"));
+                                        return 2;
+                                    } else if (!faction.getPlayers().contains(target)) {
+                                        c.getSource().sendFailure(
+                                                Component.literal("That player is not in your faction")
+                                        );
+                                        return 3;
+                                    }
+
+                                    final FactionRole newRole;
+                                    {
+                                        final int targetRoleIndex = faction.getRoleIndex(target.getRoleId());
+                                        if (targetRoleIndex <= faction.getRoleIndex(fPlayer.getRoleId())) {
+                                            c.getSource().sendFailure(
+                                                    Component.literal("You are not allowed to demote that player")
+                                            );
+                                            return 4;
+                                        } else if (targetRoleIndex == (faction.getRoles().size() - 1)) {
+                                            c.getSource().sendFailure(
+                                                    Component.literal("You cannot demote a recruit")
+                                            );
+                                            return 5;
+                                        }
+
+                                        newRole = faction.getRoles().get(targetRoleIndex + 1);
+                                    }
+
+
+                                    return executeSetRole(c, faction, target, newRole, FactionPlayerChangeRoleEvent.EChangeRoleReason.DEMOTE, true);
+                                })
+                );
+    }
+
+    /* ========================================= */
+    /* Set Role
     /* ========================================= */
 
     static LiteralArgumentBuilder<CommandSourceStack> buildSetRoleCommand() {
@@ -203,24 +255,22 @@ public class FactionPlayersCommand extends BaseFactionCommand {
 
                                                     final FactionRole newRole = faction.getRoleByName(newRoleName);
 
-                                                    executeSetRole(c, faction, target, newRole, FactionPlayerChangeRoleEvent.EChangeRoleReason.SET);
-
-                                                    return 1;
+                                                    return executeSetRole(c, faction, target, newRole, FactionPlayerChangeRoleEvent.EChangeRoleReason.SET, true);
                                                 })
                                 )
                 );
     }
 
     /* ========================================= */
-    /* Set Role
+    /* Set Owner
     /* ========================================= */
 
-    static LiteralArgumentBuilder<CommandSourceStack> buildDemoteCommand() {
-        return Commands.literal("remove")
+    static LiteralArgumentBuilder<CommandSourceStack> buildSetOwnerCommand() {
+        return Commands.literal("setowner")
                 .requires(commandSourceStack -> {
                     final ServerPlayer player = commandSourceStack.getPlayer();
                     final FactionPlayer fPlayer = getPlayerOrTemplate(player);
-                    return DatPermissions.hasPermission(player, FACTION_DEMOTE) && fPlayer.getRole().hasPermission(ERolePermissions.DEMOTE);
+                    return DatPermissions.hasPermission(player, FACTION_SET_OWNER) && fPlayer.getRole().equals(fPlayer.getFaction().getOwnerRole());
                 })
                 .then(
                         Commands.argument("Target Player", StringArgumentType.word())
@@ -242,25 +292,102 @@ public class FactionPlayersCommand extends BaseFactionCommand {
                                         return 3;
                                     }
 
-                                    final FactionRole newRole;
-                                    {
-                                        final int targetRoleIndex = faction.getRoleIndex(target.getRoleId());
-                                        if (targetRoleIndex <= faction.getRoleIndex(fPlayer.getRoleId())) {
-                                            c.getSource().sendFailure(
-                                                    Component.literal("You are not allowed to demote that player")
-                                            );
-                                            return 4;
-                                        } else if (targetRoleIndex == (faction.getRoles().size() - 1)) {
-                                            c.getSource().sendFailure(
-                                                    Component.literal("You cannot demote a recruit")
-                                            );
-                                        }
+                                    final FactionChangeOwnerEvent event = new FactionChangeOwnerEvent(c.getSource().source, faction, target);
+                                    MinecraftForge.EVENT_BUS.post(event);
+                                    if (event.isCanceled()) return 0;
 
-                                        newRole = faction.getRoles().get(targetRoleIndex + 1);
+
+                                    executeSetRole(c, faction, fPlayer, faction.getRoles().get(1), FactionPlayerChangeRoleEvent.EChangeRoleReason.CHANGE_OWNER, false);
+                                    executeSetRole(c, faction, target, faction.getOwnerRole(), FactionPlayerChangeRoleEvent.EChangeRoleReason.CHANGE_OWNER, false);
+
+                                    c.getSource().sendSuccess(
+                                            Component.literal(DatChatFormatting.TextColour.INFO + "Successfully made ")
+                                                    .append(
+                                                            target.getNameWithDescription(faction)
+                                                                    .withStyle(EFactionRelation.SELF.formatting)
+                                                    )
+                                                    .append(DatChatFormatting.TextColour.INFO + " to ")
+                                                    .append(" the owner of ")
+                                                    .append(
+                                                            faction.getNameWithDescription(faction)
+                                                                    .withStyle(EFactionRelation.SELF.formatting)
+                                                    ),
+                                            true
+                                    );
+
+                                    if (target.isPlayerOnline()) {
+                                        target.getServerPlayer().sendSystemMessage(
+                                                Component.literal(DatChatFormatting.TextColour.INFO + "You are now the owner of ")
+                                                        .append(
+                                                                faction.getNameWithDescription(faction)
+                                                                        .withStyle(EFactionRelation.SELF.formatting)
+                                                        )
+                                        );
                                     }
 
+                                    return 1;
+                                })
+                );
+    }
 
-                                    executeSetRole(c, faction, target, newRole, FactionPlayerChangeRoleEvent.EChangeRoleReason.DEMOTE);
+    /* ========================================= */
+    /* Kick
+    /* ========================================= */
+
+    static LiteralArgumentBuilder<CommandSourceStack> buildKickCommand() {
+        return Commands.literal("kick")
+                .requires(commandSourceStack -> {
+                    final ServerPlayer player = commandSourceStack.getPlayer();
+                    final FactionPlayer fPlayer = getPlayerOrTemplate(player);
+                    return DatPermissions.hasPermission(player, FACTION_KICK) && fPlayer.getRole().hasPermission(ERolePermissions.KICK);
+                })
+                .then(
+                        Commands.argument("Target Player", StringArgumentType.word())
+                                .suggests(new OwnFPlayerSuggestionProvider(true))
+                                .executes(c -> {
+                                    final ServerPlayer player = c.getSource().getPlayer();
+                                    final FactionPlayer fPlayer = getPlayerOrTemplate(player);
+                                    final Faction faction = fPlayer.getFaction();
+
+                                    final String targetName = c.getArgument("Target Player", String.class);
+                                    final FactionPlayer target = FPlayerCollection.getInstance().getByName(targetName);
+                                    if (target == null) {
+                                        c.getSource().sendFailure(Component.literal("Cannot find a player with that name"));
+                                        return 2;
+                                    } else if (!faction.getPlayers().contains(target)) {
+                                        c.getSource().sendFailure(
+                                                Component.literal("That player is not in your faction")
+                                        );
+                                        return 3;
+                                    } else if (faction.getRoleIndex(target.getRoleId()) <= faction.getRoleIndex(fPlayer.getRoleId())) {
+                                        c.getSource().sendFailure(
+                                                Component.literal("You are not allowed to kick that player")
+                                        );
+                                        return 4;
+                                    }
+
+                                    final FactionPlayerChangeMembershipEvent event = new FactionPlayerChangeMembershipEvent(c.getSource().source, target, null, null, FactionPlayerChangeMembershipEvent.EChangeFactionReason.KICK);
+                                    MinecraftForge.EVENT_BUS.post(event);
+                                    if (event.isCanceled()) return 0;
+
+                                    final Faction newFaction = event.getNewFaction();
+                                    final FactionRole role = event.getNewRole();
+
+                                    fPlayer.setFaction(
+                                            newFaction != null ? newFaction.getId() : null,
+                                            role != null ? role.getId() : null,
+                                            FactionPlayerChangeMembershipEvent.EChangeFactionReason.KICK
+                                    );
+
+                                    c.getSource().sendSuccess(
+                                            Component.literal(DatChatFormatting.TextColour.INFO + "Successfully kicked ")
+                                                    .append(
+                                                            target.getNameWithDescription(faction)
+                                                                    .withStyle(RelationUtil.getRelation(faction, target).formatting)
+                                                    )
+                                                    .append(" from the faction"),
+                                            true
+                                    );
 
                                     return 1;
                                 })
@@ -271,7 +398,7 @@ public class FactionPlayersCommand extends BaseFactionCommand {
     /* Util
     /* ========================================= */
 
-    private static int executeSetRole(final CommandContext<CommandSourceStack> c, final Faction faction, final FactionPlayer target, FactionRole newRole, final FactionPlayerChangeRoleEvent.EChangeRoleReason reason) {
+    private static int executeSetRole(final CommandContext<CommandSourceStack> c, final Faction faction, final FactionPlayer target, FactionRole newRole, final FactionPlayerChangeRoleEvent.EChangeRoleReason reason, final boolean notify) {
         final FactionPlayerChangeRoleEvent event = new FactionPlayerChangeRoleEvent(
                 c.getSource().source,
                 target,
@@ -283,42 +410,45 @@ public class FactionPlayersCommand extends BaseFactionCommand {
 
         newRole = event.getNewRole();
         target.setRole(newRole.getId());
-        c.getSource().sendSuccess(
-                Component.literal(DatChatFormatting.TextColour.INFO + "Successfully set the role of ")
-                        .append(
-                                target.getNameWithDescription(faction)
-                                        .withStyle(EFactionRelation.SELF.formatting)
-                        )
-                        .append(DatChatFormatting.TextColour.INFO + " to ")
-                        .append(
-                                newRole.getNameWithDescription()
-                                        .withStyle(ChatFormatting.DARK_PURPLE)
-                        ),
-                true
-        );
 
-        if (target.isPlayerOnline()) {
-            target.getServerPlayer().sendSystemMessage(
-                    Component.literal(DatChatFormatting.TextColour.INFO + "Your role has been changed to ")
+        if (notify) {
+            c.getSource().sendSuccess(
+                    Component.literal(DatChatFormatting.TextColour.INFO + "Successfully set the role of ")
+                            .append(
+                                    target.getNameWithDescription(faction)
+                                            .withStyle(EFactionRelation.SELF.formatting)
+                            )
+                            .append(DatChatFormatting.TextColour.INFO + " to ")
                             .append(
                                     newRole.getNameWithDescription()
                                             .withStyle(ChatFormatting.DARK_PURPLE)
-                            )
+                            ),
+                    true
             );
+
+            if (target.isPlayerOnline()) {
+                target.getServerPlayer().sendSystemMessage(
+                        Component.literal(DatChatFormatting.TextColour.INFO + "Your role has been changed to ")
+                                .append(
+                                        newRole.getNameWithDescription()
+                                                .withStyle(ChatFormatting.DARK_PURPLE)
+                                )
+                );
+            }
         }
 
         return 1;
     }
 
 
-    private static int checkPlayerCanSetToRole(final CommandSourceStack source, final FactionPlayer fPlayer, final String parentRoleName) {
+    private static int checkPlayerCanSetToRole(final CommandSourceStack source, final FactionPlayer fPlayer, final String newRole) {
         final Faction faction = fPlayer.getFaction();
 
         final int playerRoleIndex = faction.getRoleIndex(fPlayer.getRoleId());
-        final int parentRoleIndex = faction.getRoleIndexByName(parentRoleName);
+        final int parentRoleIndex = faction.getRoleIndexByName(newRole);
 
         if (parentRoleIndex < 0) {
-            source.sendFailure(Component.literal("Failed to find a role named " + parentRoleName));
+            source.sendFailure(Component.literal("Failed to find a role named " + newRole));
             return 1;
         } else if (parentRoleIndex < playerRoleIndex) {
             source.sendFailure(Component.literal("You cannot set a player to a role at or above your own the faction hierarchy"));

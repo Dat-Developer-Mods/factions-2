@@ -65,7 +65,7 @@ public class FactionCreateCommand extends BaseFactionCommand{
                                     .append(DatChatFormatting.TextColour.INFO + "Add a description with ")
                                     .append(FactionCommandUtils.wrapCommand("/f desc <description>", "/f desc ")).append("\n")
                                     .append(DatChatFormatting.TextColour.INFO + "and invite people using ")
-                                    .append(FactionCommandUtils.wrapCommand("/f invite <player name>", "/f invite "))
+                                    .append(FactionCommandUtils.wrapCommand("/f invites add <player name>", "/f invites add "))
                             , false);
 
                             return 1;

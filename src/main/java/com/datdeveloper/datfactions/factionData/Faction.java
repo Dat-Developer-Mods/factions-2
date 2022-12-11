@@ -414,7 +414,7 @@ public class Faction extends DatabaseEntity {
                 continue;
             }
 
-            final FactionPlayerChangeRoleEvent event = new FactionPlayerChangeRoleEvent(null, fPlayer, this, getRole(newRole), FactionPlayerChangeRoleEvent.EChangeRoleReason.REMOVED);
+            final FactionPlayerChangeRoleEvent event = new FactionPlayerChangeRoleEvent(null, fPlayer, getRole(newRole), FactionPlayerChangeRoleEvent.EChangeRoleReason.REMOVED);
             MinecraftForge.EVENT_BUS.post(event);
 
             fPlayer.setRole(event.getNewRole().getId());

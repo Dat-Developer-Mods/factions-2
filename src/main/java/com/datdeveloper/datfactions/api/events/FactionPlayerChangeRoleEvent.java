@@ -9,7 +9,8 @@ import org.jetbrains.annotations.Nullable;
 /**
  * Fired when a player changes role inside their faction
  * <br>
- * The event can only be cancelled if the reason isn't REMOVED
+ * Changes to newRole will be reflected, except for the new owner when the reason is NEW_OWNER
+ * The event can only be cancelled if the reason isn't REMOVED or NEW_OWNER
  */
 public class FactionPlayerChangeRoleEvent extends FactionPlayerEvent {
     /**
@@ -48,6 +49,10 @@ public class FactionPlayerChangeRoleEvent extends FactionPlayerEvent {
      * @param newRole The role the player will take
      */
     public void setNewRole(@NotNull final FactionRole newRole) {
+        if (getReason() == EChangeRoleReason.CHANGE_OWNER && this.newRole.equals(getPlayer().getFaction().getOwnerRole())) {
+            throw new UnsupportedOperationException("You cannot set the role for the new faction owner when the reason is CHANGE_OWNER");
+        }
+
         this.newRole = newRole;
     }
 
@@ -61,7 +66,7 @@ public class FactionPlayerChangeRoleEvent extends FactionPlayerEvent {
 
     @Override
     public boolean isCancelable() {
-        return getReason() != EChangeRoleReason.REMOVED;
+        return getReason() != EChangeRoleReason.REMOVED && getReason() != EChangeRoleReason.CHANGE_OWNER;
     }
 
     /**
@@ -75,6 +80,8 @@ public class FactionPlayerChangeRoleEvent extends FactionPlayerEvent {
         /** Changed because their role was set */
         SET,
         /** Changed because their role was removed */
-        REMOVED
+        REMOVED,
+        /** Changed because the faction changed owner */
+        CHANGE_OWNER
     }
 }
