@@ -29,7 +29,8 @@ public class FactionIndex {
      * @return A set of players in the faction
      */
     Set<FactionPlayer> getFactionPlayers(final Faction faction) {
-        return factionToPlayerMap.get(faction);
+        final Set<FactionPlayer> players = factionToPlayerMap.get(faction);
+        return players != null ? Collections.unmodifiableSet(players) : Collections.emptySet();
     }
 
     /**
