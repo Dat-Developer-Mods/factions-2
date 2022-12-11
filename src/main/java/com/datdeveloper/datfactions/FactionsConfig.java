@@ -40,6 +40,11 @@ public class FactionsConfig {
 
     private static ConfigValue<Float> bonusPowerFlagMultiplier;
 
+    // Validation
+    private static ConfigValue<EValidationType> validateLandOwnership;
+    private static ConfigValue<EValidationType> validateEmptyFactions;
+
+
     // Misc
     private static ConfigValue<Boolean> useFactionChat;
     private static ConfigValue<Integer> teleportDelay;
@@ -126,11 +131,30 @@ public class FactionsConfig {
                 )
                 .define("RoleKillPowerMultiplier", 2.f);
 
-            bonusPowerFlagMultiplier = builder
+            bonusPowerFlagMultiplier = builder.define("BonusPowerFlagMultiplier", 2.f);
+        } builder.pop();
+
+        builder
                 .comment(
-                        "The multiplier for power gained when killing a player on chunks owned by a faction with the BONUSPOWER flag"
+                        "Validation steps to take during world start",
+                        "IGNORE: Don't do anything",
+                        "WARN: Print a console message explaining the problem",
+                        "REMOVE: Remove the offending problem"
                 )
-                .define("BonusPowerFlagMultiplier", 2.f);
+                .push("Validation");
+        {
+            validateEmptyFactions = builder
+                    .comment(
+                            "How to handle factions without the DEFAULT flag that have no members"
+                    )
+                    .defineEnum("ValidateFactionMembers", EValidationType.WARN);
+
+            validateLandOwnership = builder
+                    .comment(
+                            "How to handle claimed chunks who's owning faction no longer exists",
+                            "Note, not removing these may lead to crashes"
+                    )
+                    .defineEnum("ValidateFactionMembers", EValidationType.REMOVE);
         } builder.pop();
 
         builder.push("Miscellaneous");
@@ -234,7 +258,7 @@ public class FactionsConfig {
         return enemyKillPowerMultiplier.get();
     }
 
-    public static float getroleKillPowerMultiplier() {
+    public static float getRoleKillPowerMultiplier() {
         return roleKillPowerMultiplier.get();
     }
 
@@ -252,5 +276,25 @@ public class FactionsConfig {
 
     public static boolean getFlagBlacklisted(final EFactionFlags flag) {
         return flagBlacklist.get(flag).get();
+    }
+
+    public static EValidationType getValidateLandOwnership() {
+        return validateLandOwnership.get();
+    }
+
+    public static EValidationType getValidateEmptyFactions() {
+        return validateEmptyFactions.get();
+    }
+
+    /**
+     * How to handle validation
+     */
+    public enum EValidationType {
+        /** Ignore the issue */
+        IGNORE,
+        /** Print a warning message in the console but don't do anything about it */
+        WARN,
+        /** Remove the offending issue */
+        REMOVE
     }
 }

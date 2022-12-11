@@ -4,14 +4,12 @@ import com.datdeveloper.datfactions.Datfactions;
 import com.datdeveloper.datfactions.FactionsConfig;
 import com.datdeveloper.datfactions.database.Database;
 import com.datdeveloper.datfactions.database.FlatFileDatabase;
-import com.datdeveloper.datfactions.factionData.FLevelCollection;
-import com.datdeveloper.datfactions.factionData.FPlayerCollection;
-import com.datdeveloper.datfactions.factionData.FactionCollection;
-import com.datdeveloper.datfactions.factionData.FactionIndex;
+import com.datdeveloper.datfactions.factionData.*;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.storage.LevelResource;
 import net.minecraftforge.event.entity.player.PlayerEvent;
@@ -23,6 +21,10 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
 import java.nio.file.Path;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 
 import static com.datdeveloper.datfactions.Datfactions.logger;
 
@@ -47,6 +49,24 @@ public class DataEvents {
         FPlayerCollection.getInstance().initialise();
         FLevelCollection.getInstance().initialise();
         FactionIndex.getInstance().initialise();
+
+        // Validate empty factions
+        if (FactionsConfig.getValidateEmptyFactions() != FactionsConfig.EValidationType.IGNORE) {
+            final List<Faction> emptyFactions = FactionCollection.getInstance().getAll().values().stream()
+                    .filter(faction -> faction.getPlayers().isEmpty() && !faction.hasFlag(EFactionFlags.DEFAULT))
+                    .toList();
+
+            if (!emptyFactions.isEmpty()) {
+                if (FactionsConfig.getValidateEmptyFactions() == FactionsConfig.EValidationType.REMOVE) {
+                    final Map<UUID, Faction> factionMap = FactionCollection.getInstance().getAll();
+                    emptyFactions.forEach(faction -> FactionCollection.getInstance().disbandFaction(faction.getId()));
+
+                    logger.warn("Found and removed " + emptyFactions.size() + " empty non-default factions");
+                } else {
+                    logger.warn("Found " + emptyFactions.size() + " empty non-default factions, if these were not manually created then they probably need removing");
+                }
+            }
+        }
     }
 
     /**
@@ -72,7 +92,7 @@ public class DataEvents {
      * Save factions at the same time the world is saved
      */
     @SubscribeEvent
-    public static void LevelSave(final LevelEvent.Save event) {
+    public static void levelSave(final LevelEvent.Save event) {
         // This fires for all levels, we just want to save once, so only run on the overworld
         if (!ServerLevel.OVERWORLD.equals(((ServerLevel) event.getLevel()).dimension())) return;
 
@@ -92,12 +112,32 @@ public class DataEvents {
      * Or when a new level is created like by infiniverse or rftools
      */
     @SubscribeEvent
-    public static void worldLoad(final LevelEvent.Load event) {
+    public static void levelLoad(final LevelEvent.Load event) {
         if (event.getLevel().isClientSide()) return;
 
         final ResourceKey<Level> levelId = ((ServerLevel) event.getLevel()).dimension();
         logger.info("Factions loading level " + levelId);
-        FLevelCollection.getInstance().loadOrCreate(levelId);
+        final FactionLevel level = FLevelCollection.getInstance().loadOrCreate(levelId);
+
+        // Validate Land ownership
+        if (FactionsConfig.getValidateLandOwnership() != FactionsConfig.EValidationType.IGNORE) {
+            final List<ChunkPos> orphans = level.getClaims().entrySet().stream()
+                    .filter(entry -> FactionCollection.getInstance().getByKey(entry.getValue().getFactionId()) == null)
+                    .map(Map.Entry::getKey)
+                    .toList();
+
+            if (!orphans.isEmpty()) {
+                if (FactionsConfig.getValidateLandOwnership() == FactionsConfig.EValidationType.REMOVE) {
+                    final Set<ChunkPos> claims = level.getClaims().keySet();
+                    orphans.forEach(claims::remove);
+                    level.markDirty();
+
+                    logger.warn("Found and removed " + orphans.size() + " orphaned claims in " + level.getName());
+                } else {
+                    logger.warn("Found " + orphans.size() + " orphaned claims in " + level.getName() + ". These will cause crashes unless removed");
+                }
+            }
+        }
     }
 
     /* ========================================= */

@@ -8,9 +8,6 @@ import net.minecraft.world.level.Level;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-
-import static com.datdeveloper.datfactions.Datfactions.logger;
 
 public class FLevelCollection extends BaseCollection<ResourceKey<Level>, FactionLevel>{
     private static final FLevelCollection instance = new FLevelCollection();
@@ -35,17 +32,6 @@ public class FLevelCollection extends BaseCollection<ResourceKey<Level>, Faction
         if (level == null) {
             level = new FactionLevel(levelId);
             Database.instance.storeLevel(level);
-        }
-
-        final List<ChunkPos> orphans = level.getClaims().entrySet().stream()
-                .filter(entry -> FactionCollection.getInstance().getByKey(entry.getValue().factionId) == null)
-                .map(Map.Entry::getKey)
-                .toList();
-
-        if (!orphans.isEmpty()) {
-            final Set<ChunkPos> claims = level.getClaims().keySet();
-            orphans.forEach(claims::remove);
-            logger.warn("Found and removed " + orphans.size() + " orphaned claims in " + level.getName());
         }
 
         return map.put(levelId, level);
