@@ -2,17 +2,15 @@ package com.datdeveloper.datfactions.factionData;
 
 import com.datdeveloper.datfactions.api.events.FactionPlayerChangeMembershipEvent;
 import com.datdeveloper.datfactions.database.Database;
-import com.mojang.logging.LogUtils;
 import net.minecraft.server.level.ServerPlayer;
 import org.jetbrains.annotations.Nullable;
-import org.slf4j.Logger;
 
 import java.util.List;
 import java.util.UUID;
 
-public class FPlayerCollection extends BaseCollection<UUID, FactionPlayer> {
-    final Logger logger = LogUtils.getLogger();
+import static com.datdeveloper.datfactions.Datfactions.logger;
 
+public class FPlayerCollection extends BaseCollection<UUID, FactionPlayer> {
     FactionPlayer template;
 
     // Singleton

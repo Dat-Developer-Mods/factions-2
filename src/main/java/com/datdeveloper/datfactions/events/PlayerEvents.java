@@ -4,7 +4,6 @@ import com.datdeveloper.datfactions.Datfactions;
 import com.datdeveloper.datfactions.factionData.*;
 import com.datdeveloper.datfactions.util.RelationUtil;
 import com.datdeveloper.datmoddingapi.util.DatChatFormatting;
-import com.mojang.logging.LogUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -20,17 +19,16 @@ import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import org.slf4j.Logger;
 
 import java.util.Objects;
+
+import static com.datdeveloper.datfactions.Datfactions.logger;
 
 /**
  * Events pertaining to the players
  */
 @Mod.EventBusSubscriber(modid = Datfactions.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class PlayerEvents {
-    private static final Logger logger = LogUtils.getLogger();
-
     /**
      * Register power gain event
      */

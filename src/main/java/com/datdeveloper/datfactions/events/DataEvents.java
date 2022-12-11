@@ -8,7 +8,6 @@ import com.datdeveloper.datfactions.factionData.FLevelCollection;
 import com.datdeveloper.datfactions.factionData.FPlayerCollection;
 import com.datdeveloper.datfactions.factionData.FactionCollection;
 import com.datdeveloper.datfactions.factionData.FactionIndex;
-import com.mojang.logging.LogUtils;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
@@ -22,17 +21,16 @@ import net.minecraftforge.event.server.ServerStoppedEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import org.slf4j.Logger;
 
 import java.nio.file.Path;
+
+import static com.datdeveloper.datfactions.Datfactions.logger;
 
 /**
  * Events for dealing with faction, player, and level data
  */
 @Mod.EventBusSubscriber(modid = Datfactions.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class DataEvents {
-    private static final Logger logger = LogUtils.getLogger();
-
     /* ========================================= */
     /* Startup and shutdown
     /* ========================================= */
