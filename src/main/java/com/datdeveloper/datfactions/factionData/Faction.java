@@ -1,5 +1,6 @@
 package com.datdeveloper.datfactions.factionData;
 
+import com.datdeveloper.datfactions.FactionsConfig;
 import com.datdeveloper.datfactions.api.events.FactionPlayerChangeRoleEvent;
 import com.datdeveloper.datfactions.commands.util.FactionCommandUtils;
 import com.datdeveloper.datfactions.database.DatabaseEntity;
@@ -205,12 +206,16 @@ public class Faction extends DatabaseEntity {
 
     public int getTotalPower() {
         if (hasFlag(EFactionFlags.INFINITEPOWER)) return Integer.MAX_VALUE;
-        return factionPower + getPlayers().stream().mapToInt(FactionPlayer::getPower).sum();
+        return Math.max(factionPower + getPlayers().stream().mapToInt(FactionPlayer::getPower).sum(), FactionsConfig.getFactionMaxPower());
     }
 
     public int getTotalMaxPower() {
         if (hasFlag(EFactionFlags.INFINITEPOWER)) return Integer.MAX_VALUE;
-        return factionPower + getPlayers().stream().mapToInt(FactionPlayer::getMaxPower).sum();
+        return Math.min(factionPower + getPlayers().stream().mapToInt(FactionPlayer::getMaxPower).sum(), FactionsConfig.getFactionMaxPower());
+    }
+
+    public int getMaxLandWorth() {
+        return (int) (getTotalPower() * FactionsConfig.getPowerLandMultiplier());
     }
 
     /* ========================================= */
@@ -672,7 +677,7 @@ public class Faction extends DatabaseEntity {
             message.append(DatChatFormatting.TextColour.INFO + "Land worth/count: ")
                     .append(
                             Component.literal("%d/%d".formatted(total.getLeftHand(), total.getRightHand()))
-                            .withStyle(total.getRightHand() > power ? ChatFormatting.DARK_RED : ChatFormatting.WHITE)
+                            .withStyle(total.getRightHand() > getMaxLandWorth() ? ChatFormatting.DARK_RED : ChatFormatting.WHITE)
                     );
             for (final FactionLevel level : landCount.keySet()) {
                 final Pair<Integer, Integer> value = landCount.get(level);

@@ -1,5 +1,6 @@
 package com.datdeveloper.datfactions.commands;
 
+import com.datdeveloper.datfactions.FactionsConfig;
 import com.datdeveloper.datfactions.api.events.FactionChangeMotdEvent;
 import com.datdeveloper.datfactions.factionData.FPlayerCollection;
 import com.datdeveloper.datfactions.factionData.Faction;
@@ -11,6 +12,7 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
+import net.minecraft.network.chat.Component;
 import net.minecraftforge.common.MinecraftForge;
 
 import static com.datdeveloper.datfactions.commands.FactionPermissions.FACTION_SET_MOTD;
@@ -30,6 +32,11 @@ public class FactionMotdCommand extends BaseFactionCommand {
                             final FactionPlayer fPlayer = FPlayerCollection.getInstance().getPlayer(c.getSource().getPlayer());
                             final Faction faction = fPlayer.getFaction();
                             final String newMotd = c.getArgument("MOTD", String.class);
+
+                            if (newMotd.length() > FactionsConfig.getMaxFactionMotdLength()) {
+                                c.getSource().sendFailure(Component.literal("Your faction MOTD cannot be longer than " + FactionsConfig.getMaxFactionMotdLength()));
+                                return 2;
+                            }
 
                             final FactionChangeMotdEvent event = new FactionChangeMotdEvent(c.getSource().source, faction, newMotd);
                             MinecraftForge.EVENT_BUS.post(event);

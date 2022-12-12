@@ -143,7 +143,7 @@ public class FactionEvents {
                 return;
             }
 
-            if (!faction.hasFlag(EFactionFlags.INFINITEPOWER) && (faction.getTotalLandWorth() + (connectedChunks.size() * level.getSettings().getLandWorth())) > faction.getTotalPower()) {
+            if (!faction.hasFlag(EFactionFlags.INFINITEPOWER) && (faction.getTotalLandWorth() + (connectedChunks.size() * level.getSettings().getLandWorth())) > faction.getMaxLandWorth()) {
                 sendSourceMessage(source, Component.literal(DatChatFormatting.TextColour.ERROR + "You don't have enough power to claim that much more land in ")
                         .append(level.getNameWithDescription(faction).withStyle(ChatFormatting.AQUA)));
                 event.setCanceled(true);

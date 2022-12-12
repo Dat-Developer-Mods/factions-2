@@ -1,5 +1,6 @@
 package com.datdeveloper.datfactions.factionData;
 
+import com.datdeveloper.datfactions.FactionsConfig;
 import com.datdeveloper.datfactions.api.events.FactionPlayerChangeMembershipEvent;
 import com.datdeveloper.datfactions.database.DatabaseEntity;
 import com.datdeveloper.datfactions.factionData.permissions.FactionRole;
@@ -110,14 +111,6 @@ public class FactionPlayer extends DatabaseEntity {
         return lastActiveTime;
     }
 
-    public int getPower() {
-        return power;
-    }
-
-    public int getMaxPower() {
-        return maxPower;
-    }
-
     public boolean hasFaction() {
         return factionId != null;
     }
@@ -168,16 +161,6 @@ public class FactionPlayer extends DatabaseEntity {
 
     public void setLastActiveTime(final long lastActiveTime) {
         this.lastActiveTime = lastActiveTime;
-        this.markDirty();
-    }
-
-    public void setPower(final int power) {
-        this.power = power;
-        this.markDirty();
-    }
-
-    public void setMaxPower(final int maxPower) {
-        this.maxPower = maxPower;
         this.markDirty();
     }
 
@@ -240,6 +223,38 @@ public class FactionPlayer extends DatabaseEntity {
         this.role = role;
         updateCommands();
         markDirty();
+    }
+
+    /* ========================================= */
+    /* Power
+    /* ========================================= */
+
+    public int getPower() {
+        return power;
+    }
+
+    public int getMaxPower() {
+        return maxPower;
+    }
+
+    public void addPower(final int power) {
+        this.setPower(this.power + power);
+    }
+
+    public void addMaxPower(final int power) {
+        this.setMaxPower(this.maxPower + power);
+    }
+
+    public void setPower(final int power) {
+        this.power = Math.min(this.maxPower, (Math.max(power, FactionsConfig.getPlayerMinPower())));
+
+        this.markDirty();
+    }
+
+    public void setMaxPower(final int maxPower) {
+        this.maxPower = Math.min(FactionsConfig.getPlayerMaxPower(), (Math.max(maxPower, FactionsConfig.getPlayerMinPower())));
+
+        this.markDirty();
     }
 
     /* ========================================= */

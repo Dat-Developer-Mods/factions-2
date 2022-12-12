@@ -1,5 +1,6 @@
 package com.datdeveloper.datfactions.commands;
 
+import com.datdeveloper.datfactions.FactionsConfig;
 import com.datdeveloper.datfactions.commands.suggestions.DatSuggestionProviders;
 import com.datdeveloper.datfactions.factionData.EFactionFlags;
 import com.datdeveloper.datfactions.factionData.Faction;
@@ -108,7 +109,7 @@ public class FactionFlagsCommand extends BaseFactionCommand {
                                         return 2;
                                     }
 
-                                    if (flag.admin) {
+                                    if (flag.admin || FactionsConfig.getFlagBlacklisted(flag)) {
                                         c.getSource().sendFailure(Component.literal("You're not allowed to use that flag"));
                                         return 3;
                                     } else if (faction.hasFlag(flag)) {
