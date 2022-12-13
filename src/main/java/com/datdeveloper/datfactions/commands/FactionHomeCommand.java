@@ -26,7 +26,7 @@ public class FactionHomeCommand extends BaseFactionCommand {
 
         final LiteralCommandNode<CommandSourceStack> subCommand = Commands.literal("home")
                 .requires(commandSourceStack -> {
-                    if (!(commandSourceStack.isPlayer()) && DatPermissions.hasPermission(commandSourceStack.getPlayer(), FACTION_HOME))
+                    if (!(commandSourceStack.isPlayer() && DatPermissions.hasPermission(commandSourceStack.getPlayer(), FACTION_HOME)))
                         return false;
                     final FactionPlayer fPlayer1 = getPlayerOrTemplate(commandSourceStack.getPlayer());
                     return fPlayer1.hasFaction() && fPlayer1.getRole().hasPermission(ERolePermissions.HOME);

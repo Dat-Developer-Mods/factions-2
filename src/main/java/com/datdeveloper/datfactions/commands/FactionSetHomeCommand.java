@@ -22,7 +22,7 @@ public class FactionSetHomeCommand extends BaseFactionCommand {
 
         final LiteralCommandNode<CommandSourceStack> subCommand = Commands.literal("sethome")
                 .requires(commandSourceStack -> {
-                    if (!(commandSourceStack.isPlayer()) && DatPermissions.hasPermission(commandSourceStack.getPlayer(), FACTION_SET_HOME))
+                    if (!(commandSourceStack.isPlayer() && DatPermissions.hasPermission(commandSourceStack.getPlayer(), FACTION_SET_HOME)))
                         return false;
                     final FactionPlayer fPlayer1 = getPlayerOrTemplate(commandSourceStack.getPlayer());
                     return fPlayer1.hasFaction() && fPlayer1.getRole().hasPermission(ERolePermissions.SETHOME);

@@ -37,7 +37,7 @@ public class FactionPlayersCommand extends BaseFactionCommand {
 
         final LiteralArgumentBuilder<CommandSourceStack> subCommand = Commands.literal("players")
                 .requires(commandSourceStack -> {
-                    if (!(commandSourceStack.isPlayer()) && DatPermissions.hasAnyPermissions(commandSourceStack.getPlayer(), FACTION_LIST_PLAYERS, FACTION_PROMOTE, FACTION_DEMOTE, FACTION_SET_ROLE, FACTION_SET_OWNER, FACTION_KICK))
+                    if (!(commandSourceStack.isPlayer() && DatPermissions.hasAnyPermissions(commandSourceStack.getPlayer(), FACTION_LIST_PLAYERS, FACTION_PROMOTE, FACTION_DEMOTE, FACTION_SET_ROLE, FACTION_SET_OWNER, FACTION_KICK)))
                         return false;
                     final FactionPlayer fPlayer = getPlayerOrTemplate(commandSourceStack.getPlayer());
                     final Faction faction = fPlayer.getFaction();

@@ -24,7 +24,7 @@ public class FactionLeaveCommand extends BaseFactionCommand {
 
         final LiteralCommandNode<CommandSourceStack> subCommand = Commands.literal("leave")
                 .requires(commandSourceStack -> {
-                    if (!(commandSourceStack.isPlayer()) && DatPermissions.hasPermission(commandSourceStack.getPlayer(), FACTION_LEAVE))
+                    if (!(commandSourceStack.isPlayer() && DatPermissions.hasPermission(commandSourceStack.getPlayer(), FACTION_LEAVE)))
                         return false;
                     final FactionPlayer fPlayer1 = getPlayerOrTemplate(commandSourceStack.getPlayer());
                     return fPlayer1.hasFaction();

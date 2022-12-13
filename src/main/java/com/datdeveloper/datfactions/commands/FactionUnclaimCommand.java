@@ -28,7 +28,7 @@ public class FactionUnclaimCommand extends BaseFactionCommand {
 
         final LiteralCommandNode<CommandSourceStack> claimCommand = Commands.literal("unclaim")
                 .requires(commandSourceStack1 -> {
-                    if (!(commandSourceStack1.isPlayer()) && DatPermissions.hasAnyPermissions(commandSourceStack1.source, FactionPermissions.FACTION_UNCLAIM_ONE, FactionPermissions.FACTION_UNCLAIM_SQUARE, FactionPermissions.FACTION_UNCLAIM_LEVEL, FactionPermissions.FACTION_UNCLAIM_ALL))
+                    if (!(commandSourceStack1.isPlayer() && DatPermissions.hasAnyPermissions(commandSourceStack1.source, FactionPermissions.FACTION_UNCLAIM_ONE, FactionPermissions.FACTION_UNCLAIM_SQUARE, FactionPermissions.FACTION_UNCLAIM_LEVEL, FactionPermissions.FACTION_UNCLAIM_ALL)))
                         return false;
                     final FactionPlayer fPlayer1 = getPlayerOrTemplate(commandSourceStack1.getPlayer());
                     return fPlayer1.hasFaction() && fPlayer1.getRole().hasAnyPermissions(ERolePermissions.UNCLAIMONE, ERolePermissions.UNCLAIMSQUARE, ERolePermissions.UNCLAIMLEVEL, ERolePermissions.UNCLAIMALL);

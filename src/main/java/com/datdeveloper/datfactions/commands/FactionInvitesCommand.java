@@ -34,7 +34,7 @@ public class FactionInvitesCommand extends BaseFactionCommand {
 
         final LiteralArgumentBuilder<CommandSourceStack> subCommand = Commands.literal("invites")
                 .requires(commandSourceStack -> {
-                    if (!(commandSourceStack.isPlayer()) && DatPermissions.hasAnyPermissions(commandSourceStack.getPlayer(), FACTION_INVITE, FACTION_UNINVITE, FACTION_INVITE_LIST_FACTION))
+                    if (!(commandSourceStack.isPlayer() && DatPermissions.hasAnyPermissions(commandSourceStack.getPlayer(), FACTION_INVITE, FACTION_UNINVITE, FACTION_INVITE_LIST_FACTION)))
                         return false;
                     final FactionPlayer fPlayer = getPlayerOrTemplate(commandSourceStack.getPlayer());
                     final Faction faction = fPlayer.getFaction();

@@ -26,7 +26,7 @@ public class FactionFlagsCommand extends BaseFactionCommand {
 
         final LiteralArgumentBuilder<CommandSourceStack> subCommand = Commands.literal("flags")
                 .requires(commandSourceStack -> {
-                    if (!(commandSourceStack.isPlayer()) && DatPermissions.hasAnyPermissions(commandSourceStack.getPlayer(), FACTION_FLAG_LIST, FACTION_FLAG_ADD, FACTION_FLAG_REMOVE))
+                    if (!(commandSourceStack.isPlayer() && DatPermissions.hasAnyPermissions(commandSourceStack.getPlayer(), FACTION_FLAG_LIST, FACTION_FLAG_ADD, FACTION_FLAG_REMOVE)))
                         return false;
                     final FactionPlayer fPlayer = getPlayerOrTemplate(commandSourceStack.getPlayer());
                     final Faction faction = fPlayer.getFaction();

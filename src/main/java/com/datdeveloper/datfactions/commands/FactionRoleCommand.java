@@ -35,7 +35,7 @@ public class FactionRoleCommand extends BaseFactionCommand {
 
         final LiteralArgumentBuilder<CommandSourceStack> subCommand = Commands.literal("roles")
                 .requires(commandSourceStack -> {
-                    if (!(commandSourceStack.isPlayer()) && DatPermissions.hasAnyPermissions(commandSourceStack.getPlayer(), FACTION_ROLE_ADD, FACTION_ROLE_REMOVE, FACTION_ROLE_RENAME, FACTION_ROLE_LIST, FACTION_ROLE_INFO, FACTION_ROLE_MODIFY_PERMISSIONS, FACTION_ROLE_REORDER))
+                    if (!(commandSourceStack.isPlayer() && DatPermissions.hasAnyPermissions(commandSourceStack.getPlayer(), FACTION_ROLE_ADD, FACTION_ROLE_REMOVE, FACTION_ROLE_RENAME, FACTION_ROLE_LIST, FACTION_ROLE_INFO, FACTION_ROLE_MODIFY_PERMISSIONS, FACTION_ROLE_REORDER)))
                         return false;
                     final FactionPlayer fPlayer = getPlayerOrTemplate(commandSourceStack.getPlayer());
                     return fPlayer.hasFaction() && fPlayer.getRole().hasAnyPermissions(ERolePermissions.ROLECREATE, ERolePermissions.ROLEREMOVE, ERolePermissions.ROLERENAME, ERolePermissions.ROLELIST, ERolePermissions.ROLEINFO, ERolePermissions.ROLEMODIFYPERMISSIONS, ERolePermissions.ROLEREORDER);

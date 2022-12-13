@@ -24,7 +24,7 @@ public class FactionClaimCommand extends BaseFactionCommand {
 
         final LiteralCommandNode<CommandSourceStack> claimCommand = Commands.literal("claim")
                 .requires(commandSourceStack1 -> {
-                    if (!(commandSourceStack1.isPlayer()) && DatPermissions.hasAnyPermissions(commandSourceStack1.source, FactionPermissions.FACTION_CLAIM_ONE, FactionPermissions.FACTION_CLAIM_SQUARE, FactionPermissions.FACTION_CLAIM_AUTO))
+                    if (!(commandSourceStack1.isPlayer() && DatPermissions.hasAnyPermissions(commandSourceStack1.source, FactionPermissions.FACTION_CLAIM_ONE, FactionPermissions.FACTION_CLAIM_SQUARE, FactionPermissions.FACTION_CLAIM_AUTO)))
                         return false;
                     final FactionPlayer fPlayer1 = getPlayerOrTemplate(commandSourceStack1.getPlayer());
                     return fPlayer1.hasFaction() && fPlayer1.getRole().hasAnyPermissions(ERolePermissions.CLAIMONE, ERolePermissions.CLAIMSQUARE, ERolePermissions.AUTOCLAIM);
