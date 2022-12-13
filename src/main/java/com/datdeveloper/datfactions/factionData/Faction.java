@@ -86,6 +86,17 @@ public class Faction extends DatabaseEntity {
      */
     final Map<UUID, FactionRelation> relations;
 
+    /**
+     * Default Constructor for Deserialization
+     */
+    protected Faction() {
+        id = null;
+        playerInvites = new HashSet<>();
+        roles = new ArrayList<>();
+        flags = new HashSet<>();
+        relations = new HashMap<>();
+    }
+
     public Faction(final UUID id, final String name) {
         this.id = id;
         this.name = name;

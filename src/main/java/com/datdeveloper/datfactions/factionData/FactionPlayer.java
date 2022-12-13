@@ -72,6 +72,13 @@ public class FactionPlayer extends DatabaseEntity {
      */
     EFPlayerChunkAlertMode chunkAlertMode;
 
+    /**
+     * Default Constructor for Deserialization
+     */
+    protected FactionPlayer() {
+        id = null;
+    }
+
     public FactionPlayer(final UUID id, final String lastName) {
         this.id = id;
         this.lastName = lastName;

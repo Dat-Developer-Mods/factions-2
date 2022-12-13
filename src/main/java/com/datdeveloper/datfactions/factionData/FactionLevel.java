@@ -36,9 +36,17 @@ public class FactionLevel extends DatabaseEntity {
     /**
      * The claims faction's have in the level
      */
-    Map<ChunkPos, ChunkClaim> claims;
+    final Map<ChunkPos, ChunkClaim> claims;
 
     // TODO: Add a faction or player blacklist to block a faction in the world
+
+    /**
+     * Default Constructor for Deserialization
+     */
+    public FactionLevel() {
+        id = null;
+        claims = new HashMap<>();
+    }
 
     public FactionLevel(final @NotNull ResourceKey<Level> id) {
         this.id = id;
@@ -76,7 +84,7 @@ public class FactionLevel extends DatabaseEntity {
     /* ========================================= */
     public int getClaimsCount(@NotNull final UUID factionId) {
         if (factionId.equals(getSettings().defaultOwner)) return Integer.MAX_VALUE;
-        return (int) claims.values().stream()
+        return (int) getClaims().values().stream()
                 .filter(claim -> claim.getFactionId().equals(factionId))
                 .count();
     }
@@ -88,13 +96,13 @@ public class FactionLevel extends DatabaseEntity {
 
     @NotNull
     public UUID getChunkOwner(final ChunkPos pos) {
-        final ChunkClaim claim = claims.get(pos);
+        final ChunkClaim claim = getClaims().get(pos);
         return claim != null ? claim.getFactionId() : getSettings().defaultOwner;
     }
 
     public List<ChunkPos> getFactionChunks(final Faction faction) {
-        return claims.keySet().stream()
-                .filter(chunk -> claims.get(chunk).factionId.equals(faction.getId()))
+        return getClaims().keySet().stream()
+                .filter(chunk -> getClaims().get(chunk).factionId.equals(faction.getId()))
                 .toList();
     }
 
@@ -106,9 +114,9 @@ public class FactionLevel extends DatabaseEntity {
         final Faction oldOwner = getChunkOwningFaction(chunk);
 
         if (faction == null || faction.getId().equals(getSettings().defaultOwner)) {
-            claims.remove(chunk);
+            getClaims().remove(chunk);
         } else {
-            claims.put(chunk, new ChunkClaim(faction.getId()));
+            getClaims().put(chunk, new ChunkClaim(faction.getId()));
         }
         if (oldOwner != null) oldOwner.validateHome();
 
@@ -121,10 +129,10 @@ public class FactionLevel extends DatabaseEntity {
                 .map(this::getChunkOwningFaction)
                 .collect(Collectors.toSet());
         if (faction == null || faction.getId().equals(getSettings().defaultOwner)) {
-            claims.keySet().removeAll(chunks);
+            getClaims().keySet().removeAll(chunks);
         } else {
             for (final ChunkPos chunk : chunks) {
-                claims.put(chunk, new ChunkClaim(faction.getId()));
+                getClaims().put(chunk, new ChunkClaim(faction.getId()));
             }
         }
 
