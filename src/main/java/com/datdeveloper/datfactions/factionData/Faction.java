@@ -572,7 +572,7 @@ public class Faction extends DatabaseEntity {
                     case TRUCE:
                         message.append(EFactionRelation.TRUCE.formatting + "you still have a truce with them and are prevented from dealing pvp damage with each other, ");
                     case NEUTRAL:
-                        message.append(EFactionRelation.NEUTRAL.formatting + "you can add them as an ally with")
+                        message.append(EFactionRelation.NEUTRAL.formatting + "you can add them as an ally with ")
                                 .append(FactionCommandUtils.wrapCommand("/factions relations ally " + otherFaction.getName()));
                         break;
                     case ENEMY:
