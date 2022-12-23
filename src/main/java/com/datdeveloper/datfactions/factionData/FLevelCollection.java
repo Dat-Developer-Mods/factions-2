@@ -40,6 +40,12 @@ public class FLevelCollection extends BaseCollection<ResourceKey<Level>, Faction
         return level;
     }
 
+    public FactionLevel removeLevel(final ResourceKey<Level> levelId) {
+        final FactionLevel level = map.remove(levelId);
+        Database.instance.deleteLevel(level);
+        return level;
+    }
+
     /**
      * Get a list of the given faction's chunks per level
      * @param faction The faction to get the chunks of
