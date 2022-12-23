@@ -19,9 +19,13 @@ public class FactionsCommand {
         FactionInfoCommand.register(command);
         FactionPlayerInfoCommand.register(command);
         FactionMapCommand.register(command);
-        FactionCreateCommand.register(command);
-        FactionJoinCommand.register(command);
         FactionPlayerInvitesCommand.register(command);
+        FactionCreateCommand.register(command);
+
+        FactionJoinCommand.register(command);
+        FactionLeaveCommand.register(command);
+        FactionHomeCommand.register(command);
+        FactionChatCommand.register(command);
 
         FactionNameCommand.register(command);
         FactionDescriptionCommand.register(command);
@@ -30,20 +34,13 @@ public class FactionsCommand {
         FactionDisbandCommand.register(command);
 
         FactionRoleCommand.register(command);
-
         FactionInvitesCommand.register(command);
-
         FactionRelationCommand.register(command);
-
         FactionPlayersCommand.register(command);
-
         FactionFlagsCommand.register(command);
 
         FactionClaimCommand.register(command);
         FactionUnclaimCommand.register(command);
-
-        FactionLeaveCommand.register(command);
-        FactionHomeCommand.register(command);
 
         final CommandNode<CommandSourceStack> mainCommand = dispatcher.register(command);
         dispatcher.register(LiteralArgumentBuilder.<CommandSourceStack>literal("f").redirect(mainCommand));

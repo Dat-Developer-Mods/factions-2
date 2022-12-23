@@ -1,7 +1,10 @@
 package com.datdeveloper.datfactions.events;
 
 import com.datdeveloper.datfactions.Datfactions;
+import com.datdeveloper.datfactions.FactionsConfig;
 import com.datdeveloper.datfactions.factionData.*;
+import com.datdeveloper.datfactions.factionData.relations.EFactionRelation;
+import com.datdeveloper.datfactions.factionData.relations.FactionRelation;
 import com.datdeveloper.datfactions.util.RelationUtil;
 import com.datdeveloper.datmoddingapi.util.DatChatFormatting;
 import net.minecraft.ChatFormatting;
@@ -17,12 +20,13 @@ import net.minecraftforge.event.entity.EntityEvent;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
-
-import static com.datdeveloper.datfactions.Datfactions.logger;
 
 /**
  * Events pertaining to the players
@@ -119,8 +123,43 @@ public class PlayerEvents {
     /**
      * Handle faction chat
      */
-    @SubscribeEvent
+    @SubscribeEvent(priority = EventPriority.LOWEST)
     public static void playerChat(final ServerChatEvent.Submitted event) {
-        logger.info(event.getMessage().toString());
+        if (!FactionsConfig.getUseFactionChat()) return;
+
+        final ServerPlayer player = event.getPlayer();
+        final FactionPlayer fPlayer = FPlayerCollection.getInstance().getPlayer(player);
+        final Faction faction = fPlayer.getFaction();
+
+        if (faction == null || fPlayer.getChatMode() == EFPlayerChatMode.PUBLIC) return;
+
+        final MutableComponent message = Component.empty();
+        message.append("<").append(event.getUsername()).append("> ");
+        message.append(event.getMessage());
+
+        final List<Faction> targets = new ArrayList<>();
+        targets.add(faction);
+        if (fPlayer.getChatMode() == EFPlayerChatMode.ALLY) {
+            faction.getRelations().values().stream()
+                    .filter(relation -> {
+                        if (relation.getRelation() != EFactionRelation.ALLY) return false;
+                        final FactionRelation otherRelation = relation.getFaction().getRelation(faction);
+                        return otherRelation != null && otherRelation.getRelation() == EFactionRelation.ALLY;
+                    })
+                    .forEach(relation -> targets.add(relation.getFaction()));
+        }
+
+        for (final Faction target : targets) {
+            final MutableComponent component = Component.empty();
+            component.append(
+                    Component.empty()
+                            .withStyle(RelationUtil.getRelation(target, faction).formatting)
+                            .append("[").append(faction.getNameWithDescription(target)).append("]")
+            ).append(" ");
+            component.append(message);
+            target.sendFactionWideMessage(component);
+        }
+
+        event.setCanceled(true);
     }
 }
