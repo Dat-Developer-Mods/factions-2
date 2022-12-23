@@ -64,11 +64,6 @@ public class FactionLevelSettings extends DatabaseEntity {
 
     // Misc
     /**
-     * The delay before teleporting to this world with /factions home
-     */
-    int teleportDelay;
-
-    /**
      * The passive power gain a player gets in this level
      */
     float passivePowerGainMultiplier;
@@ -87,7 +82,6 @@ public class FactionLevelSettings extends DatabaseEntity {
         this.requireLandStealConnect = false;
         this.notifyLandOwnersOfSteal = false;
 
-        this.teleportDelay = 5;
         this.passivePowerGainMultiplier = 1.f;
     }
 
@@ -105,7 +99,6 @@ public class FactionLevelSettings extends DatabaseEntity {
         this.requireLandStealConnect = template.requireLandStealConnect;
         this.notifyLandOwnersOfSteal = template.notifyLandOwnersOfSteal;
 
-        this.teleportDelay = template.teleportDelay;
         this.passivePowerGainMultiplier = template.passivePowerGainMultiplier;
     }
 
@@ -151,10 +144,6 @@ public class FactionLevelSettings extends DatabaseEntity {
 
     public boolean isRequireLandStealConnect() {
         return requireLandStealConnect;
-    }
-
-    public int getTeleportDelay() {
-        return teleportDelay;
     }
 
     public float getPassivePowerGainMultiplier() {
@@ -212,11 +201,6 @@ public class FactionLevelSettings extends DatabaseEntity {
 
     public void setRequireLandStealConnect(final boolean requireLandStealConnect) {
         this.requireLandStealConnect = requireLandStealConnect;
-        markDirty();
-    }
-
-    public void setTeleportDelay(final int teleportDelay) {
-        this.teleportDelay = teleportDelay;
         markDirty();
     }
 

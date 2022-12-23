@@ -138,13 +138,15 @@ public class FactionClaimCommand extends BaseFactionCommand {
             level.setChunkOwner(chunk, faction);
         }
 
-        for (final Faction owner : stolen.keySet()) {
-            owner.sendFactionWideMessage(
-                    faction.getNameWithDescription(owner)
-                            .withStyle(RelationUtil.getRelation(owner, faction).formatting)
-                            .append(DatChatFormatting.TextColour.ERROR + " has stolen ")
-                            .append(stolen.get(owner) + " chunks from you")
-            );
+        if (level.getSettings().isNotifyLandOwnersOfSteal()) {
+            for (final Faction owner : stolen.keySet()) {
+                owner.sendFactionWideMessage(
+                        faction.getNameWithDescription(owner)
+                                .withStyle(RelationUtil.getRelation(owner, faction).formatting)
+                                .append(DatChatFormatting.TextColour.ERROR + " has stolen ")
+                                .append(stolen.get(owner) + " chunks from you")
+                );
+            }
         }
 
         player.sendSystemMessage(Component.literal(DatChatFormatting.TextColour.INFO + "Successfully claimed " + event.getChunks().size() + " chunks"));

@@ -68,27 +68,32 @@ public class FactionEvents {
 
             if (owner == null) continue;
 
-            // Weak borders check happens first to avoid the cost of comparing power
-            if (owner.hasFlag(EFactionFlags.WEAKBORDERS)) {
-                continue;
+            if (!level.getSettings().isAllowLandSteal()) {
+                sendSourceMessage(source,
+                        Component.literal(DatChatFormatting.TextColour.ERROR + "You cannot steal chunks in ")
+                                .append(level.getNameWithDescription(faction).withStyle(ChatFormatting.AQUA))
+                );
+                event.setCanceled(true);
+                return;
             }
 
-            if (!owner.hasFlag(EFactionFlags.STRONGBORDERS)) {
-                stolenChunks.computeIfAbsent(owner, (key) -> new HashSet<>()).add(chunk);
+            stolenChunks.computeIfAbsent(owner, (key) -> new HashSet<>()).add(chunk);
+            if (!level.getSettings().isRequireLandStealConnect()) {
                 connectedChunks.add(chunk);
                 iterator.remove();
             }
         }
 
-        // Ensure the owning faction can afford to keep any of the land the faction is trying to steal, and check
+        // Ensure the owning faction can't afford to keep any of the land the faction is trying to steal, and check
         // if the faction's power is higher than the owner
-        for (final Faction owner : stolenChunks.keySet()) {
-            final int worthAfterStealing = (owner.getTotalLandWorth() - 1) * level.getSettings().getLandWorth();
-            if (worthAfterStealing < owner.getTotalPower()
-                    && owner.getTotalPower() > faction.getTotalPower()
+        for (final Map.Entry<Faction, Set<ChunkPos>> ownerSet : stolenChunks.entrySet()) {
+            if (ownerSet.getKey().hasFlag(EFactionFlags.WEAKBORDERS)) continue;
+            final int worthAfterStealing = (ownerSet.getKey().getTotalLandWorth() - ownerSet.getValue().size()) * level.getSettings().getLandWorth();
+            if (worthAfterStealing < ownerSet.getKey().getTotalPower()
+                    && ownerSet.getKey().getTotalPower() > faction.getTotalPower()
             ) {
-                sendSourceMessage(source, owner.getNameWithDescription(faction)
-                        .withStyle(RelationUtil.getRelation(faction, owner).formatting)
+                sendSourceMessage(source, ownerSet.getKey().getNameWithDescription(faction)
+                        .withStyle(RelationUtil.getRelation(faction, ownerSet.getKey()).formatting)
                         .append(DatChatFormatting.TextColour.ERROR + " already owns that land and can afford to keep it"));
                 event.setCanceled(true);
                 return;
