@@ -83,7 +83,7 @@ public class FactionFlagsCommand extends BaseFactionCommand {
     }
 
     /* ========================================= */
-    /* Relation Ally
+    /* Flags Add
     /* ========================================= */
 
     static LiteralArgumentBuilder<CommandSourceStack> buildFlagAddCommand() {
@@ -109,7 +109,7 @@ public class FactionFlagsCommand extends BaseFactionCommand {
                                         return 2;
                                     }
 
-                                    if (flag.admin || FactionsConfig.getFlagBlacklisted(flag)) {
+                                    if (flag.admin || !FactionsConfig.getFlagWhitelisted(flag)) {
                                         c.getSource().sendFailure(Component.literal("You're not allowed to use that flag"));
                                         return 3;
                                     } else if (faction.hasFlag(flag)) {
@@ -134,7 +134,7 @@ public class FactionFlagsCommand extends BaseFactionCommand {
     }
 
     /* ========================================= */
-    /* Relation Truce
+    /* Flags Remove
     /* ========================================= */
 
     static LiteralArgumentBuilder<CommandSourceStack> buildFlagRemoveCommand() {

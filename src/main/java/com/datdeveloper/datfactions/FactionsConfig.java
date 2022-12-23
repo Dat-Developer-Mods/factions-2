@@ -48,7 +48,7 @@ public class FactionsConfig {
     // Misc
     private static ConfigValue<Boolean> useFactionChat;
     private static ConfigValue<Integer> teleportDelay;
-    private static final Map<EFactionFlags, ConfigValue<Boolean>> flagBlacklist = new HashMap<>();
+    private static final Map<EFactionFlags, ConfigValue<Boolean>> flagWhitelist = new HashMap<>();
 
     FactionsConfig(final ForgeConfigSpec.Builder builder) {
         builder.push("Faction Management");
@@ -173,7 +173,7 @@ public class FactionsConfig {
             for (final EFactionFlags factionFlag : EFactionFlags.values()) {
                 if (factionFlag.admin) continue;
 
-                flagBlacklist.put(
+                flagWhitelist.put(
                         factionFlag,
                         builder
                                 .comment(factionFlag.description)
@@ -274,8 +274,8 @@ public class FactionsConfig {
         return teleportDelay.get();
     }
 
-    public static boolean getFlagBlacklisted(final EFactionFlags flag) {
-        return flagBlacklist.get(flag).get();
+    public static boolean getFlagWhitelisted(final EFactionFlags flag) {
+        return flagWhitelist.get(flag).get();
     }
 
     public static EValidationType getValidateLandOwnership() {

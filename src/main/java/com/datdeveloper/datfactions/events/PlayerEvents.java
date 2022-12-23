@@ -15,9 +15,10 @@ import net.minecraft.network.protocol.game.ClientboundSetSubtitleTextPacket;
 import net.minecraft.network.protocol.game.ClientboundSetTitleTextPacket;
 import net.minecraft.network.protocol.game.ClientboundSetTitlesAnimationPacket;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraftforge.event.ServerChatEvent;
 import net.minecraftforge.event.entity.EntityEvent;
-import net.minecraftforge.event.entity.living.LivingDamageEvent;
+import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
@@ -53,12 +54,47 @@ public class PlayerEvents {
      * Block damage if the player shares a faction or alliance
      */
     @SubscribeEvent
-    public static void playerDamaged(final LivingDamageEvent event) {
-        if (!(event.getEntity() instanceof ServerPlayer target)) {
-            return;
-        }
-        if (!(event.getSource().getEntity() instanceof ServerPlayer source)) return;
+    public static void playerDamaged(final LivingAttackEvent event) {
+        if (!(event.getEntity() instanceof ServerPlayer target)) return;
 
+        final FactionPlayer targetPlayer = FPlayerCollection.getInstance().getPlayer(target);
+        final Faction targetFaction = targetPlayer.getFaction();
+
+        // Friendly Fire
+        if (event.getSource().getEntity() instanceof ServerPlayer source) {
+            final FactionPlayer sourcePlayer = FPlayerCollection.getInstance().getPlayer(source);
+            final Faction sourceFaction = sourcePlayer.getFaction();
+            if (sourceFaction != null && targetFaction != null) {
+                if (targetFaction.equals(sourceFaction) && !targetFaction.hasFlag(EFactionFlags.FRIENDLYFIRE)
+                ) {
+                    event.setCanceled(true);
+                    return;
+                }
+
+                final FactionRelation fromRelation = sourceFaction.getRelation(targetFaction);
+                final FactionRelation toRelation = targetFaction.getRelation(sourceFaction);
+                if (fromRelation != null && toRelation != null
+                        && fromRelation.getRelation() == EFactionRelation.ALLY
+                        && toRelation.getRelation() == EFactionRelation.ALLY
+                        && !(targetFaction.hasFlag(EFactionFlags.FRIENDLYFIRE) || sourceFaction.hasFlag(EFactionFlags.FRIENDLYFIRE))
+                ) {
+                    event.setCanceled(true);
+                    return;
+                }
+            }
+        }
+
+        // Land protection
+        {
+            final FactionLevel level = FLevelCollection.getInstance().getByKey(target.getLevel().dimension());
+            final Faction landOwner = level.getChunkOwningFaction(new ChunkPos(target.getOnPos()));
+            if (landOwner.hasFlag(EFactionFlags.TOTALPROTECTION)
+                    || (landOwner.equals(targetFaction) && landOwner.hasFlag(EFactionFlags.PROTECTED))
+            ) {
+                event.setCanceled(true);
+                return;
+            }
+        }
     }
 
     /**

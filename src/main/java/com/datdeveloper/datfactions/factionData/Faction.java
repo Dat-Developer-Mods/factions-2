@@ -567,7 +567,10 @@ public class Faction extends DatabaseEntity {
                 message.append(EFactionRelation.ALLY.formatting + " has declared you an ally, ");
                 switch (toRelationType) {
                     case ALLY:
-                        message.append(EFactionRelation.ALLY.formatting + "you can now both speak privately in ally chat and are prevented from dealing pvp damage with each other");
+                        message.append(EFactionRelation.ALLY.formatting + "you can now both speak privately in ally chat");
+                        if (!(hasFlag(EFactionFlags.FRIENDLYFIRE) || otherFaction.hasFlag(EFactionFlags.FRIENDLYFIRE))) {
+                            message.append(EFactionRelation.ALLY.formatting + " and are prevented from dealing pvp damage with each other");
+                        }
                         break;
                     case TRUCE:
                         message.append(EFactionRelation.TRUCE.formatting + "you still have a truce with them and are prevented from dealing pvp damage with each other, ");
