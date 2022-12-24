@@ -244,24 +244,28 @@ public class FactionPlayer extends DatabaseEntity {
         return maxPower;
     }
 
-    public void addPower(final int power) {
-        this.setPower(this.power + power);
+    public int addPower(final int power) {
+        final int originalPower = this.power;
+        return this.setPower(this.power + power) - originalPower;
     }
 
-    public void addMaxPower(final int power) {
-        this.setMaxPower(this.maxPower + power);
+    public int addMaxPower(final int power) {
+        final int originalMaxPower = this.maxPower;
+        return this.setMaxPower(this.maxPower + power) - originalMaxPower;
     }
 
-    public void setPower(final int power) {
+    public int setPower(final int power) {
         this.power = Math.min(this.maxPower, (Math.max(power, FactionsConfig.getPlayerMinPower())));
 
         this.markDirty();
+        return this.power;
     }
 
-    public void setMaxPower(final int maxPower) {
+    public int setMaxPower(final int maxPower) {
         this.maxPower = Math.min(FactionsConfig.getPlayerMaxPower(), (Math.max(maxPower, FactionsConfig.getPlayerMinPower())));
 
         this.markDirty();
+        return this.maxPower;
     }
 
     /* ========================================= */

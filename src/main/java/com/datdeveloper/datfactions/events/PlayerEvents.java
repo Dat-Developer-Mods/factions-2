@@ -2,10 +2,13 @@ package com.datdeveloper.datfactions.events;
 
 import com.datdeveloper.datfactions.Datfactions;
 import com.datdeveloper.datfactions.FactionsConfig;
+import com.datdeveloper.datfactions.database.Database;
+import com.datdeveloper.datfactions.delayedEvents.PowerDelayedEvent;
 import com.datdeveloper.datfactions.factionData.*;
 import com.datdeveloper.datfactions.factionData.relations.EFactionRelation;
 import com.datdeveloper.datfactions.factionData.relations.FactionRelation;
 import com.datdeveloper.datfactions.util.RelationUtil;
+import com.datdeveloper.datmoddingapi.delayedEvents.DelayedEventsHandler;
 import com.datdeveloper.datmoddingapi.util.DatChatFormatting;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
@@ -39,15 +42,18 @@ public class PlayerEvents {
      */
     @SubscribeEvent
     public static void playerJoin(final PlayerEvent.PlayerLoggedInEvent event) {
-
+        if (!(event.getEntity() instanceof ServerPlayer player)) return;
+        final FactionPlayer fPlayer = FPlayerCollection.getInstance().getPlayer(player);
+        DelayedEventsHandler.addEvent(new PowerDelayedEvent(fPlayer));
     }
 
     /**
-     * Force save player data, deregister power gain event
+     * Force save player data
      */
     @SubscribeEvent
     public static void playerLeave(final PlayerEvent.PlayerLoggedOutEvent event) {
-
+        if (!(event.getEntity() instanceof ServerPlayer player)) return;
+        Database.instance.storePlayer(FPlayerCollection.getInstance().getPlayer(player));
     }
 
     /**
@@ -105,7 +111,8 @@ public class PlayerEvents {
         if (!(event.getEntity() instanceof ServerPlayer target)) {
             return;
         }
-        if (!(event.getSource().getEntity() instanceof ServerPlayer source)) return;
+        if (!(event.getSource().getEntity() instanceof ServerPlayer source)) {
+        }
 
     }
 

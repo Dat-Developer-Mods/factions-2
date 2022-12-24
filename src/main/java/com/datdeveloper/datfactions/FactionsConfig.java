@@ -28,15 +28,18 @@ public class FactionsConfig {
 
     private static ConfigValue<Float> powerLandMultiplier;
 
-    private static ConfigValue<Long> playerPassivePowerGainInterval;
+    private static ConfigValue<Integer> playerPassivePowerGainInterval;
     private static ConfigValue<Integer> playerPassivePowerGainAmount;
-    private static ConfigValue<Float> rolePassivePowerGainMultiplier;
+    private static ConfigValue<Integer> playerPassiveMaxPowerGainAmount;
+    private static ConfigValue<Float> ownerRolePassivePowerGainMultiplier;
+    private static ConfigValue<Float> recruitRolePassivePowerGainMultiplier;
 
     private static ConfigValue<Integer> baseKillPowerGain;
     private static ConfigValue<Integer> baseKillMaxPowerGain;
     private static ConfigValue<Float> noFactionKillPowerMultiplier;
     private static ConfigValue<Float> enemyKillPowerMultiplier;
-    private static ConfigValue<Float> roleKillPowerMultiplier;
+    private static ConfigValue<Float> ownerRoleKillPowerMultiplier;
+    private static ConfigValue<Float> recruitRoleKillPowerMultiplier;
 
     private static ConfigValue<Float> bonusPowerFlagMultiplier;
 
@@ -99,17 +102,27 @@ public class FactionsConfig {
                     .define("PowerLandMultiplier", 1.f);
 
             playerPassivePowerGainInterval = builder
-                    .comment("The amount of time in milliseconds between a player passively gaining max power")
-                    .defineInRange("PlayerPassivePowerGainInterval", 1800, 0, Long.MAX_VALUE);
+                    .comment("The amount of time in seconds between a player passively gaining max power")
+                    .defineInRange("PlayerPassivePowerGainInterval", 1800, 0, Integer.MAX_VALUE);
             playerPassivePowerGainAmount = builder
+                    .comment("The base amount of power a player gains passively just by being online (up to their maximum power)")
+                    .define("PlayerPassivePowerGainAmount", 7);
+            playerPassiveMaxPowerGainAmount = builder
                     .comment("The base amount of max power a player gains passively just by being online")
-                    .define("PlayerPassivePowerGainAmount", 5);
-            rolePassivePowerGainMultiplier = builder
+                    .define("PlayerPassiveMaxPowerGainAmount", 5);
+
+            ownerRolePassivePowerGainMultiplier = builder
                     .comment(
                             "The multiplier for passive power gain for being the owner of the faction",
-                            "The multiplier for other roles is inferred from their position in the faction's role hierarchy"
+                            "The multiplier for other roles linearly interpolated between this value and the RecruitRolePassivePowerGainMultiplier based off their position in the faction hierarchy"
                     )
-                    .define("RolePassivePowerGainMultiplier", 2.f);
+                    .define("OwnerRolePassivePowerGainMultiplier", 2.f);
+            recruitRolePassivePowerGainMultiplier = builder
+                    .comment(
+                            "The multiplier for passive power gain for being a recruit in the faction",
+                            "The multiplier for other roles linearly interpolated between OwnerRolePassivePowerGainMultiplier and this value based off their position in the faction hierarchy"
+                    )
+                    .define("RecruitRolePassivePowerGainMultiplier", 1.f);
 
             baseKillPowerGain = builder
                     .comment("The base amount of power a player gains by killing a player")
@@ -124,12 +137,19 @@ public class FactionsConfig {
             enemyKillPowerMultiplier = builder
                     .comment("The multiplier for the amount of power a player gains by killing a player who is in an enemy faction")
                     .define("EnemyKillPowerMultiplier", 2.f);
-            roleKillPowerMultiplier = builder
+
+            ownerRoleKillPowerMultiplier = builder
                 .comment(
-                        "The multiplier for passive power gain for being the owner of the faction",
-                        "The multiplier for other roles is inferred from their position in the faction's role hierarchy"
+                        "The multiplier for power gain for killing the owner of a faction",
+                        "The multiplier for other roles linearly interpolated between this value and the value of RecruitRolePassivePowerGainMultiplier off their position in the faction hierarchy"
                 )
-                .define("RoleKillPowerMultiplier", 2.f);
+                .define("OwnerRoleKillPowerMultiplier", 2.f);
+            recruitRoleKillPowerMultiplier = builder
+                .comment(
+                        "The multiplier for power gain for killing a recruit of a faction",
+                        "The multiplier for other roles linearly interpolated between OwnerRoleKillPowerMultiplier and this value based off their position in the faction hierarchy"
+                )
+                .define("RecruitRoleKillPowerMultiplier", 1.f);
 
             bonusPowerFlagMultiplier = builder.define("BonusPowerFlagMultiplier", 2.f);
         } builder.pop();
@@ -230,7 +250,7 @@ public class FactionsConfig {
         return powerLandMultiplier.get();
     }
 
-    public static long getPlayerPassivePowerGainInterval() {
+    public static int getPlayerPassivePowerGainInterval() {
         return playerPassivePowerGainInterval.get();
     }
 
@@ -238,8 +258,16 @@ public class FactionsConfig {
         return playerPassivePowerGainAmount.get();
     }
 
-    public static float getRolePassivePowerGainMultiplier() {
-        return rolePassivePowerGainMultiplier.get();
+    public static int getPlayerPassiveMaxPowerGainAmount() {
+        return playerPassiveMaxPowerGainAmount.get();
+    }
+
+    public static float getOwnerRolePassivePowerGainMultiplier() {
+        return ownerRolePassivePowerGainMultiplier.get();
+    }
+
+    public static float getRecruitRolePassivePowerGainMultiplier() {
+        return recruitRolePassivePowerGainMultiplier.get();
     }
 
     public static int getBaseKillPowerGain() {
@@ -258,8 +286,12 @@ public class FactionsConfig {
         return enemyKillPowerMultiplier.get();
     }
 
-    public static float getRoleKillPowerMultiplier() {
-        return roleKillPowerMultiplier.get();
+    public static float getOwnerRoleKillPowerMultiplier() {
+        return ownerRoleKillPowerMultiplier.get();
+    }
+
+    public static float getRecruitRoleKillPowerMultiplier() {
+        return recruitRoleKillPowerMultiplier.get();
     }
 
     public static float getBonusPowerFlagMultiplier() {
