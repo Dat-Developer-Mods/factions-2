@@ -26,7 +26,7 @@ public enum EFactionFlags {
     UNCHARTED(true, "The faction does not show up on a map"),
     ANONYMOUS(true, "The members of the faction are anonymous"),
     DEFAULT(true, "The faction is one of the default factions"),
-    BONUSPOWER(true, "You lose/gain extra power when you die/kill on this faction's chunks"),
+    BONUSPOWER(true, "You gain extra power when you kill on this faction's chunks"),
     NOMONSTERS(true, "Monsters are prevented from spawning on this faction's chunks"),
     NOANIMALS(true, "Animals are prevented from spawning on this faction's chunks"),
     EXPLOSIONPROOF(true, "Explosions do not affect blocks in chunks owned by this faction (Only work for explosives that use the vanilla block breaking system)"),

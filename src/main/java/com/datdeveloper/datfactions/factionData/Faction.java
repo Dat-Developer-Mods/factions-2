@@ -217,7 +217,7 @@ public class Faction extends DatabaseEntity {
 
     public int getTotalPower() {
         if (hasFlag(EFactionFlags.INFINITEPOWER)) return Integer.MAX_VALUE;
-        return Math.max(factionPower + getPlayers().stream().mapToInt(FactionPlayer::getPower).sum(), FactionsConfig.getFactionMaxPower());
+        return Math.min(factionPower + getPlayers().stream().mapToInt(FactionPlayer::getPower).sum(), FactionsConfig.getFactionMaxPower());
     }
 
     public int getTotalMaxPower() {

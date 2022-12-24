@@ -92,10 +92,10 @@ public class FactionsConfig {
                     .defineInRange("PlayerMaxPower", 200, 0, Integer.MAX_VALUE);
             playerMinPower = builder
                     .comment("The minimum amount of power a player can have")
-                    .define("PlayerMaxPower", 0);
+                    .define("PlayerMinPower", 0);
             factionMaxPower = builder
                     .comment("The maximum amount of power a faction can have")
-                    .defineInRange("FactionMaxPower", 0, 0, Integer.MAX_VALUE);
+                    .defineInRange("FactionMaxPower", 5000, 0, Integer.MAX_VALUE);
 
             powerLandMultiplier = builder
                     .comment("How much to multiply the faction power by to get the amount of chunk worth the faction is able to hold")
@@ -151,7 +151,9 @@ public class FactionsConfig {
                 )
                 .define("RecruitRoleKillPowerMultiplier", 1.f);
 
-            bonusPowerFlagMultiplier = builder.define("BonusPowerFlagMultiplier", 2.f);
+            bonusPowerFlagMultiplier = builder
+                    .comment("The multiplier for power gain when killing on land owned by a faction with the BONUSPOWER flag")
+                    .define("BonusPowerFlagMultiplier", 2.f);
         } builder.pop();
 
         builder
@@ -174,7 +176,7 @@ public class FactionsConfig {
                             "How to handle claimed chunks who's owning faction no longer exists",
                             "Note, not removing these may lead to crashes"
                     )
-                    .defineEnum("ValidateFactionMembers", EValidationType.REMOVE);
+                    .defineEnum("ValidateLandOwnership", EValidationType.REMOVE);
         } builder.pop();
 
         builder.push("Miscellaneous");
