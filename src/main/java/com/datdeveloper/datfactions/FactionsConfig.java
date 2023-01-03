@@ -31,17 +31,20 @@ public class FactionsConfig {
     private static ConfigValue<Integer> playerPassivePowerGainInterval;
     private static ConfigValue<Integer> playerPassivePowerGainAmount;
     private static ConfigValue<Integer> playerPassiveMaxPowerGainAmount;
-    private static ConfigValue<Float> ownerRolePassivePowerGainMultiplier;
-    private static ConfigValue<Float> recruitRolePassivePowerGainMultiplier;
+    private static final Map<EPlayerPowerGainMultiplierType, ConfigValue<Float>> playerPassivePowerGainSources = new HashMap<>();
+
 
     private static ConfigValue<Integer> baseKillPowerGain;
     private static ConfigValue<Integer> baseKillMaxPowerGain;
-    private static ConfigValue<Float> noFactionKillPowerMultiplier;
-    private static ConfigValue<Float> enemyKillPowerMultiplier;
-    private static ConfigValue<Float> ownerRoleKillPowerMultiplier;
-    private static ConfigValue<Float> recruitRoleKillPowerMultiplier;
+    private static final Map<EPlayerPowerGainMultiplierType, ConfigValue<Float>> playerKillPowerGainSources = new HashMap<>();
 
-    private static ConfigValue<Float> bonusPowerFlagMultiplier;
+    private static ConfigValue<Integer> baseDeathPowerLoss;
+    private static ConfigValue<Integer> baseDeathMaxPowerLoss;
+    private static final Map<EPlayerPowerGainMultiplierType, ConfigValue<Float>> playerDeathPowerLossSources = new HashMap<>();
+
+    private static ConfigValue<Float> bonusPowerFlagPassiveMultiplier;
+    private static ConfigValue<Float> bonusPowerFlagKillMultiplier;
+    private static ConfigValue<Float> bonusPowerFlagDeathMultiplier;
 
     // Validation
     private static ConfigValue<EValidationType> validateLandOwnership;
@@ -78,7 +81,7 @@ public class FactionsConfig {
                     .defineInRange("globalMaxFactionLandCount", 100, 0, Integer.MAX_VALUE);
 
             factionOfflineExpiryTime = builder
-                    .comment("The amount of time a faction can spend offline before it is deleted in milliseconds, set to 0 to disable")
+                    .comment("The amount of time a faction can spend offline before it is deleted in seconds, set to 0 to disable")
                     .defineInRange("FactionOfflineExpiryTime", 0, 0, Long.MAX_VALUE);
             removePlayerOnBan = builder
                     .comment("Whether to remove the player's info when they are banned from the server")
@@ -96,64 +99,110 @@ public class FactionsConfig {
             factionMaxPower = builder
                     .comment("The maximum amount of power a faction can have")
                     .defineInRange("FactionMaxPower", 5000, 0, Integer.MAX_VALUE);
-
             powerLandMultiplier = builder
                     .comment("How much to multiply the faction power by to get the amount of chunk worth the faction is able to hold")
                     .define("PowerLandMultiplier", 1.f);
 
-            playerPassivePowerGainInterval = builder
-                    .comment("The amount of time in seconds between a player passively gaining max power")
-                    .defineInRange("PlayerPassivePowerGainInterval", 1800, 0, Integer.MAX_VALUE);
-            playerPassivePowerGainAmount = builder
-                    .comment("The base amount of power a player gains passively just by being online (up to their maximum power)")
-                    .define("PlayerPassivePowerGainAmount", 7);
-            playerPassiveMaxPowerGainAmount = builder
-                    .comment("The base amount of max power a player gains passively just by being online")
-                    .define("PlayerPassiveMaxPowerGainAmount", 5);
+            builder
+                    .comment("Config for power gained passively by the player")
+                    .push("Passive Power Gain");
+            {
+                playerPassivePowerGainInterval = builder
+                        .comment("The amount of time in seconds between a player passively gaining max power")
+                        .defineInRange("PlayerPassivePowerGainInterval", 1800, 0, Integer.MAX_VALUE);
+                playerPassivePowerGainAmount = builder
+                        .comment("The base amount of power a player gains passively just by being online (up to their maximum power)")
+                        .define("PlayerPassivePowerGainAmount", 7);
+                playerPassiveMaxPowerGainAmount = builder
+                        .comment("The base amount of max power a player gains passively just by being online")
+                        .define("PlayerPassiveMaxPowerGainAmount", 5);
+                builder
+                        .comment(
+                                "Configure the multipliers for passive power gain"
+                        )
+                        .push("Player Passive Power Gain Multipliers");
+                for (final EPlayerPowerGainMultiplierType multiplierType : EPlayerPowerGainMultiplierType.values()) {
+                    if (multiplierType.passiveDescription == null) continue;
 
-            ownerRolePassivePowerGainMultiplier = builder
-                    .comment(
-                            "The multiplier for passive power gain for being the owner of the faction",
-                            "The multiplier for other roles linearly interpolated between this value and the RecruitRolePassivePowerGainMultiplier based off their position in the faction hierarchy"
-                    )
-                    .define("OwnerRolePassivePowerGainMultiplier", 2.f);
-            recruitRolePassivePowerGainMultiplier = builder
-                    .comment(
-                            "The multiplier for passive power gain for being a recruit in the faction",
-                            "The multiplier for other roles linearly interpolated between OwnerRolePassivePowerGainMultiplier and this value based off their position in the faction hierarchy"
-                    )
-                    .define("RecruitRolePassivePowerGainMultiplier", 1.f);
+                    playerPassivePowerGainSources.put(
+                            multiplierType,
+                            builder
+                                    .comment(multiplierType.passiveDescription)
+                                    .define(multiplierType.name(), multiplierType.defaultPassiveMultiplier)
+                    );
+                } builder.pop();
+            } builder.pop();
 
-            baseKillPowerGain = builder
-                    .comment("The base amount of power a player gains by killing a player")
-                    .define("BaseKillPowerGain", 5);
-            baseKillMaxPowerGain = builder
-                    .comment("The base amount of max power a player gains by killing a player")
-                    .define("BaseKillMaxPowerGain", 5);
+            builder
+                    .comment("Config for power gained when the player kills another player")
+                    .push("Kill Power Gain");
+            {
+                baseKillPowerGain = builder
+                        .comment("The base amount of power a player gains by killing a player")
+                        .define("BaseKillPowerGain", 5);
+                baseKillMaxPowerGain = builder
+                        .comment("The base amount of max power a player gains by killing a player")
+                        .define("BaseKillMaxPowerGain", 5);
 
-            noFactionKillPowerMultiplier = builder
-                    .comment("The multiplier for the amount of power a player gains by killing a player who isn't in a faction")
-                    .define("NoFactionKillPowerMultiplier", 0.f);
-            enemyKillPowerMultiplier = builder
-                    .comment("The multiplier for the amount of power a player gains by killing a player who is in an enemy faction")
-                    .define("EnemyKillPowerMultiplier", 2.f);
+                builder
+                        .comment(
+                                "Configure the multipliers for the types of kills that cause the player to gain power"
+                        )
+                        .push("Player Power Gain Multipliers");
+                for (final EPlayerPowerGainMultiplierType killType : EPlayerPowerGainMultiplierType.values()) {
+                    if (killType.killDescription == null) continue;
 
-            ownerRoleKillPowerMultiplier = builder
-                .comment(
-                        "The multiplier for power gain for killing the owner of a faction",
-                        "The multiplier for other roles linearly interpolated between this value and the value of RecruitRolePassivePowerGainMultiplier off their position in the faction hierarchy"
-                )
-                .define("OwnerRoleKillPowerMultiplier", 2.f);
-            recruitRoleKillPowerMultiplier = builder
-                .comment(
-                        "The multiplier for power gain for killing a recruit of a faction",
-                        "The multiplier for other roles linearly interpolated between OwnerRoleKillPowerMultiplier and this value based off their position in the faction hierarchy"
-                )
-                .define("RecruitRoleKillPowerMultiplier", 1.f);
+                    playerKillPowerGainSources.put(
+                            killType,
+                            builder
+                                    .comment(killType.killDescription)
+                                    .define(killType.name(), killType.defaultKillMultiplier)
+                    );
+                } builder.pop();
+            } builder.pop();
 
-            bonusPowerFlagMultiplier = builder
-                    .comment("The multiplier for power gain when killing on land owned by a faction with the BONUSPOWER flag")
-                    .define("BonusPowerFlagMultiplier", 2.f);
+            builder
+                    .comment("Config for power lost when the player is killed by another player")
+                    .push("Death Power Loss");
+            {
+                baseDeathPowerLoss = builder
+                        .comment("The base amount of power a player loses by killing a player")
+                        .define("BaseDeathPowerLoss", -5);
+                baseDeathMaxPowerLoss = builder
+                        .comment("The base amount of max power a player loses by killing a player")
+                        .define("BaseDeathMaxPowerLoss", -5);
+                builder
+                        .comment(
+                                "Configure the multipliers for the sources of death that cause the player to lose power",
+                                "Note these use the true source of the death, IE the entity that shot the arrow, or the entity that hit the player off a cliff"
+                        )
+                        .push("Player Power Loss Multipliers");
+                for (final EPlayerPowerGainMultiplierType deathSource : EPlayerPowerGainMultiplierType.values()) {
+                    if (deathSource.deathDescription == null) continue;
+
+                    playerDeathPowerLossSources.put(
+                            deathSource,
+                            builder
+                                    .comment(deathSource.deathDescription)
+                                    .define(deathSource.name(), deathSource.defaultDeathMultiplier)
+                    );
+                } builder.pop();
+            } builder.pop();
+
+            builder
+                    .comment("Config for the BONUSPOWER faction flag")
+                    .push("BONUSPOWER Flag Bonuses");
+            {
+                bonusPowerFlagPassiveMultiplier = builder
+                        .comment("The multiplier for power gain when passively gaining power on land owned by a faction with the BONUSPOWER flag")
+                        .define("BonusPowerFlagPassiveMultiplier", 2.f);
+                bonusPowerFlagKillMultiplier = builder
+                        .comment("The multiplier for power gain when killing on land owned by a faction with the BONUSPOWER flag")
+                        .define("BonusPowerFlagKillMultiplier", 2.f);
+                bonusPowerFlagDeathMultiplier = builder
+                        .comment("The multiplier for power gain when being killed on land owned by a faction with the BONUSPOWER flag")
+                        .define("BonusPowerFlagDeathMultiplier", 2.f);
+            } builder.pop();
         } builder.pop();
 
         builder
@@ -264,12 +313,8 @@ public class FactionsConfig {
         return playerPassiveMaxPowerGainAmount.get();
     }
 
-    public static float getOwnerRolePassivePowerGainMultiplier() {
-        return ownerRolePassivePowerGainMultiplier.get();
-    }
-
-    public static float getRecruitRolePassivePowerGainMultiplier() {
-        return recruitRolePassivePowerGainMultiplier.get();
+    public static float getPassiveMultiplier(final EPlayerPowerGainMultiplierType multiplierType) {
+        return playerKillPowerGainSources.get(multiplierType).get();
     }
 
     public static int getBaseKillPowerGain() {
@@ -280,24 +325,32 @@ public class FactionsConfig {
         return baseKillMaxPowerGain.get();
     }
 
-    public static float getNoFactionKillPowerMultiplier() {
-        return noFactionKillPowerMultiplier.get();
+    public static float getKillMultiplier(final EPlayerPowerGainMultiplierType multiplierType) {
+        return playerKillPowerGainSources.get(multiplierType).get();
     }
 
-    public static float getEnemyKillPowerMultiplier() {
-        return enemyKillPowerMultiplier.get();
+    public static int getBaseDeathPowerLoss() {
+        return baseDeathPowerLoss.get();
     }
 
-    public static float getOwnerRoleKillPowerMultiplier() {
-        return ownerRoleKillPowerMultiplier.get();
+    public static int getBaseDeathMaxPowerLoss() {
+        return baseDeathMaxPowerLoss.get();
     }
 
-    public static float getRecruitRoleKillPowerMultiplier() {
-        return recruitRoleKillPowerMultiplier.get();
+    public static float getDeathMultiplier(final EPlayerPowerGainMultiplierType multiplierType) {
+        return playerDeathPowerLossSources.get(multiplierType).get();
     }
 
-    public static float getBonusPowerFlagMultiplier() {
-        return bonusPowerFlagMultiplier.get();
+    public static float getBonusPowerFlagPassiveMultiplier() {
+        return bonusPowerFlagPassiveMultiplier.get();
+    }
+
+    public static float getBonusPowerFlagKillMultiplier() {
+        return bonusPowerFlagKillMultiplier.get();
+    }
+
+    public static float getBonusPowerFlagDeathMultiplier() {
+        return bonusPowerFlagDeathMultiplier.get();
     }
 
     public static boolean getUseFactionChat() {
@@ -318,6 +371,64 @@ public class FactionsConfig {
 
     public static EValidationType getValidateEmptyFactions() {
         return validateEmptyFactions.get();
+    }
+
+
+    /**
+     * The sources of death that cause the player to lose power
+     */
+    public enum EPlayerPowerGainMultiplierType {
+        MOBS(
+                null, 0.f,
+                "Power gain multiplier when the player kills a mob", 0.f,
+                "Power loss multiplier when a mob kills the player", 1.f
+        ),
+        NOFACTION(
+                "Passive gain multiplier when the player isn't in a faction", 0.5f,
+                "Power gain multiplier when killing a player who isn't in a faction", 0.5f,
+                "Power loss multiplier when killed by a player who is not in a faction", 0.5f),
+        RECRUIT(
+                "Passive gain multiplier when the player is a recruit in a faction (Disabled if OWNER is disabled)", 1.f,
+                "Power gain multiplier when killing a recruit from another faction (Disabled if OWNER is disabled)", 1.f,
+                "Power loss multiplier when killed as a recruit (Disabled if OWNER is disabled)", 1.f
+        ),
+        OWNER(
+                "Passive gain multiplier when the player is the owner of a faction (Disabled if RECRUIT is disabled)", 2.f,
+                "Power Gain multiplier when killing the owner of a faction (Disabled if RECRUIT is disabled)", 2.f,
+                "Power loss multiplier when killed as the owner of a faction (Disabled if RECRUIT is disabled)", 1.5f
+        ),
+        FRIENDLY(
+                null, 0.f,
+                "Power gain multiplier when killing a player from the same faction (Stacks with other kill sources", 0.f,
+                "Power loss multiplier when killed by a player from the same faction (Stacks with other death sources)", 0.f
+        ),
+        ALLY(
+                null, 0.f,
+                "Power gain multiplier when killing a player from an allied faction (Stacks with other kill sources", 0.f,
+                "Power loss multiplier when killed by a player from an allied faction (Stacks with other death sources)", 0.f
+        ),
+        ENEMY(null, 0.f,
+                "Power gain multiplier when killing a player from an enemy faction (Stacks with other kill sources)", 2.f,
+                "Power loss multiplier when killed by a player from an enemy faction (Stacks with other death sources)", 1.5f),
+        SUICIDE(null, 1.f,
+                null, 0.f,
+                "Power loss multiplier when the player is responsible for killing themselves", 2.f);
+
+        public final String passiveDescription;
+        final float defaultPassiveMultiplier;
+        final float defaultKillMultiplier;
+        public final String killDescription;
+        final float defaultDeathMultiplier;
+        public final String deathDescription;
+
+        EPlayerPowerGainMultiplierType(final String passiveDescription, final float defaultPassiveMultiplier, final String killDescription, final float defaultKillMultiplier, final String deathDescription, final float defaultDeathMultiplier) {
+            this.passiveDescription = passiveDescription;
+            this.killDescription = killDescription;
+            this.deathDescription = deathDescription;
+            this.defaultPassiveMultiplier = defaultPassiveMultiplier;
+            this.defaultKillMultiplier = defaultKillMultiplier;
+            this.defaultDeathMultiplier = defaultDeathMultiplier;
+        }
     }
 
     /**

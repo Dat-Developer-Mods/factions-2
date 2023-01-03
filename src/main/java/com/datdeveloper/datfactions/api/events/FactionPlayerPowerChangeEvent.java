@@ -7,11 +7,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Fired when a faction player gains power
- * <br>
- * Cancellable, and changes to powerChange are reflected
+ * Base class for player power change events
  */
-@Cancelable
 public class FactionPlayerPowerChangeEvent extends FactionPlayerEvent {
     /**
      * The other player involved (if there is one)
@@ -23,6 +20,10 @@ public class FactionPlayerPowerChangeEvent extends FactionPlayerEvent {
      * The change in power
      */
     int powerChange;
+    /**
+     * The change in max power
+     */
+    int maxPowerChange;
 
     /**
      * The reason the player changed power
@@ -34,12 +35,14 @@ public class FactionPlayerPowerChangeEvent extends FactionPlayerEvent {
      * @param player The player the event is for
      * @param otherPlayer The other player involved (If there is one)
      * @param powerChange The change in power
+     * @param maxPowerChange The change in power
      * @param reason The reason for changing power
      */
-    public FactionPlayerPowerChangeEvent(@Nullable final CommandSource instigator, @NotNull final FactionPlayer player, @Nullable final FactionPlayer otherPlayer, final int powerChange, final EPowerChangeReason reason) {
+    public FactionPlayerPowerChangeEvent(@Nullable final CommandSource instigator, @NotNull final FactionPlayer player, @Nullable final FactionPlayer otherPlayer, final int powerChange, final int maxPowerChange, final EPowerChangeReason reason) {
         super(instigator, player);
         this.otherPlayer = otherPlayer;
         this.powerChange = powerChange;
+        this.maxPowerChange = maxPowerChange;
 
         this.reason = reason;
     }
@@ -62,10 +65,26 @@ public class FactionPlayerPowerChangeEvent extends FactionPlayerEvent {
 
     /**
      * Set the change in power
-     * @param powerChange The new Change in power
+     * @param powerChange The new change in power
      */
     public void setPowerChange(final int powerChange) {
         this.powerChange = powerChange;
+    }
+
+    /**
+     * Get the change in max power
+     * @return the change in max power
+     */
+    public int getMaxPowerChange() {
+        return maxPowerChange;
+    }
+
+    /**
+     * Set the change in max power
+     * @param maxPowerChange The new change in max power
+     */
+    public void setMaxPowerChange(final int maxPowerChange) {
+        this.maxPowerChange = maxPowerChange;
     }
 
     /**
@@ -83,5 +102,48 @@ public class FactionPlayerPowerChangeEvent extends FactionPlayerEvent {
         PASSIVE,
         KILL,
         KILLED
+    }
+
+    /**
+     * Fired just before a faction player gains power <br>
+     * The power added will be validated after this event, meaning changes to the power will be bounded to the players max power,
+     * changes to the player's max power will be validated by the configured maximum power, etc
+     * <br>
+     * Cancellable, and changes to powerChange and maxPowerChange are reflected
+     * @see com.datdeveloper.datfactions.api.events.FactionPlayerPowerChangeEvent.PostFactionPlayerPowerChangeEvent
+     */
+    @Cancelable
+    public static class PreFactionPlayerPowerChangeEvent extends FactionPlayerPowerChangeEvent {
+        /**
+         * @param instigator     The CommandSource that instigated the event
+         * @param player         The player the event is for
+         * @param otherPlayer    The other player involved (If there is one)
+         * @param powerChange    The change in power
+         * @param maxPowerChange The change in power
+         * @param reason         The reason for changing power
+         */
+        public PreFactionPlayerPowerChangeEvent(@Nullable final CommandSource instigator, @NotNull final FactionPlayer player, @Nullable final FactionPlayer otherPlayer, final int powerChange, final int maxPowerChange, final EPowerChangeReason reason) {
+            super(instigator, player, otherPlayer, powerChange, maxPowerChange, reason);
+        }
+    }
+
+    /**
+     * Fired just after a faction player gains power <br>
+     * The {@link PostFactionPlayerPowerChangeEvent#powerChange} and {@link PostFactionPlayerPowerChangeEvent#maxPowerChange} will be the actual change in power that was committed to the player data
+     * <br>
+     * Not cancellable, and Changes will not be reflected
+     */
+    public static class PostFactionPlayerPowerChangeEvent extends FactionPlayerPowerChangeEvent {
+        /**
+         * @param instigator     The CommandSource that instigated the event
+         * @param player         The player the event is for
+         * @param otherPlayer    The other player involved (If there is one)
+         * @param powerChange    The change in power
+         * @param maxPowerChange The change in power
+         * @param reason         The reason for changing power
+         */
+        public PostFactionPlayerPowerChangeEvent(@Nullable final CommandSource instigator, @NotNull final FactionPlayer player, @Nullable final FactionPlayer otherPlayer, final int powerChange, final int maxPowerChange, final EPowerChangeReason reason) {
+            super(instigator, player, otherPlayer, powerChange, maxPowerChange, reason);
+        }
     }
 }
