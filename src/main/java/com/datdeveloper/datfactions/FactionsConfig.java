@@ -138,15 +138,16 @@ public class FactionsConfig {
                     .push("Kill Power Gain");
             {
                 baseKillPowerGain = builder
-                        .comment("The base amount of power a player gains by killing a player")
+                        .comment("The base amount of power a player gains by killing")
                         .define("BaseKillPowerGain", 5);
                 baseKillMaxPowerGain = builder
-                        .comment("The base amount of max power a player gains by killing a player")
+                        .comment("The base amount of max power a player gains by killing")
                         .define("BaseKillMaxPowerGain", 5);
 
                 builder
                         .comment(
-                                "Configure the multipliers for the types of kills that cause the player to gain power"
+                                "Configure the multipliers for the types of kills that cause the player to gain power",
+                                "Set to 0.0 to disable gaining power for that type of kill"
                         )
                         .push("Player Power Gain Multipliers");
                 for (final EPlayerPowerGainMultiplierType killType : EPlayerPowerGainMultiplierType.values()) {
@@ -162,15 +163,16 @@ public class FactionsConfig {
             } builder.pop();
 
             builder
-                    .comment("Config for power lost when the player is killed by another player")
+                    .comment("Config for power lost when the player is killed by another player",
+                            "Set to 0.0 to disable losing power from that type of death")
                     .push("Death Power Loss");
             {
                 baseDeathPowerLoss = builder
-                        .comment("The base amount of power a player loses by killing a player")
+                        .comment("The base amount of power a player loses by dying")
                         .define("BaseDeathPowerLoss", -5);
                 baseDeathMaxPowerLoss = builder
-                        .comment("The base amount of max power a player loses by killing a player")
-                        .define("BaseDeathMaxPowerLoss", -5);
+                        .comment("The base amount of max power a player loses by dying")
+                        .define("BaseDeathMaxPowerLoss", 0);
                 builder
                         .comment(
                                 "Configure the multipliers for the sources of death that cause the player to lose power",
@@ -231,7 +233,7 @@ public class FactionsConfig {
         builder.push("Miscellaneous");
         {
             useFactionChat = builder
-                    .comment("Allow Enable the faction chat system, allows players to talk with just their faction")
+                    .comment("Enable the faction chat system, allows players to talk with just their faction")
                     .define("UseFactionChat", true);
 
             teleportDelay = builder
@@ -381,21 +383,22 @@ public class FactionsConfig {
         MOBS(
                 null, 0.f,
                 "Power gain multiplier when the player kills a mob", 0.f,
-                "Power loss multiplier when a mob kills the player", 1.f
+                "Power loss multiplier when a mob kills the player", 0.1f
         ),
         NOFACTION(
                 "Passive gain multiplier when the player isn't in a faction", 0.5f,
                 "Power gain multiplier when killing a player who isn't in a faction", 0.5f,
-                "Power loss multiplier when killed by a player who is not in a faction", 0.5f),
+                "Power loss multiplier when killed by a player who is not in a faction", 0.5f
+        ),
         RECRUIT(
-                "Passive gain multiplier when the player is a recruit in a faction (Disabled if OWNER is disabled)", 1.f,
-                "Power gain multiplier when killing a recruit from another faction (Disabled if OWNER is disabled)", 1.f,
-                "Power loss multiplier when killed as a recruit (Disabled if OWNER is disabled)", 1.f
+                "Passive gain multiplier when the player is a recruit in a faction", 1.f,
+                "Power gain multiplier when killing a recruit from another faction", 1.f,
+                "Power loss multiplier when killed as a recruit", 1.f
         ),
         OWNER(
-                "Passive gain multiplier when the player is the owner of a faction (Disabled if RECRUIT is disabled)", 2.f,
-                "Power Gain multiplier when killing the owner of a faction (Disabled if RECRUIT is disabled)", 2.f,
-                "Power loss multiplier when killed as the owner of a faction (Disabled if RECRUIT is disabled)", 1.5f
+                "Passive gain multiplier when the player is the owner of a faction", 2.f,
+                "Power Gain multiplier when killing the owner of a faction", 2.f,
+                "Power loss multiplier when killed as the owner of a faction", 1.5f
         ),
         FRIENDLY(
                 null, 0.f,
@@ -407,12 +410,19 @@ public class FactionsConfig {
                 "Power gain multiplier when killing a player from an allied faction (Stacks with other kill sources", 0.f,
                 "Power loss multiplier when killed by a player from an allied faction (Stacks with other death sources)", 0.f
         ),
+        TRUCE(
+                null, 0.f,
+                "Power gain multiplier when killing a player from an faction the player has a truce with (Stacks with other kill sources", 0.f,
+                "Power loss multiplier when killed by a player from an faction the player has a truce with (Stacks with other death sources)", 0.f
+        ),
         ENEMY(null, 0.f,
                 "Power gain multiplier when killing a player from an enemy faction (Stacks with other kill sources)", 2.f,
-                "Power loss multiplier when killed by a player from an enemy faction (Stacks with other death sources)", 1.5f),
+                "Power loss multiplier when killed by a player from an enemy faction (Stacks with other death sources)", 1.5f
+        ),
         SUICIDE(null, 1.f,
                 null, 0.f,
-                "Power loss multiplier when the player is responsible for killing themselves", 2.f);
+                "Power loss multiplier when the player is responsible for killing themselves", 2.f
+        );
 
         public final String passiveDescription;
         final float defaultPassiveMultiplier;
