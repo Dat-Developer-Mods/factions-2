@@ -652,6 +652,27 @@ public class Faction extends DatabaseEntity {
         message.append("\n")
                 .append(DatChatFormatting.TextColour.INFO + "Description: " + ChatFormatting.WHITE + description);
 
+
+
+        // Last Online
+        if (!isAnyoneOnline()) {
+            final long factionOfflineExpiryTime = FactionsConfig.getFactionOfflineExpiryTime() * 1000L;
+            final MutableComponent component = Component.literal(AgeUtil.calculateAgeString(getLastOnline()))
+                    .withStyle(
+                            factionOfflineExpiryTime > 0 && System.currentTimeMillis() - getLastOnline() > Math.min(0.9 * factionOfflineExpiryTime, 604800)
+                                ? Style.EMPTY
+                                    .withHoverEvent(new HoverEvent(
+                                            HoverEvent.Action.SHOW_TEXT,
+                                            Component.literal("This faction hasn't been online for a while and is at risk of being removed")
+                                    ))
+                                    .withColor(ChatFormatting.DARK_RED)
+                                : Style.EMPTY.withColor(ChatFormatting.WHITE)
+                    );
+
+            message.append("\n")
+                    .append(DatChatFormatting.TextColour.INFO + "Last Online: ").append(component);
+        }
+
         // Age
         if (!hasFlag(EFactionFlags.DEFAULT)) {
             message.append("\n")
@@ -819,7 +840,22 @@ public class Faction extends DatabaseEntity {
                     .append(DatChatFormatting.TextColour.INFO + "Age: " + ChatFormatting.WHITE + AgeUtil.calculateAgeString(creationTime));
         }
 
+        // Last Online
+        if (!isAnyoneOnline()) {
+            component.append("\n")
+                    .append(DatChatFormatting.TextColour.INFO + "Last Online: " + ChatFormatting.WHITE + AgeUtil.calculateAgeString(getLastOnline()));
+        }
+
         return component;
+    }
+
+    public long getLastOnline() {
+        if (isAnyoneOnline()) return System.currentTimeMillis();
+
+        return getPlayers().stream()
+                .max(Comparator.comparing(FactionPlayer::getLastActiveTime))
+                .get()
+                .getLastActiveTime();
     }
 
     /* ========================================= */

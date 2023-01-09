@@ -18,7 +18,7 @@ public class FactionsConfig {
 
     private static ConfigValue<Integer> globalMaxFactionLandCount;
 
-    private static ConfigValue<Long> factionOfflineExpiryTime;
+    private static ConfigValue<Integer> factionOfflineExpiryTime;
     private static ConfigValue<Boolean> removePlayerOnBan;
 
     // Power
@@ -82,10 +82,10 @@ public class FactionsConfig {
 
             factionOfflineExpiryTime = builder
                     .comment("The amount of time a faction can spend offline before it is deleted in seconds, set to 0 to disable")
-                    .defineInRange("FactionOfflineExpiryTime", 0, 0, Long.MAX_VALUE);
+                    .defineInRange("FactionOfflineExpiryTime", 0, 0, Integer.MAX_VALUE);
             removePlayerOnBan = builder
-                    .comment("Whether to remove the player's info when they are banned from the server")
-                    .define("RemovePlayerInfoOnBan", true);
+                    .comment("Whether to remove a player's faction data when they are banned from the server")
+                    .define("RemovePlayerDataOnBan", true);
         } builder.pop();
 
         builder.push("Power");
@@ -280,7 +280,7 @@ public class FactionsConfig {
         return globalMaxFactionLandCount.get();
     }
 
-    public static long getFactionOfflineExpiryTime() {
+    public static int getFactionOfflineExpiryTime() {
         return factionOfflineExpiryTime.get();
     }
 

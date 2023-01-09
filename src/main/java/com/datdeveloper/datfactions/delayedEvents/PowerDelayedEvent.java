@@ -14,6 +14,9 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraftforge.common.MinecraftForge;
 
+/**
+ * A delayed event to passively increase a player's power as they play on the server
+ */
 public class PowerDelayedEvent extends TimeDelayedEvent {
     final FactionPlayer fPlayer;
 
