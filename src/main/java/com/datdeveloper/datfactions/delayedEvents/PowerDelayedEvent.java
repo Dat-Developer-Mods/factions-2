@@ -6,13 +6,14 @@ import com.datdeveloper.datfactions.factionData.*;
 import com.datdeveloper.datmoddingapi.delayedEvents.TimeDelayedEvent;
 import com.datdeveloper.datmoddingapi.util.DatChatFormatting;
 import net.minecraft.ChatFormatting;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.HoverEvent;
-import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.*;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraftforge.common.MinecraftForge;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * A delayed event to passively increase a player's power as they play on the server
@@ -28,59 +29,63 @@ public class PowerDelayedEvent extends TimeDelayedEvent {
     @Override
     public void execute() {
         try {
-            if (!fPlayer.hasFaction()) return;
-
             final ServerPlayer player = fPlayer.getServerPlayer();
             final Faction faction = fPlayer.getFaction();
-            final FactionLevel level = FLevelCollection.getInstance().getByKey(player.getLevel().dimension());
 
             final int basePower = FactionsConfig.getPlayerPassivePowerGainAmount();
             final int baseMaxPower = FactionsConfig.getPlayerPassiveMaxPowerGainAmount();
-            final float levelMultiplier = level.getSettings().getPassivePowerGainMultiplier();
-            final Faction chunkOwner = level.getChunkOwningFaction(new ChunkPos(player.getOnPos()));
-            final float landMultiplier = chunkOwner.hasFlag(EFactionFlags.BONUSPOWER) ? FactionsConfig.getBonusPowerFlagDeathMultiplier() : 1.f;
-            final float roleMultiplier;
+            final Map<String, Float> multipliers = new HashMap<>();
+
+            // Level multipliers
             {
-                final float roleAlpha = (faction.getRoleIndex(fPlayer.getRoleId()) / (float) (faction.getRoles().size() - 1));
-                roleMultiplier = ((1 - roleAlpha) * FactionsConfig.getPassiveMultiplier(FactionsConfig.EPlayerPowerGainMultiplierType.OWNER) + roleAlpha * FactionsConfig.getPassiveMultiplier(FactionsConfig.EPlayerPowerGainMultiplierType.RECRUIT));
+                final FactionLevel level = FLevelCollection.getInstance().getByKey(player.getLevel().dimension());
+                multipliers.put("Level", level.getSettings().getPassivePowerGainMultiplier());
+
+
+                final Faction chunkOwner = level.getChunkOwningFaction(new ChunkPos(player.getOnPos()));
+                if (chunkOwner.hasFlag(EFactionFlags.BONUSPOWER)) {
+                    multipliers.put("Bonus", FactionsConfig.getBonusPowerFlagDeathMultiplier());
+                }
             }
 
-            final int maxPowerGain = (int) Math.floor(
-                    baseMaxPower
-                            * levelMultiplier
-                            * roleMultiplier
-                            * landMultiplier
-            );
-            final int powerGain = (int) Math.floor(
-                    basePower
-                            * levelMultiplier
-                            * roleMultiplier
-                            * landMultiplier
-            );
+            // Faction multipliers
+            if (fPlayer.hasFaction()) {
+                final float roleAlpha = (faction.getRoleIndex(fPlayer.getRoleId()) / (float) (faction.getRoles().size() - 1));
+                multipliers.put("Role (" + fPlayer.getRole().getName() + ")", ((1 - roleAlpha) * FactionsConfig.getPassiveMultiplier(FactionsConfig.EPlayerPowerGainMultiplierType.OWNER) + roleAlpha * FactionsConfig.getPassiveMultiplier(FactionsConfig.EPlayerPowerGainMultiplierType.RECRUIT)));
+            } else {
+                multipliers.put("No Faction", FactionsConfig.getPassiveMultiplier(FactionsConfig.EPlayerPowerGainMultiplierType.NOFACTION));
+            }
 
-            final FactionPlayerPowerChangeEvent.PreFactionPlayerPowerChangeEvent preEvent = new FactionPlayerPowerChangeEvent.PreFactionPlayerPowerChangeEvent(null, fPlayer, null, powerGain, maxPowerGain, FactionPlayerPowerChangeEvent.EPowerChangeReason.PASSIVE);
+            final FactionPlayerPowerChangeEvent.PreFactionPlayerPowerChangeEvent preEvent = new FactionPlayerPowerChangeEvent.PreFactionPlayerPowerChangeEvent(null, fPlayer, null, basePower, baseMaxPower, multipliers, FactionPlayerPowerChangeEvent.EPowerChangeReason.PASSIVE);
             MinecraftForge.EVENT_BUS.post(preEvent);
             if (preEvent.isCanceled()) return;
 
-            final int maxPowerDelta = fPlayer.addMaxPower(preEvent.getPowerChange());
-            final int powerDelta = fPlayer.addPower(preEvent.getMaxPowerChange());
+            final int maxPowerDelta = fPlayer.addMaxPower(preEvent.getFinalPowerChange());
+            final int powerDelta = fPlayer.addPower(preEvent.getFinalMaxPowerChange());
             if (powerDelta == 0 && maxPowerDelta == 0) return;
 
             MinecraftForge.EVENT_BUS.post(
-                    new FactionPlayerPowerChangeEvent.PostFactionPlayerPowerChangeEvent(null, fPlayer, null, powerDelta, maxPowerDelta, FactionPlayerPowerChangeEvent.EPowerChangeReason.PASSIVE)
+                    new FactionPlayerPowerChangeEvent.PostFactionPlayerPowerChangeEvent(null, fPlayer, null, preEvent.getBasePowerChange(), preEvent.getBaseMaxPowerChange(), multipliers, FactionPlayerPowerChangeEvent.EPowerChangeReason.PASSIVE)
             );
 
             final MutableComponent message = Component.literal(DatChatFormatting.TextColour.INFO + "You have gained ");
 
+            final MutableComponent multiplierComponent = Component.literal("Modifiers:").append("\n")
+                    .append(ComponentUtils.formatList(
+                            multipliers.entrySet().stream()
+                                    .map((entry ->
+                                            Component.literal(DatChatFormatting.TextColour.INFO + "  %s: ".formatted(entry.getKey()))
+                                                    .append(ChatFormatting.WHITE + "x%.2f".formatted(entry.getValue()))
+                                    ))
+                                    .collect(Collectors.toList()),
+                            Component.literal("\n")
+                    )
+            );
+
             if (powerDelta != 0) {
                 final MutableComponent summary = Component.empty()
-                        .append(DatChatFormatting.TextColour.INFO + "Base: ").append(String.valueOf(basePower)).append("\n");
-
-                if (levelMultiplier != 1.f) summary.append(DatChatFormatting.TextColour.INFO + "Level Modifier: ").append("x%.2f".formatted(levelMultiplier)).append("\n");
-                if (landMultiplier != 1.f) summary.append(DatChatFormatting.TextColour.INFO + "Land Modifier: ").append("x%.2f".formatted(landMultiplier)).append("\n");
-
-                summary
-                        .append(DatChatFormatting.TextColour.INFO + "Role Modifier: ").append("x%.2f".formatted(roleMultiplier)).append("\n")
+                        .append(DatChatFormatting.TextColour.INFO + "Base: ").append(String.valueOf(basePower)).append("\n")
+                        .append(multiplierComponent).append("\n")
                         .append(DatChatFormatting.TextColour.INFO + "Limit: ").append(String.valueOf(fPlayer.getMaxPower()));
 
                 message.append(
@@ -100,12 +105,8 @@ public class PowerDelayedEvent extends TimeDelayedEvent {
                 if (powerDelta != 0) message.append(DatChatFormatting.TextColour.INFO + " and ");
 
                 final MutableComponent summary = Component.empty()
-                        .append(DatChatFormatting.TextColour.INFO + "Base: ").append(String.valueOf(baseMaxPower)).append("\n");
-                if (levelMultiplier != 1.f) summary.append(DatChatFormatting.TextColour.INFO + "Level Modifier: ").append("x%.2f".formatted(levelMultiplier)).append("\n");
-                if (landMultiplier != 1.f) summary.append(DatChatFormatting.TextColour.INFO + "Land Modifier: ").append("x%.2f".formatted(landMultiplier)).append("\n");
-
-                summary
-                        .append(DatChatFormatting.TextColour.INFO + "Role Modifier: ").append("x%.2f".formatted(roleMultiplier)).append("\n")
+                        .append(DatChatFormatting.TextColour.INFO + "Base: ").append(String.valueOf(baseMaxPower)).append("\n")
+                        .append(multiplierComponent).append("\n")
                         .append(DatChatFormatting.TextColour.INFO + "Limit: ").append(String.valueOf(FactionsConfig.getPlayerMaxPower()));
 
                 message.append(

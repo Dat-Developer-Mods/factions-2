@@ -386,19 +386,19 @@ public class FactionsConfig {
                 "Power loss multiplier when a mob kills the player", 0.1f
         ),
         NOFACTION(
-                "Passive gain multiplier when the player isn't in a faction", 0.5f,
-                "Power gain multiplier when killing a player who isn't in a faction", 0.5f,
+                "Passive gain multiplier when the player isn't in a faction", 0.f,
+                "Power gain multiplier when killing a player who isn't in a faction", 0.f,
                 "Power loss multiplier when killed by a player who is not in a faction", 0.5f
         ),
         RECRUIT(
                 "Passive gain multiplier when the player is a recruit in a faction", 1.f,
                 "Power gain multiplier when killing a recruit from another faction", 1.f,
-                "Power loss multiplier when killed as a recruit", 1.f
+                "Power loss multiplier when killed by a recruit", 1.f
         ),
         OWNER(
                 "Passive gain multiplier when the player is the owner of a faction", 2.f,
                 "Power Gain multiplier when killing the owner of a faction", 2.f,
-                "Power loss multiplier when killed as the owner of a faction", 1.5f
+                "Power loss multiplier when killed by the owner of a faction", 1.5f
         ),
         FRIENDLY(
                 null, 0.f,
