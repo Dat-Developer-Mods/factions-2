@@ -421,7 +421,7 @@ public class FactionsConfig {
         ),
         SUICIDE(null, 1.f,
                 null, 0.f,
-                "Power loss multiplier when the player is responsible for killing themselves", 2.f
+                "Power loss multiplier when the player is responsible for killing themselves (Fall damage, hit self with arrow, drowning, etc)", 2.f
         );
 
         public final String passiveDescription;

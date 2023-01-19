@@ -28,9 +28,7 @@ import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * Events pertaining to the players
@@ -94,8 +92,8 @@ public class PlayerEvents {
         {
             final FactionLevel level = FLevelCollection.getInstance().getByKey(target.getLevel().dimension());
             final Faction landOwner = level.getChunkOwningFaction(new ChunkPos(target.getOnPos()));
-            if (landOwner.hasFlag(EFactionFlags.TOTALPROTECTION)
-                    || (landOwner.equals(targetFaction) && landOwner.hasFlag(EFactionFlags.PROTECTED))
+            if (landOwner.hasFlag(EFactionFlags.OPENSHELTER)
+                    || (landOwner.equals(targetFaction) && landOwner.hasFlag(EFactionFlags.SHELTERED))
             ) {
                 event.setCanceled(true);
                 return;
@@ -108,11 +106,52 @@ public class PlayerEvents {
      */
     @SubscribeEvent
     public static void playerKilled(final LivingDeathEvent event) {
-        if (!(event.getEntity() instanceof ServerPlayer target)) {
-            return;
+        if (!(event.getEntity() instanceof ServerPlayer target)) return;
+
+        final FactionPlayer targetFPlayer = FPlayerCollection.getInstance().getPlayer(target);
+        final Faction targetFaction = targetFPlayer.getFaction();
+
+        // Calculated in the death if relevant
+        final ServerPlayer source;
+        final FactionPlayer sourceFPlayer;
+        final Faction sourceFaction;
+
+        // Handle Death
+        {
+            final int basePowerChange = FactionsConfig.getBaseDeathPowerLoss();
+            final int baseMaxPowerChange = FactionsConfig.getBaseDeathMaxPowerLoss();
+            final Map<String, Float> multipliers = new HashMap<>();
+
+            // Player
+            if (event.getSource().getEntity() instanceof ServerPlayer) {
+                source = (ServerPlayer) event.getSource().getEntity();
+                sourceFPlayer = FPlayerCollection.getInstance().getPlayer(source);
+                sourceFaction = sourceFPlayer.getFaction();
+
+                if (sourceFaction == null) {
+                    multipliers.put("Killed by non-faction", FactionsConfig.getDeathMultiplier(FactionsConfig.EPlayerPowerGainMultiplierType.NOFACTION));
+                } else {
+                    // Relation
+                    switch (RelationUtil.)
+
+                    // Role
+                    final float roleAlpha = (sourceFaction.getRoleIndex(sourceFPlayer.getRoleId()) / (float) (sourceFaction.getRoles().size() - 1));
+                    multipliers.put("Killed by role (" + sourceFPlayer.getRole().getName() + ")", ((1 - roleAlpha) * FactionsConfig.getDeathMultiplier(FactionsConfig.EPlayerPowerGainMultiplierType.OWNER) + roleAlpha * FactionsConfig.getDeathMultiplier(FactionsConfig.EPlayerPowerGainMultiplierType.RECRUIT)));
+
+
+                }
+            }
+
+            // Suicide
+            else if (event.getSource().getEntity() == null || event.getSource().getEntity() == target) {
+                multipliers.put("Suicide", FactionsConfig.getDeathMultiplier(FactionsConfig.EPlayerPowerGainMultiplierType.SUICIDE));
+            }
+
+            // Mob
+            else if (event.getSource().getEntity().)
         }
-        if (!(event.getSource().getEntity() instanceof ServerPlayer source)) {
-        }
+
+//        if (source == null) return;
 
     }
 
