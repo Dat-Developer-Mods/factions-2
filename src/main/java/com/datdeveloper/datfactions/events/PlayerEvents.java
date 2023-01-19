@@ -7,6 +7,7 @@ import com.datdeveloper.datfactions.delayedEvents.PowerDelayedEvent;
 import com.datdeveloper.datfactions.factionData.*;
 import com.datdeveloper.datfactions.factionData.relations.EFactionRelation;
 import com.datdeveloper.datfactions.factionData.relations.FactionRelation;
+import com.datdeveloper.datfactions.util.PowerUtil;
 import com.datdeveloper.datfactions.util.RelationUtil;
 import com.datdeveloper.datmoddingapi.delayedEvents.DelayedEventsHandler;
 import com.datdeveloper.datmoddingapi.util.DatChatFormatting;
@@ -18,6 +19,7 @@ import net.minecraft.network.protocol.game.ClientboundSetSubtitleTextPacket;
 import net.minecraft.network.protocol.game.ClientboundSetTitleTextPacket;
 import net.minecraft.network.protocol.game.ClientboundSetTitlesAnimationPacket;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraftforge.event.ServerChatEvent;
 import net.minecraftforge.event.entity.EntityEvent;
@@ -102,7 +104,64 @@ public class PlayerEvents {
     }
 
     /**
-     * Remove Power
+     * Gain Power
+     * <br>
+     * These functions have been split for readability and simplicities sake. They would be more efficient as one
+     * but it's not worth the headache
+     * @see #playerKilled(LivingDeathEvent)
+     */
+    @SubscribeEvent
+    public static void playerKill(final LivingDeathEvent event) {
+        if (!(event.getSource().getEntity() instanceof ServerPlayer source)) return;
+
+        final FactionPlayer sourceFPlayer = FPlayerCollection.getInstance().getPlayer(source);
+        final Faction sourceFaction = sourceFPlayer.getFaction();
+
+        final int basePowerChange = FactionsConfig.getBaseKillMaxPowerGain();
+        final int baseMaxPowerChange = FactionsConfig.getBaseKillMaxPowerGain();
+        final Map<String, Float> multipliers = new HashMap<>();
+
+        // Player
+        if (event.getEntity() instanceof ServerPlayer target) {
+            FactionPlayer targetFPlayer = FPlayerCollection.getInstance().getPlayer(target);
+            Faction targetFaction = targetFPlayer.getFaction();
+
+            if (targetFaction == null) {
+                multipliers.put("Killed non-faction", FactionsConfig.getKillMultiplier(FactionsConfig.EPlayerPowerGainMultiplierType.NOFACTION));
+            } else {
+                // Relation
+                switch (RelationUtil.getRelation(sourceFaction, targetFaction)) {
+                    case ALLY -> {
+                        multipliers.put("Killed ally", FactionsConfig.getKillMultiplier(FactionsConfig.EPlayerPowerGainMultiplierType.ALLY));
+                    }
+                    case TRUCE -> {
+                        multipliers.put("Killed truce", FactionsConfig.getKillMultiplier(FactionsConfig.EPlayerPowerGainMultiplierType.TRUCE));
+                    }
+                    case ENEMY -> {
+                        multipliers.put("Killed enemy", FactionsConfig.getKillMultiplier(FactionsConfig.EPlayerPowerGainMultiplierType.ENEMY));
+                    }
+                    case SELF -> {
+                        multipliers.put("Friendly Fire", FactionsConfig.getKillMultiplier(FactionsConfig.EPlayerPowerGainMultiplierType.FRIENDLY));
+                    }
+                }
+
+                // Role
+                final float roleAlpha = (targetFaction.getRoleIndex(targetFPlayer.getRoleId()) / (float) (targetFaction.getRoles().size() - 1));
+                multipliers.put("Killed role (" + targetFPlayer.getRole().getName() + ")", ((1 - roleAlpha) * FactionsConfig.getKillMultiplier(FactionsConfig.EPlayerPowerGainMultiplierType.OWNER) + roleAlpha * FactionsConfig.getKillMultiplier(FactionsConfig.EPlayerPowerGainMultiplierType.RECRUIT)));
+            }
+        }
+
+        // Mob
+        else if (event.getSource().getEntity() instanceof Mob) {
+            multipliers.put("Killed mob", FactionsConfig.getKillMultiplier(FactionsConfig.EPlayerPowerGainMultiplierType.MOBS));
+        }
+
+        PowerUtil.handlePowerChange(sourceFPlayer, basePowerChange, baseMaxPowerChange, multipliers);
+    }
+
+    /**
+     * Lose Power
+     * @see #playerKill(LivingDeathEvent)
      */
     @SubscribeEvent
     public static void playerKilled(final LivingDeathEvent event) {
@@ -111,48 +170,53 @@ public class PlayerEvents {
         final FactionPlayer targetFPlayer = FPlayerCollection.getInstance().getPlayer(target);
         final Faction targetFaction = targetFPlayer.getFaction();
 
-        // Calculated in the death if relevant
-        final ServerPlayer source;
-        final FactionPlayer sourceFPlayer;
-        final Faction sourceFaction;
-
-        // Handle Death
-        {
-            final int basePowerChange = FactionsConfig.getBaseDeathPowerLoss();
-            final int baseMaxPowerChange = FactionsConfig.getBaseDeathMaxPowerLoss();
-            final Map<String, Float> multipliers = new HashMap<>();
-
-            // Player
-            if (event.getSource().getEntity() instanceof ServerPlayer) {
-                source = (ServerPlayer) event.getSource().getEntity();
-                sourceFPlayer = FPlayerCollection.getInstance().getPlayer(source);
-                sourceFaction = sourceFPlayer.getFaction();
-
-                if (sourceFaction == null) {
-                    multipliers.put("Killed by non-faction", FactionsConfig.getDeathMultiplier(FactionsConfig.EPlayerPowerGainMultiplierType.NOFACTION));
-                } else {
-                    // Relation
-                    switch (RelationUtil.)
-
-                    // Role
-                    final float roleAlpha = (sourceFaction.getRoleIndex(sourceFPlayer.getRoleId()) / (float) (sourceFaction.getRoles().size() - 1));
-                    multipliers.put("Killed by role (" + sourceFPlayer.getRole().getName() + ")", ((1 - roleAlpha) * FactionsConfig.getDeathMultiplier(FactionsConfig.EPlayerPowerGainMultiplierType.OWNER) + roleAlpha * FactionsConfig.getDeathMultiplier(FactionsConfig.EPlayerPowerGainMultiplierType.RECRUIT)));
+        final int basePowerChange = FactionsConfig.getBaseDeathPowerLoss();
+        final int baseMaxPowerChange = FactionsConfig.getBaseDeathMaxPowerLoss();
+        final Map<String, Float> multipliers = new HashMap<>();
 
 
-                }
-            }
 
-            // Suicide
-            else if (event.getSource().getEntity() == null || event.getSource().getEntity() == target) {
-                multipliers.put("Suicide", FactionsConfig.getDeathMultiplier(FactionsConfig.EPlayerPowerGainMultiplierType.SUICIDE));
-            }
-
-            // Mob
-            else if (event.getSource().getEntity().)
+        // Suicide
+        if (event.getSource().getEntity() == null || event.getSource().getEntity() == target) {
+            multipliers.put("World", FactionsConfig.getDeathMultiplier(FactionsConfig.EPlayerPowerGainMultiplierType.SUICIDE));
         }
 
-//        if (source == null) return;
+        // Player
+        else if (event.getSource().getEntity() instanceof ServerPlayer source) {
+            FactionPlayer sourceFPlayer = FPlayerCollection.getInstance().getPlayer(source);
+            Faction sourceFaction = sourceFPlayer.getFaction();
 
+            if (sourceFaction == null) {
+                multipliers.put("Killed by non-faction", FactionsConfig.getDeathMultiplier(FactionsConfig.EPlayerPowerGainMultiplierType.NOFACTION));
+            } else {
+                // Relation
+                switch (RelationUtil.getRelation(targetFaction, sourceFaction)) {
+                    case ALLY -> {
+                        multipliers.put("Killed by ally", FactionsConfig.getDeathMultiplier(FactionsConfig.EPlayerPowerGainMultiplierType.ALLY));
+                    }
+                    case TRUCE -> {
+                        multipliers.put("Killed by truce", FactionsConfig.getDeathMultiplier(FactionsConfig.EPlayerPowerGainMultiplierType.TRUCE));
+                    }
+                    case ENEMY -> {
+                        multipliers.put("Killed by enemy", FactionsConfig.getDeathMultiplier(FactionsConfig.EPlayerPowerGainMultiplierType.ENEMY));
+                    }
+                    case SELF -> {
+                        multipliers.put("Friendly Fire", FactionsConfig.getDeathMultiplier(FactionsConfig.EPlayerPowerGainMultiplierType.FRIENDLY));
+                    }
+                }
+
+                // Role
+                final float roleAlpha = (sourceFaction.getRoleIndex(sourceFPlayer.getRoleId()) / (float) (sourceFaction.getRoles().size() - 1));
+                multipliers.put("Killed by role (" + sourceFPlayer.getRole().getName() + ")", ((1 - roleAlpha) * FactionsConfig.getDeathMultiplier(FactionsConfig.EPlayerPowerGainMultiplierType.OWNER) + roleAlpha * FactionsConfig.getDeathMultiplier(FactionsConfig.EPlayerPowerGainMultiplierType.RECRUIT)));
+            }
+        }
+
+        // Mob
+        else if (event.getSource().getEntity() instanceof Mob) {
+            multipliers.put("Killed by mob", FactionsConfig.getDeathMultiplier(FactionsConfig.EPlayerPowerGainMultiplierType.MOBS));
+        }
+
+        PowerUtil.handlePowerChange(targetFPlayer, basePowerChange, baseMaxPowerChange, multipliers);
     }
 
     /**
