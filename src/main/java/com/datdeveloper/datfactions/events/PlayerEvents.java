@@ -121,6 +121,18 @@ public class PlayerEvents {
         final int baseMaxPowerChange = FactionsConfig.getBaseKillMaxPowerGain();
         final Map<String, Float> multipliers = new HashMap<>();
 
+        // Level multipliers
+        {
+            final FactionLevel level = FLevelCollection.getInstance().getByKey(source.getLevel().dimension());
+
+            final Faction chunkOwner = level.getChunkOwningFaction(new ChunkPos(source.getOnPos()));
+            if (chunkOwner.hasFlag(EFactionFlags.NOPOWER)) return;
+
+            if (chunkOwner.hasFlag(EFactionFlags.BONUSPOWER)) {
+                multipliers.put("Bonus", FactionsConfig.getBonusPowerFlagKillMultiplier());
+            }
+        }
+
         // Player
         if (event.getEntity() instanceof ServerPlayer target) {
             FactionPlayer targetFPlayer = FPlayerCollection.getInstance().getPlayer(target);
@@ -174,7 +186,17 @@ public class PlayerEvents {
         final int baseMaxPowerChange = FactionsConfig.getBaseDeathMaxPowerLoss();
         final Map<String, Float> multipliers = new HashMap<>();
 
+        // Level multipliers
+        {
+            final FactionLevel level = FLevelCollection.getInstance().getByKey(target.getLevel().dimension());
 
+            final Faction chunkOwner = level.getChunkOwningFaction(new ChunkPos(target.getOnPos()));
+            if (chunkOwner.hasFlag(EFactionFlags.NOPOWER)) return;
+
+            if (chunkOwner.hasFlag(EFactionFlags.BONUSPOWER)) {
+                multipliers.put("Bonus", FactionsConfig.getBonusPowerFlagDeathMultiplier());
+            }
+        }
 
         // Suicide
         if (event.getSource().getEntity() == null || event.getSource().getEntity() == target) {
