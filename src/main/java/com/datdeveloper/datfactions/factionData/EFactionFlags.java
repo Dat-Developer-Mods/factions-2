@@ -29,6 +29,7 @@ public enum EFactionFlags {
     BONUSPOWER(true, "You gain/lose extra power when you kill/die on this faction's chunks"),
     NOMONSTERS(true, "Monsters are prevented from spawning on this faction's chunks"),
     NOANIMALS(true, "Animals are prevented from spawning on this faction's chunks"),
+    NOMOBGRIEF(true, "Mobs are prevented from griefing on this faction's land (Zombie door breaking, enderman stealing, etc)"),
     EXPLOSIONPROOF(true, "Explosions do not affect blocks in chunks owned by this faction (Only work for explosives that use the vanilla block breaking system)"),
     INFLAMMABLE(true, "Fire does not affect blocks in chunks owned by this faction");
 
