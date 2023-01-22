@@ -31,9 +31,8 @@ public enum ERolePermissions {
     UNCLAIMALL("Allows the player to unclaim all the faction's chunks at once"),
 
     // Land Access
-    CONTAINERS("Allows the player to access containers on the faction chunks"),
     BUILD("Allows the player to build on the faction's chunks"),
-    INTERACT("Allows the player to interact with blocks (Doors, buttons, furnaces, etc) on the faction's chunks"),
+    INTERACT("Allows the player to interact with blocks (Chests, doors, buttons, furnaces, etc) on the faction's chunks"),
 
     // Faction Management
     SETNAME("Allows the player to set the faction's name"),

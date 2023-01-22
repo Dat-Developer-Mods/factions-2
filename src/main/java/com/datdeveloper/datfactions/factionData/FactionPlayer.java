@@ -10,6 +10,7 @@ import com.datdeveloper.datfactions.util.RelationUtil;
 import com.datdeveloper.datmoddingapi.util.DatChatFormatting;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.*;
+import net.minecraft.network.protocol.game.ClientboundSetActionBarTextPacket;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.server.ServerLifecycleHooks;
 import org.jetbrains.annotations.Nullable;
@@ -365,6 +366,30 @@ public class FactionPlayer extends DatabaseEntity {
     /* ========================================= */
     /* Misc
     /* ========================================= */
+
+    /**
+     * Send a message to the player that displays on their hotbar
+     * <br>
+     * Silently fails if they're offline
+     * @param message The message to send to the player
+     */
+    public void sendHotbarMessage(final Component message) {
+        final ServerPlayer player = getServerPlayer();
+        if (player == null) return;
+        player.connection.send(new ClientboundSetActionBarTextPacket(message));
+    }
+
+    /**
+     * Send a message to the player that displays in their chat
+     * <br>
+     * Silently fails if they're offlne
+     * @param message The message to send to the player
+     */
+    public void sendChatMessage(final Component message) {
+        final ServerPlayer player = getServerPlayer();
+        if (player == null) return;
+        player.sendSystemMessage(message);
+    }
 
     public @Nullable ServerPlayer getServerPlayer() {
         return ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayer(this.id);
