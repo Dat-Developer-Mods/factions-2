@@ -112,7 +112,7 @@ public class FactionChatCommand extends BaseFactionCommand {
                                 Component.literal(chatMode.name())
                                         .withStyle(ChatFormatting.DARK_PURPLE)
                         ),
-                true
+                false
         );
 
         return 1;

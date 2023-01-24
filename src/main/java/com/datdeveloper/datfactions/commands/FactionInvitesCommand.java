@@ -160,7 +160,7 @@ public class FactionInvitesCommand extends BaseFactionCommand {
                                                             target.getNameWithDescription(faction)
                                                                     .withStyle(RelationUtil.getRelation(faction, target).formatting)
                                                     ).append(DatChatFormatting.TextColour.INFO + " to the faction"),
-                                            true
+                                            false
                                     );
 
                                     if (target.isPlayerOnline()) {
@@ -231,7 +231,7 @@ public class FactionInvitesCommand extends BaseFactionCommand {
                                                             target.getNameWithDescription(faction)
                                                                     .withStyle(RelationUtil.getRelation(faction, target).formatting)
                                                     ).append(DatChatFormatting.TextColour.INFO + " invite to the faction"),
-                                            true
+                                            false
                                     );
 
                                     if (target.isPlayerOnline()) {

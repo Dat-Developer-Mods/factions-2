@@ -371,7 +371,7 @@ public class FactionRelationCommand extends BaseFactionCommand {
 
         c.getSource().sendSuccess(
                 message,
-                true
+                false
         );
 
         return 1;

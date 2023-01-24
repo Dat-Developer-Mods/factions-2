@@ -312,7 +312,7 @@ public class FactionPlayersCommand extends BaseFactionCommand {
                                                             faction.getNameWithDescription(faction)
                                                                     .withStyle(EFactionRelation.SELF.formatting)
                                                     ),
-                                            true
+                                            false
                                     );
 
                                     if (target.isPlayerOnline()) {
@@ -386,7 +386,7 @@ public class FactionPlayersCommand extends BaseFactionCommand {
                                                                     .withStyle(RelationUtil.getRelation(faction, target).formatting)
                                                     )
                                                     .append(" from the faction"),
-                                            true
+                                            false
                                     );
 
                                     return 1;
@@ -423,7 +423,7 @@ public class FactionPlayersCommand extends BaseFactionCommand {
                                     newRole.getNameWithDescription()
                                             .withStyle(ChatFormatting.DARK_PURPLE)
                             ),
-                    true
+                    false
             );
 
             if (target.isPlayerOnline()) {

@@ -35,7 +35,7 @@ public class FactionNameCommand extends BaseFactionCommand {
                             final String newName = c.getArgument("New Faction Name", String.class);
 
                             if (newName.length() > FactionsConfig.getMaxFactionNameLength()) {
-                                c.getSource().sendFailure(Component.literal("Your faction name cannot be longer than " + FactionsConfig.getMaxFactionNameLength()));
+                                c.getSource().sendFailure(Component.literal("Your faction name cannot be longer than " + FactionsConfig.getMaxFactionNameLength() + " characters"));
                                 return 2;
                             } else if (FactionCollection.getInstance().isNameTaken(newName)) {
                                 c.getSource().sendFailure(Component.literal("A faction with that name already exists"));

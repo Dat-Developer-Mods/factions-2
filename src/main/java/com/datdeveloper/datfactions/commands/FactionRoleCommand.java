@@ -112,7 +112,7 @@ public class FactionRoleCommand extends BaseFactionCommand {
         final FactionRole newRole = faction.createNewRole(event.getNewRoleName(), event.getNewRoleParent());
         source.sendSuccess(Component.literal(DatChatFormatting.TextColour.INFO + "Successfully Created new role ")
                 .append(newRole.getNameWithDescription().withStyle(ChatFormatting.DARK_PURPLE)),
-                true
+                false
         );
 
         return 1;
@@ -157,7 +157,7 @@ public class FactionRoleCommand extends BaseFactionCommand {
                                     c.getSource().sendSuccess(
                                             Component.literal(DatChatFormatting.TextColour.INFO + "Successfully removed ")
                                                     .append(role.getNameWithDescription().withStyle(ChatFormatting.DARK_PURPLE)),
-                                            true
+                                            false
                                     );
 
                                     return 1;
@@ -204,7 +204,7 @@ public class FactionRoleCommand extends BaseFactionCommand {
                                                     c.getSource().sendSuccess(
                                                             Component.literal(DatChatFormatting.TextColour.INFO + "Successfully changed " + roleName + " to ")
                                                                     .append(role.getNameWithDescription().withStyle(ChatFormatting.DARK_PURPLE)),
-                                                            true
+                                                            false
                                                     );
 
                                                     return 1;
@@ -576,7 +576,7 @@ public class FactionRoleCommand extends BaseFactionCommand {
                                                     c.getSource().sendSuccess(
                                                             Component.literal(DatChatFormatting.TextColour.INFO + "Successfully changed the parent of ")
                                                                     .append(role.getNameWithDescription().withStyle(ChatFormatting.DARK_PURPLE)),
-                                                            true
+                                                            false
                                                     );
 
                                                     return 1;

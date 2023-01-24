@@ -59,7 +59,7 @@ public class FactionLeaveCommand extends BaseFactionCommand {
                                             faction.getNameWithDescription(newFaction)
                                                     .withStyle(RelationUtil.getRelation(fPlayer, newFaction).formatting)
                                     )
-                    ,true);
+                    ,false);
                     return 1;
                 }).build();
 

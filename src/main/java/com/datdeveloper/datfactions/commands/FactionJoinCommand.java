@@ -82,7 +82,7 @@ public class FactionJoinCommand extends BaseFactionCommand {
                                                     target.getNameWithDescription(target)
                                                             .withStyle(EFactionRelation.SELF.formatting)
                                             ),
-                                    true
+                                    false
                             );
 
                             return 1;
