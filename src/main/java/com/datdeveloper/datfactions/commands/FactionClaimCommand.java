@@ -1,9 +1,8 @@
 package com.datdeveloper.datfactions.commands;
 
-import com.datdeveloper.datfactions.api.events.FactionLandChangeOwnerEvent;
 import com.datdeveloper.datfactions.factionData.*;
 import com.datdeveloper.datfactions.factionData.permissions.ERolePermissions;
-import com.datdeveloper.datfactions.util.RelationUtil;
+import com.datdeveloper.datfactions.util.ClaimUtil;
 import com.datdeveloper.datmoddingapi.permissions.DatPermissions;
 import com.datdeveloper.datmoddingapi.util.DatChatFormatting;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
@@ -15,7 +14,6 @@ import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.ChunkPos;
-import net.minecraftforge.common.MinecraftForge;
 
 import java.util.*;
 
@@ -39,7 +37,7 @@ public class FactionClaimCommand extends BaseFactionCommand {
                                 .executes(c -> {
                                     final ServerPlayer player = c.getSource().getPlayer();
 
-                                    return claimChunks(player, new ArrayList<>(List.of(new ChunkPos(player.getOnPos()))));
+                                    return ClaimUtil.claimChunks(player, new ArrayList<>(List.of(new ChunkPos(player.getOnPos()))));
                                 })
 
                 )
@@ -76,7 +74,7 @@ public class FactionClaimCommand extends BaseFactionCommand {
                                                         }
                                                     }
 
-                                                    return claimChunks(player, chunks);
+                                                    return ClaimUtil.claimChunks(player, chunks);
                                                 })
                                 )
                 )
@@ -99,7 +97,7 @@ public class FactionClaimCommand extends BaseFactionCommand {
                                         fPlayer.setAutoClaim(true);
                                         player.sendSystemMessage(Component.literal(DatChatFormatting.TextColour.INFO + "Enabled auto-claiming, you will now claim chunks as you cross into their borders"));
 
-                                        claimChunks(player, new ArrayList<>(List.of(new ChunkPos(player.getOnPos()))));
+                                        ClaimUtil.claimChunks(player, new ArrayList<>(List.of(new ChunkPos(player.getOnPos()))));
                                     }
 
                                     return 1;
@@ -107,50 +105,5 @@ public class FactionClaimCommand extends BaseFactionCommand {
                 ).build();
 
         command.then(claimCommand);
-    }
-
-    public static int claimChunks(final ServerPlayer player, final List<ChunkPos> chunks) {
-        final FactionPlayer fPlayer = getPlayerOrTemplate(player);
-        Faction faction = fPlayer.getFaction();
-        FactionLevel level = FLevelCollection.getInstance().getByKey(player.getLevel().dimension());
-
-        // Event
-        final FactionLandChangeOwnerEvent event = new FactionLandChangeOwnerEvent(
-                player,
-                chunks,
-                level,
-                faction,
-                FactionLandChangeOwnerEvent.EChangeOwnerReason.CLAIM
-        );
-        MinecraftForge.EVENT_BUS.post(event);
-        if (event.isCanceled()) return -1;
-
-        level = event.getLevel();
-        faction = event.getNewOwner();
-
-        final Map<Faction, Integer> stolen = new HashMap<>();
-        for (final ChunkPos chunk : chunks) {
-            final Faction owner = level.getChunkOwningFaction(chunk);
-            if (!owner.hasFlag(EFactionFlags.WEAKBORDERS)) {
-                stolen.put(faction, stolen.computeIfAbsent(faction, (key) -> 0) + 1);
-            }
-
-            level.setChunkOwner(chunk, faction);
-        }
-
-        if (level.getSettings().isNotifyLandOwnersOfSteal()) {
-            for (final Faction owner : stolen.keySet()) {
-                owner.sendFactionWideMessage(
-                        faction.getNameWithDescription(owner)
-                                .withStyle(RelationUtil.getRelation(owner, faction).formatting)
-                                .append(DatChatFormatting.TextColour.ERROR + " has stolen ")
-                                .append(stolen.get(owner) + " chunks from you")
-                );
-            }
-        }
-
-        player.sendSystemMessage(Component.literal(DatChatFormatting.TextColour.INFO + "Successfully claimed " + event.getChunks().size() + " chunks"));
-
-        return event.getChunks().size();
     }
 }
