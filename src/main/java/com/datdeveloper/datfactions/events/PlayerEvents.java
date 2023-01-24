@@ -7,6 +7,7 @@ import com.datdeveloper.datfactions.delayedEvents.PowerDelayedEvent;
 import com.datdeveloper.datfactions.factionData.*;
 import com.datdeveloper.datfactions.factionData.relations.EFactionRelation;
 import com.datdeveloper.datfactions.factionData.relations.FactionRelation;
+import com.datdeveloper.datfactions.util.ClaimUtil;
 import com.datdeveloper.datfactions.util.PowerUtil;
 import com.datdeveloper.datfactions.util.RelationUtil;
 import com.datdeveloper.datmoddingapi.delayedEvents.DelayedEventsHandler;
@@ -98,7 +99,6 @@ public class PlayerEvents {
                     || (landOwner.equals(targetFaction) && landOwner.hasFlag(EFactionFlags.SHELTERED))
             ) {
                 event.setCanceled(true);
-                return;
             }
         }
     }
@@ -135,8 +135,8 @@ public class PlayerEvents {
 
         // Player
         if (event.getEntity() instanceof ServerPlayer target) {
-            FactionPlayer targetFPlayer = FPlayerCollection.getInstance().getPlayer(target);
-            Faction targetFaction = targetFPlayer.getFaction();
+            final FactionPlayer targetFPlayer = FPlayerCollection.getInstance().getPlayer(target);
+            final Faction targetFaction = targetFPlayer.getFaction();
 
             if (targetFaction == null) {
                 multipliers.put("Killed non-faction", FactionsConfig.getKillMultiplier(FactionsConfig.EPlayerPowerGainMultiplierType.NOFACTION));
@@ -164,7 +164,7 @@ public class PlayerEvents {
         }
 
         // Mob
-        else if (event.getSource().getEntity() instanceof Mob) {
+        else if (event.getEntity() instanceof Mob) {
             multipliers.put("Killed mob", FactionsConfig.getKillMultiplier(FactionsConfig.EPlayerPowerGainMultiplierType.MOBS));
         }
 
@@ -205,8 +205,8 @@ public class PlayerEvents {
 
         // Player
         else if (event.getSource().getEntity() instanceof ServerPlayer source) {
-            FactionPlayer sourceFPlayer = FPlayerCollection.getInstance().getPlayer(source);
-            Faction sourceFaction = sourceFPlayer.getFaction();
+            final FactionPlayer sourceFPlayer = FPlayerCollection.getInstance().getPlayer(source);
+            final Faction sourceFaction = sourceFPlayer.getFaction();
 
             if (sourceFaction == null) {
                 multipliers.put("Killed by non-faction", FactionsConfig.getDeathMultiplier(FactionsConfig.EPlayerPowerGainMultiplierType.NOFACTION));
@@ -242,18 +242,30 @@ public class PlayerEvents {
     }
 
     /**
-     * Send enter border message
+     * Send enter border message, handle autoclaim
      */
     @SubscribeEvent
     public static void enterChunk(final EntityEvent.EnteringSection event) {
         if (!(event.getEntity() instanceof ServerPlayer player)) return;
         if (!event.didChunkChange()) return;
 
+        final FactionLevel level = FLevelCollection.getInstance().getByKey(player.getLevel().dimension());
+
         final FactionPlayer fPlayer = FPlayerCollection.getInstance().getPlayer(player);
 
-        if (fPlayer.getChunkAlertMode() == EFPlayerChunkAlertMode.DISABLED) return;
+        // Try autoclaim, if successful then skip notifying the user of chunk change
+        final Faction faction = fPlayer.getFaction();
+        if (fPlayer.isAutoClaim()) {
+            if (ClaimUtil.claimChunks(player, List.of(event.getNewPos().chunk())) > 0) return;
+            else {
+                if (faction.getTotalLandWorth() + level.getSettings().getLandWorth() > faction.getTotalPower()) {
+                    player.sendSystemMessage(Component.literal(DatChatFormatting.TextColour.ERROR + "Your faction has reached the maximum amount of land it can own in this world, disabling autoclaim"));
+                    fPlayer.setAutoClaim(false);
+                }
+            }
+        }
 
-        final FactionLevel level = FLevelCollection.getInstance().getByKey(player.getLevel().dimension());
+        if (fPlayer.getChunkAlertMode() == EFPlayerChunkAlertMode.DISABLED) return;
         final Faction lastChunkOwner = level.getChunkOwningFaction(event.getOldPos().chunk());
         final Faction nextChunkOwner = level.getChunkOwningFaction(event.getNewPos().chunk());
 
@@ -261,8 +273,8 @@ public class PlayerEvents {
         // Or either owner has the silent flag
         if (Objects.equals(lastChunkOwner, nextChunkOwner) || nextChunkOwner.hasFlag(EFactionFlags.SILENT) || lastChunkOwner.hasFlag(EFactionFlags.SILENT)) return;
 
-        final MutableComponent title = nextChunkOwner.getNameWithDescription(fPlayer.getFaction())
-                                .withStyle(RelationUtil.getRelation(fPlayer.getFaction(), nextChunkOwner).formatting);
+        final MutableComponent title = nextChunkOwner.getNameWithDescription(faction)
+                                .withStyle(RelationUtil.getRelation(faction, nextChunkOwner).formatting);
         final MutableComponent description = Component.literal(nextChunkOwner.getDescription()).withStyle(ChatFormatting.WHITE);
 
         switch (fPlayer.getChunkAlertMode()) {

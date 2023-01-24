@@ -371,7 +371,7 @@ public class Faction extends DatabaseEntity {
 
         final FactionRole newRole = new FactionRole(roleName);
         newRole.markDirty();
-        this.roles.add(parentIndex, newRole);
+        this.roles.add(parentIndex + 1, newRole);
 
         return newRole;
     }
@@ -850,9 +850,10 @@ public class Faction extends DatabaseEntity {
     }
 
     public long getLastOnline() {
-        if (isAnyoneOnline()) return System.currentTimeMillis();
+        final Set<FactionPlayer> players = getPlayers();
+        if (players.isEmpty() || isAnyoneOnline()) return System.currentTimeMillis();
 
-        return getPlayers().stream()
+        return players.stream()
                 .max(Comparator.comparing(FactionPlayer::getLastActiveTime))
                 .get()
                 .getLastActiveTime();

@@ -2,6 +2,7 @@ package com.datdeveloper.datfactions;
 
 import com.datdeveloper.datfactions.delayedEvents.FactionCleanUpDelayedEvent;
 import com.datdeveloper.datfactions.events.InfiniverseEvents;
+import com.datdeveloper.datfactions.events.ServerEvents;
 import com.datdeveloper.datmoddingapi.delayedEvents.DelayedEventsHandler;
 import com.mojang.logging.LogUtils;
 import net.minecraftforge.common.ForgeConfigSpec;
@@ -26,10 +27,6 @@ public class Datfactions {
     public Datfactions() {
         final IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
         modEventBus.addListener(this::modCommonEventHandler);
-        // Compat with Infiniverse
-        if (ModList.get().isLoaded("infiniverse")) {
-            MinecraftForge.EVENT_BUS.register(InfiniverseEvents.class);
-        }
 
         final ForgeConfigSpec.Builder builder = new ForgeConfigSpec.Builder();
         //noinspection InstantiationOfUtilityClass
@@ -37,7 +34,25 @@ public class Datfactions {
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, builder.build());
     }
 
+    /**
+     * Register events enabled by config
+     */
+    private void registerOptionalEvents() {
+        // Compat with Infiniverse
+        if (ModList.get().isLoaded("infiniverse")) {
+            MinecraftForge.EVENT_BUS.register(InfiniverseEvents.class);
+        }
+
+        if (FactionsConfig.getPreventCropTrampling())
+            MinecraftForge.EVENT_BUS.addListener(ServerEvents::trampleFarmland);
+
+        if (FactionsConfig.getPreventPistonGrief())
+            MinecraftForge.EVENT_BUS.addListener(ServerEvents::blockPiston);
+    }
+
     private void modCommonEventHandler(final FMLCommonSetupEvent event) {
+        registerOptionalEvents();
+
         if (FactionsConfig.getFactionOfflineExpiryTime() > 0) {
             DelayedEventsHandler.addEvent(new FactionCleanUpDelayedEvent());
         }

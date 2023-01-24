@@ -32,7 +32,8 @@ public enum ERolePermissions {
 
     // Land Access
     BUILD("Allows the player to build on the faction's chunks"),
-    INTERACT("Allows the player to interact with blocks (Chests, doors, buttons, furnaces, etc) on the faction's chunks"),
+    INTERACT("Allows the player to interact with blocks (doors, buttons, etc) on the faction's chunks"),
+    CONTAINERS("Allows the player to access containers (Chests, furnaces, etc) on the faction's chunks"),
 
     // Faction Management
     SETNAME("Allows the player to set the faction's name"),

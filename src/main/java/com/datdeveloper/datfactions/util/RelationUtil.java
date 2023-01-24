@@ -16,8 +16,8 @@ public class RelationUtil {
      * @return The relation between the two players
      */
     public static EFactionRelation getRelation(final FactionPlayer from, final FactionPlayer to) {
-        if (from.hasFaction() && to.hasFaction()) return getRelation(from.getFaction(), to.getFaction());
-        return EFactionRelation.NEUTRAL;
+        if (!from.hasFaction() || !to.hasFaction()) return EFactionRelation.NEUTRAL;
+        return getRelation(from.getFaction(), to.getFaction());
     }
 
     /**
@@ -56,5 +56,24 @@ public class RelationUtil {
         if (relation != null) return relation.getRelation();
 
         return EFactionRelation.NEUTRAL;
+    }
+
+    /**
+     * Get the mutual relation between 2 factions
+     * <br>
+     * This will resolve to neutral if they differ or if either faction is null, and the relation if the two factions agree
+     * @param faction1 The first faction
+     * @param faction2 The second faction
+     * @return The mutual relation between the two factions
+     */
+    public static EFactionRelation getMutualRelation(final Faction faction1, final Faction faction2) {
+        if (faction1 == null || faction2 == null) return EFactionRelation.NEUTRAL;
+        else if (faction1.equals(faction2)) return EFactionRelation.SELF;
+
+        final FactionRelation relation1 = faction1.getRelation(faction2);
+        final FactionRelation relation2 = faction2.getRelation(faction1);
+
+        if (relation1 != null && relation2 != null && relation1.getRelation() == relation2.getRelation()) return relation1.getRelation();
+        else return EFactionRelation.NEUTRAL;
     }
 }

@@ -33,7 +33,6 @@ public class FactionsConfig {
     private static ConfigValue<Integer> playerPassiveMaxPowerGainAmount;
     private static final Map<EPlayerPowerGainMultiplierType, ConfigValue<Float>> playerPassivePowerGainSources = new HashMap<>();
 
-
     private static ConfigValue<Integer> baseKillPowerGain;
     private static ConfigValue<Integer> baseKillMaxPowerGain;
     private static final Map<EPlayerPowerGainMultiplierType, ConfigValue<Float>> playerKillPowerGainSources = new HashMap<>();
@@ -50,6 +49,9 @@ public class FactionsConfig {
     private static ConfigValue<EValidationType> validateLandOwnership;
     private static ConfigValue<EValidationType> validateEmptyFactions;
 
+    // Griefing
+    private static ConfigValue<Boolean> preventPistonGrief;
+    private static ConfigValue<Boolean> preventCropTrampling;
 
     // Misc
     private static ConfigValue<Boolean> useFactionChat;
@@ -230,6 +232,21 @@ public class FactionsConfig {
                     .defineEnum("ValidateLandOwnership", EValidationType.REMOVE);
         } builder.pop();
 
+        builder.push("Griefing");
+        {
+            preventPistonGrief = builder
+                    .comment(
+                            "Prevent pistons from pushing blocks across faction borders",
+                            "Pistons will still be allowed to push blocks between their own borders, and in & out of unowned land"
+                    )
+                    .worldRestart()
+                    .define("PreventPistonGrief", true);
+            preventCropTrampling = builder
+                    .comment("Prevent players from trampling farmland on owned land")
+                    .worldRestart()
+                    .define("PreventCropTrampling", true);
+        } builder.pop();
+
         builder.push("Miscellaneous");
         {
             useFactionChat = builder
@@ -316,7 +333,7 @@ public class FactionsConfig {
     }
 
     public static float getPassiveMultiplier(final EPlayerPowerGainMultiplierType multiplierType) {
-        return playerKillPowerGainSources.get(multiplierType).get();
+        return playerPassivePowerGainSources.get(multiplierType).get();
     }
 
     public static int getBaseKillPowerGain() {
@@ -353,6 +370,14 @@ public class FactionsConfig {
 
     public static float getBonusPowerFlagDeathMultiplier() {
         return bonusPowerFlagDeathMultiplier.get();
+    }
+
+    public static boolean getPreventPistonGrief() {
+        return preventPistonGrief.get();
+    }
+
+    public static boolean getPreventCropTrampling() {
+        return preventCropTrampling.get();
     }
 
     public static boolean getUseFactionChat() {
