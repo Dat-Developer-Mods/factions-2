@@ -24,7 +24,7 @@ public class FactionPermissions {
     public static final PermissionResolver<Boolean> PLAYER_ALL = ((player, playerUUID, context) -> player != null && player.hasPermissions(Commands.LEVEL_ALL));
 
     /* ========================================= */
-    /* Permission Nodes
+    /* Player Permission Nodes
     /* ========================================= */
     // General
     public static final PermissionNode<Boolean> FACTION_LIST = createNode("datfactions.list");
@@ -91,6 +91,62 @@ public class FactionPermissions {
     public static final PermissionNode<Boolean> FACTION_UNCLAIM_SQUARE = createNode("datfactions.faction.unclaim.square");
     public static final PermissionNode<Boolean> FACTION_UNCLAIM_LEVEL = createNode("datfactions.faction.unclaim.level");
     public static final PermissionNode<Boolean> FACTION_UNCLAIM_ALL = createNode("datfactions.faction.unclaim.all");
+
+    /* ========================================= */
+    /* Admin Permission Nodes
+    /* ========================================= */
+
+    // Player
+    public static final PermissionNode<Boolean> ADMIN_PLAYER_SETPOWER = createNode("datfactions.admin.player.setpower");
+    public static final PermissionNode<Boolean> ADMIN_PLAYER_SETMAXPOWER = createNode("datfactions.admin.player.setmaxpower");
+    public static final PermissionNode<Boolean> ADMIN_PLAYER_SETFACTION = createNode("datfactions.admin.player.setfaction");
+    public static final PermissionNode<Boolean> ADMIN_PLAYER_SETROLE = createNode("datfactions.admin.player.setrole");
+    public static final PermissionNode<Boolean> ADMIN_PLAYER_SETAUTOCLAIM = createNode("datfactions.admin.player.setautoclaim");
+    public static final PermissionNode<Boolean> ADMIN_PLAYER_SETCHATMODE = createNode("datfactions.admin.player.setchatmode");
+    public static final PermissionNode<Boolean> ADMIN_PLAYER_SETCHUNKALERTMODE = createNode("datfactions.admin.player.setchunkalertmode");
+    public static final PermissionNode<Boolean> ADMIN_PLAYER_DELETE = createNode("datfactions.admin.player.delete");
+
+    // Faction
+    public static final PermissionNode<Boolean> ADMIN_FACTION_SETNAME = createNode("datfactions.admin.faction.setname");
+    public static final PermissionNode<Boolean> ADMIN_FACTION_SETDESCRIPTION = createNode("datfactions.admin.faction.setdescription");
+    public static final PermissionNode<Boolean> ADMIN_FACTION_SETMOTD = createNode("datfactions.admin.faction.setmotd");
+    public static final PermissionNode<Boolean> ADMIN_FACTION_SETBONUSPOWER = createNode("datfactions.admin.faction.setbonuspower");
+    public static final PermissionNode<Boolean> ADMIN_FACTION_SETHOME = createNode("datfactions.admin.faction.sethome.self");
+    public static final PermissionNode<Boolean> ADMIN_FACTION_SETHOMECOORD = createNode("datfactions.admin.faction.sethome.coord");
+    public static final PermissionNode<Boolean> ADMIN_FACTION_INVITE_LIST = createNode("datfactions.admin.faction.invites.list");
+    public static final PermissionNode<Boolean> ADMIN_FACTION_INVITE_ADD = createNode("datfactions.admin.faction.invites.add");
+    public static final PermissionNode<Boolean> ADMIN_FACTION_INVITE_REMOVE = createNode("datfactions.admin.faction.invites.remove");
+    public static final PermissionNode<Boolean> ADMIN_FACTION_ROLE_LIST = createNode("datfactions.admin.faction.role.list");
+    public static final PermissionNode<Boolean> ADMIN_FACTION_ROLE_ADD = createNode("datfactions.admin.faction.role.add");
+    public static final PermissionNode<Boolean> ADMIN_FACTION_ROLE_REMOVE = createNode("datfactions.admin.faction.role.remove");
+    public static final PermissionNode<Boolean> ADMIN_FACTION_ROLE_REORDER = createNode("datfactions.admin.faction.role.reorder");
+    public static final PermissionNode<Boolean> ADMIN_FACTION_ROLE_PERMISSIONS = createNode("datfactions.admin.faction.role.permissions");
+    public static final PermissionNode<Boolean> ADMIN_FACTION_FLAG_LIST = createNode("datfactions.admin.faction.flag.list");
+    public static final PermissionNode<Boolean> ADMIN_FACTION_FLAG_ADD = createNode("datfactions.admin.faction.flag.add");
+    public static final PermissionNode<Boolean> ADMIN_FACTION_FLAG_REMOVE = createNode("datfactions.admin.faction.flag.remove");
+    public static final PermissionNode<Boolean> ADMIN_FACTION_RELATIONS_LISTS = createNode("datfactions.admin.faction.relation.list");
+    public static final PermissionNode<Boolean> ADMIN_FACTION_RELATIONS_SET = createNode("datfactions.admin.faction.relation.set");
+    public static final PermissionNode<Boolean> ADMIN_FACTION_PLAYER_LIST = createNode("datfactions.admin.faction.player.list");
+    public static final PermissionNode<Boolean> ADMIN_FACTION_PLAYER_KICK = createNode("datfactions.admin.faction.player.kick");
+    public static final PermissionNode<Boolean> ADMIN_FACTION_PLAYER_SETOWNER = createNode("datfactions.admin.faction.player.setowner");
+    public static final PermissionNode<Boolean> ADMIN_FACTION_PLAYER_SETROLE = createNode("datfactions.admin.faction.player.setrole");
+    public static final PermissionNode<Boolean> ADMIN_FACTION_CLAIM_ONE = createNode("datfactions.admin.faction.claim.one");
+    public static final PermissionNode<Boolean> ADMIN_FACTION_CLAIM_SQUARE = createNode("datfactions.admin.faction.claim.square");
+    public static final PermissionNode<Boolean> ADMIN_FACTION_UNCLAIM_ONE = createNode("datfactions.admin.faction.unclaim.one");
+    public static final PermissionNode<Boolean> ADMIN_FACTION_UNCLAIM_SQUARE = createNode("datfactions.admin.faction.unclaim.square");
+    public static final PermissionNode<Boolean> ADMIN_FACTION_UNCLAIM_ALL = createNode("datfactions.admin.faction.unclaim.all");
+    public static final PermissionNode<Boolean> ADMIN_FACTION_MESSAGE = createNode("datfactions.admin.faction.message");
+    public static final PermissionNode<Boolean> ADMIN_FACTION_DISBAND = createNode("datfactions.admin.faction.disband");
+
+    // Level
+    public static final PermissionNode<Boolean> ADMIN_LEVEL_CONFIGURE = createNode("datfactions.admin.level.configure");
+    public static final PermissionNode<Boolean> ADMIN_LEVEL_SETCHUNKOWNER = createNode("datfactions.admin.level.setchunkowner");
+    public static final PermissionNode<Boolean> ADMIN_LEVEL_RELEASEALL = createNode("datfactions.admin.level.releaseall");
+
+    // Util
+    public static final PermissionNode<Boolean> ADMIN_MAP = createNode("datfactions.admin.map");
+    public static final PermissionNode<Boolean> ADMIN_BUILDOVERRIDE = createNode("datfactions.admin.buildoverride");
+    public static final PermissionNode<Boolean> ADMIN_CHATSPY = createNode("datfactions.admin.chatspy");
 
     /* ========================================= */
     /* Permission Builders
@@ -167,7 +223,55 @@ public class FactionPermissions {
                 FACTION_UNCLAIM_ONE,
                 FACTION_UNCLAIM_SQUARE,
                 FACTION_UNCLAIM_LEVEL,
-                FACTION_UNCLAIM_ALL
+                FACTION_UNCLAIM_ALL,
+
+                ADMIN_PLAYER_SETPOWER,
+                ADMIN_PLAYER_SETMAXPOWER,
+                ADMIN_PLAYER_SETFACTION,
+                ADMIN_PLAYER_SETROLE,
+                ADMIN_PLAYER_SETAUTOCLAIM,
+                ADMIN_PLAYER_SETCHATMODE,
+                ADMIN_PLAYER_SETCHUNKALERTMODE,
+                ADMIN_PLAYER_DELETE,
+
+                ADMIN_FACTION_SETNAME,
+                ADMIN_FACTION_SETDESCRIPTION,
+                ADMIN_FACTION_SETMOTD,
+                ADMIN_FACTION_SETBONUSPOWER,
+                ADMIN_FACTION_SETHOME,
+                ADMIN_FACTION_SETHOMECOORD,
+                ADMIN_FACTION_INVITE_LIST,
+                ADMIN_FACTION_INVITE_ADD,
+                ADMIN_FACTION_INVITE_REMOVE,
+                ADMIN_FACTION_ROLE_LIST,
+                ADMIN_FACTION_ROLE_ADD,
+                ADMIN_FACTION_ROLE_REMOVE,
+                ADMIN_FACTION_ROLE_REORDER,
+                ADMIN_FACTION_ROLE_PERMISSIONS,
+                ADMIN_FACTION_FLAG_LIST,
+                ADMIN_FACTION_FLAG_ADD,
+                ADMIN_FACTION_FLAG_REMOVE,
+                ADMIN_FACTION_RELATIONS_LISTS,
+                ADMIN_FACTION_RELATIONS_SET,
+                ADMIN_FACTION_PLAYER_LIST,
+                ADMIN_FACTION_PLAYER_KICK,
+                ADMIN_FACTION_PLAYER_SETOWNER,
+                ADMIN_FACTION_PLAYER_SETROLE,
+                ADMIN_FACTION_CLAIM_ONE,
+                ADMIN_FACTION_CLAIM_SQUARE,
+                ADMIN_FACTION_UNCLAIM_ONE,
+                ADMIN_FACTION_UNCLAIM_SQUARE,
+                ADMIN_FACTION_UNCLAIM_ALL,
+                ADMIN_FACTION_MESSAGE,
+                ADMIN_FACTION_DISBAND,
+
+                ADMIN_LEVEL_CONFIGURE,
+                ADMIN_LEVEL_SETCHUNKOWNER,
+                ADMIN_LEVEL_RELEASEALL,
+
+                ADMIN_MAP,
+                ADMIN_BUILDOVERRIDE,
+                ADMIN_CHATSPY
         );
     }
 }
