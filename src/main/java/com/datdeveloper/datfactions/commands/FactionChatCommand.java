@@ -1,6 +1,7 @@
 package com.datdeveloper.datfactions.commands;
 
 import com.datdeveloper.datfactions.FactionsConfig;
+import com.datdeveloper.datfactions.commands.util.FactionCommandUtils;
 import com.datdeveloper.datfactions.factionData.EFPlayerChatMode;
 import com.datdeveloper.datfactions.factionData.FPlayerCollection;
 import com.datdeveloper.datfactions.factionData.Faction;
@@ -19,26 +20,26 @@ import net.minecraft.network.chat.Component;
 
 import static com.datdeveloper.datfactions.commands.FactionPermissions.FACTION_CHAT;
 
-public class FactionChatCommand extends BaseFactionCommand {
+public class FactionChatCommand {
     static void register(final LiteralArgumentBuilder<CommandSourceStack> command) {
         final LiteralCommandNode<CommandSourceStack> subCommand = Commands.literal("chat")
                 .requires((commandSourceStack) -> {
                     if (!(FactionsConfig.getUseFactionChat() && commandSourceStack.isPlayer() && DatPermissions.hasPermission(commandSourceStack.getPlayer(), FACTION_CHAT)))
                         return false;
-                    final FactionPlayer fPlayer = getPlayerOrTemplate(commandSourceStack.getPlayer());
+                    final FactionPlayer fPlayer = FactionCommandUtils.getPlayerOrTemplate(commandSourceStack.getPlayer());
                     final Faction faction = fPlayer.getFaction();
                     return faction != null && fPlayer.getRole().hasAnyPermissions(ERolePermissions.ALLYCHAT, ERolePermissions.FACTIONCHAT);
                 })
                 .then(Commands.argument("Chat Type", StringArgumentType.word())
                         .suggests((context, builder) -> {
-                            final FactionPlayer fPlayer = getPlayerOrTemplate(context.getSource().getPlayer());
+                            final FactionPlayer fPlayer = FactionCommandUtils.getPlayerOrTemplate(context.getSource().getPlayer());
                             builder.suggest("public");
                             if (fPlayer.getRole().hasPermission(ERolePermissions.FACTIONCHAT)) builder.suggest("faction");
                             if (fPlayer.getRole().hasPermission(ERolePermissions.ALLYCHAT)) builder.suggest("ally");
                             return builder.buildFuture();
                         })
                         .executes(c -> {
-                            final FactionPlayer fPlayer = getPlayerOrTemplate(c.getSource().getPlayer());
+                            final FactionPlayer fPlayer = FactionCommandUtils.getPlayerOrTemplate(c.getSource().getPlayer());
                             final String chatName = c.getArgument("Chat Type", String.class);
                             final EFPlayerChatMode chatMode;
                             try {

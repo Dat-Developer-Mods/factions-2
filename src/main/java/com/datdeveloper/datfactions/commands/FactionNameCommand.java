@@ -2,6 +2,7 @@ package com.datdeveloper.datfactions.commands;
 
 import com.datdeveloper.datfactions.FactionsConfig;
 import com.datdeveloper.datfactions.api.events.FactionChangeNameEvent;
+import com.datdeveloper.datfactions.commands.util.FactionCommandUtils;
 import com.datdeveloper.datfactions.factionData.*;
 import com.datdeveloper.datfactions.factionData.permissions.ERolePermissions;
 import com.datdeveloper.datfactions.factionData.relations.EFactionRelation;
@@ -19,14 +20,14 @@ import net.minecraftforge.common.MinecraftForge;
 
 import static com.datdeveloper.datfactions.commands.FactionPermissions.FACTION_SET_NAME;
 
-public class FactionNameCommand extends BaseFactionCommand {
+public class FactionNameCommand {
     static void register(final LiteralArgumentBuilder<CommandSourceStack> command) {
 
         final LiteralCommandNode<CommandSourceStack> subCommand = Commands.literal("name")
                 .requires(commandSourceStack -> {
                     if (!(commandSourceStack.isPlayer() && DatPermissions.hasPermission(commandSourceStack.getPlayer(), FACTION_SET_NAME)))
                         return false;
-                    final FactionPlayer fPlayer1 = getPlayerOrTemplate(commandSourceStack.getPlayer());
+                    final FactionPlayer fPlayer1 = FactionCommandUtils.getPlayerOrTemplate(commandSourceStack.getPlayer());
                     return fPlayer1.hasFaction() && fPlayer1.getRole().hasPermission(ERolePermissions.SETNAME);
                 })
                 .then(Commands.argument("New Faction Name", StringArgumentType.word())
@@ -58,6 +59,6 @@ public class FactionNameCommand extends BaseFactionCommand {
                         })).build();
 
         command.then(subCommand);
-        command.then(buildRedirect("setname", subCommand));
+        command.then(FactionCommandUtils.buildRedirect("setname", subCommand));
     }
 }

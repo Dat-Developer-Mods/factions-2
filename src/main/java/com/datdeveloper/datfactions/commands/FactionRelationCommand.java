@@ -2,6 +2,7 @@ package com.datdeveloper.datfactions.commands;
 
 import com.datdeveloper.datfactions.api.events.FactionChangeRelationEvent;
 import com.datdeveloper.datfactions.commands.suggestions.DatSuggestionProviders;
+import com.datdeveloper.datfactions.commands.util.FactionCommandUtils;
 import com.datdeveloper.datfactions.factionData.EFactionFlags;
 import com.datdeveloper.datfactions.factionData.Faction;
 import com.datdeveloper.datfactions.factionData.FactionCollection;
@@ -29,14 +30,14 @@ import java.util.List;
 
 import static com.datdeveloper.datfactions.commands.FactionPermissions.*;
 
-public class FactionRelationCommand extends BaseFactionCommand {
+public class FactionRelationCommand {
     static void register(final LiteralArgumentBuilder<CommandSourceStack> command) {
 
         final LiteralArgumentBuilder<CommandSourceStack> subCommand = Commands.literal("relations")
                 .requires(commandSourceStack -> {
                     if (!(commandSourceStack.isPlayer() && DatPermissions.hasAnyPermissions(commandSourceStack.getPlayer(), FACTION_RELATION_LIST, FACTION_RELATION_WISHES, FACTION_RELATION_ALLY, FACTION_RELATION_TRUCE, FACTION_RELATION_NEUTRAL, FACTION_RELATION_ENEMY)))
                         return false;
-                    final FactionPlayer fPlayer = getPlayerOrTemplate(commandSourceStack.getPlayer());
+                    final FactionPlayer fPlayer = FactionCommandUtils.getPlayerOrTemplate(commandSourceStack.getPlayer());
                     final Faction faction = fPlayer.getFaction();
                     return faction != null && !faction.hasFlag(EFactionFlags.UNRELATEABLE) && fPlayer.getRole().hasAnyPermissions(ERolePermissions.RELATIONWISHES, ERolePermissions.RELATIONALLY, ERolePermissions.RELATIONTRUCE, ERolePermissions.RELATIONNEUTRAL, ERolePermissions.RELATIONENEMY);
                 })
@@ -58,7 +59,7 @@ public class FactionRelationCommand extends BaseFactionCommand {
         return Commands.literal("list")
                 .requires(commandSourceStack -> {
                     final ServerPlayer player = commandSourceStack.getPlayer();
-                    final FactionPlayer fPlayer = getPlayerOrTemplate(player);
+                    final FactionPlayer fPlayer = FactionCommandUtils.getPlayerOrTemplate(player);
                     return DatPermissions.hasPermission(player, FACTION_RELATION_LIST) && fPlayer.getRole().hasPermission(ERolePermissions.RELATIONLIST);
                 })
                 .then(
@@ -70,7 +71,7 @@ public class FactionRelationCommand extends BaseFactionCommand {
 
     private static int executeList(final CommandSourceStack sourceStack, final int page) {
         final ServerPlayer player = sourceStack.getPlayer();
-        final FactionPlayer fPlayer = getPlayerOrTemplate(player);
+        final FactionPlayer fPlayer = FactionCommandUtils.getPlayerOrTemplate(player);
         final Faction faction = fPlayer.getFaction();
 
         AsyncHandler.runAsyncTask(() -> {
@@ -143,7 +144,7 @@ public class FactionRelationCommand extends BaseFactionCommand {
         return Commands.literal("wishes")
                 .requires(commandSourceStack -> {
                     final ServerPlayer player = commandSourceStack.getPlayer();
-                    final FactionPlayer fPlayer = getPlayerOrTemplate(player);
+                    final FactionPlayer fPlayer = FactionCommandUtils.getPlayerOrTemplate(player);
                     return DatPermissions.hasPermission(player, FACTION_RELATION_WISHES) && fPlayer.getRole().hasPermission(ERolePermissions.RELATIONWISHES);
                 })
                 .then(
@@ -155,7 +156,7 @@ public class FactionRelationCommand extends BaseFactionCommand {
 
     private static int executeWishes(final CommandSourceStack sourceStack, final int page) {
         final ServerPlayer player = sourceStack.getPlayer();
-        final FactionPlayer fPlayer = getPlayerOrTemplate(player);
+        final FactionPlayer fPlayer = FactionCommandUtils.getPlayerOrTemplate(player);
         final Faction faction = fPlayer.getFaction();
 
         AsyncHandler.runAsyncTask(() -> {
@@ -229,7 +230,7 @@ public class FactionRelationCommand extends BaseFactionCommand {
         return Commands.literal("ally")
                 .requires(commandSourceStack -> {
                     final ServerPlayer player = commandSourceStack.getPlayer();
-                    final FactionPlayer fPlayer = getPlayerOrTemplate(player);
+                    final FactionPlayer fPlayer = FactionCommandUtils.getPlayerOrTemplate(player);
                     return DatPermissions.hasPermission(player, FACTION_RELATION_ALLY) && fPlayer.getRole().hasPermission(ERolePermissions.RELATIONALLY);
                 })
                 .then(
@@ -247,7 +248,7 @@ public class FactionRelationCommand extends BaseFactionCommand {
         return Commands.literal("truce")
                 .requires(commandSourceStack -> {
                     final ServerPlayer player = commandSourceStack.getPlayer();
-                    final FactionPlayer fPlayer = getPlayerOrTemplate(player);
+                    final FactionPlayer fPlayer = FactionCommandUtils.getPlayerOrTemplate(player);
                     return DatPermissions.hasPermission(player, FACTION_RELATION_TRUCE) && fPlayer.getRole().hasPermission(ERolePermissions.RELATIONTRUCE);
                 })
                 .then(
@@ -265,7 +266,7 @@ public class FactionRelationCommand extends BaseFactionCommand {
         return Commands.literal("neutral")
                 .requires(commandSourceStack -> {
                     final ServerPlayer player = commandSourceStack.getPlayer();
-                    final FactionPlayer fPlayer = getPlayerOrTemplate(player);
+                    final FactionPlayer fPlayer = FactionCommandUtils.getPlayerOrTemplate(player);
                     return DatPermissions.hasPermission(player, FACTION_RELATION_NEUTRAL) && fPlayer.getRole().hasPermission(ERolePermissions.RELATIONNEUTRAL);
                 })
                 .then(
@@ -283,7 +284,7 @@ public class FactionRelationCommand extends BaseFactionCommand {
         return Commands.literal("enemy")
                 .requires(commandSourceStack -> {
                     final ServerPlayer player = commandSourceStack.getPlayer();
-                    final FactionPlayer fPlayer = getPlayerOrTemplate(player);
+                    final FactionPlayer fPlayer = FactionCommandUtils.getPlayerOrTemplate(player);
                     return DatPermissions.hasPermission(player, FACTION_RELATION_ENEMY) && fPlayer.getRole().hasPermission(ERolePermissions.RELATIONENEMY);
                 })
                 .then(
@@ -305,7 +306,7 @@ public class FactionRelationCommand extends BaseFactionCommand {
      */
     private static int executeRelation(final CommandContext<CommandSourceStack> c, EFactionRelation relation) {
         final ServerPlayer player = c.getSource().getPlayer();
-        final FactionPlayer fPlayer = getPlayerOrTemplate(player);
+        final FactionPlayer fPlayer = FactionCommandUtils.getPlayerOrTemplate(player);
         final Faction faction = fPlayer.getFaction();
 
         final String targetName = c.getArgument("Target Faction", String.class);

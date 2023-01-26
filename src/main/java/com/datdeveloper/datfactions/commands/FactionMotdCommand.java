@@ -2,6 +2,7 @@ package com.datdeveloper.datfactions.commands;
 
 import com.datdeveloper.datfactions.FactionsConfig;
 import com.datdeveloper.datfactions.api.events.FactionChangeMotdEvent;
+import com.datdeveloper.datfactions.commands.util.FactionCommandUtils;
 import com.datdeveloper.datfactions.factionData.FPlayerCollection;
 import com.datdeveloper.datfactions.factionData.Faction;
 import com.datdeveloper.datfactions.factionData.FactionPlayer;
@@ -17,14 +18,14 @@ import net.minecraftforge.common.MinecraftForge;
 
 import static com.datdeveloper.datfactions.commands.FactionPermissions.FACTION_SET_MOTD;
 
-public class FactionMotdCommand extends BaseFactionCommand {
+public class FactionMotdCommand {
     static void register(final LiteralArgumentBuilder<CommandSourceStack> command) {
 
         final LiteralCommandNode<CommandSourceStack> subCommand = Commands.literal("motd")
                 .requires(commandSourceStack -> {
                     if (!(commandSourceStack.isPlayer() && DatPermissions.hasPermission(commandSourceStack.getPlayer(), FACTION_SET_MOTD)))
                         return false;
-                    final FactionPlayer fPlayer1 = getPlayerOrTemplate(commandSourceStack.getPlayer());
+                    final FactionPlayer fPlayer1 = FactionCommandUtils.getPlayerOrTemplate(commandSourceStack.getPlayer());
                     return fPlayer1.hasFaction() && fPlayer1.getRole().hasPermission(ERolePermissions.SETMOTD);
                 })
                 .then(Commands.argument("MOTD", StringArgumentType.greedyString())
@@ -48,6 +49,6 @@ public class FactionMotdCommand extends BaseFactionCommand {
                         })).build();
 
         command.then(subCommand);
-        command.then(buildRedirect("setmotd", subCommand));
+        command.then(FactionCommandUtils.buildRedirect("setmotd", subCommand));
     }
 }

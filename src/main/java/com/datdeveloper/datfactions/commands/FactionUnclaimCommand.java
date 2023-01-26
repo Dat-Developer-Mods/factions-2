@@ -23,21 +23,21 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class FactionUnclaimCommand extends BaseFactionCommand {
+public class FactionUnclaimCommand {
     static void register(final LiteralArgumentBuilder<CommandSourceStack> command) {
 
         final LiteralCommandNode<CommandSourceStack> claimCommand = Commands.literal("unclaim")
                 .requires(commandSourceStack1 -> {
                     if (!(commandSourceStack1.isPlayer() && DatPermissions.hasAnyPermissions(commandSourceStack1.source, FactionPermissions.FACTION_UNCLAIM_ONE, FactionPermissions.FACTION_UNCLAIM_SQUARE, FactionPermissions.FACTION_UNCLAIM_LEVEL, FactionPermissions.FACTION_UNCLAIM_ALL)))
                         return false;
-                    final FactionPlayer fPlayer1 = getPlayerOrTemplate(commandSourceStack1.getPlayer());
+                    final FactionPlayer fPlayer1 = FactionCommandUtils.getPlayerOrTemplate(commandSourceStack1.getPlayer());
                     return fPlayer1.hasFaction() && fPlayer1.getRole().hasAnyPermissions(ERolePermissions.UNCLAIMONE, ERolePermissions.UNCLAIMSQUARE, ERolePermissions.UNCLAIMLEVEL, ERolePermissions.UNCLAIMALL);
                 })
                 .then(
                         Commands.literal("one")
                                 .requires(commandSourceStack -> {
                                     final ServerPlayer player = commandSourceStack.getPlayer();
-                                    final FactionPlayer fPlayer = getPlayerOrTemplate(player);
+                                    final FactionPlayer fPlayer = FactionCommandUtils.getPlayerOrTemplate(player);
                                     return DatPermissions.hasPermission(player, FactionPermissions.FACTION_UNCLAIM_ONE) && fPlayer.getRole().hasPermission(ERolePermissions.UNCLAIMONE);
                                 })
                                 .executes(c -> {
@@ -59,7 +59,7 @@ public class FactionUnclaimCommand extends BaseFactionCommand {
                         Commands.literal("square")
                                 .requires(commandSourceStack -> {
                                     final ServerPlayer player = commandSourceStack.getPlayer();
-                                    final FactionPlayer fPlayer = getPlayerOrTemplate(player);
+                                    final FactionPlayer fPlayer = FactionCommandUtils.getPlayerOrTemplate(player);
                                     return DatPermissions.hasPermission(player, FactionPermissions.FACTION_UNCLAIM_SQUARE) && fPlayer.getRole().hasPermission(ERolePermissions.UNCLAIMSQUARE);
                                 })
                                 .then(
@@ -106,7 +106,7 @@ public class FactionUnclaimCommand extends BaseFactionCommand {
                         Commands.literal("level")
                                 .requires(commandSourceStack -> {
                                     final ServerPlayer player = commandSourceStack.getPlayer();
-                                    final FactionPlayer fPlayer = getPlayerOrTemplate(player);
+                                    final FactionPlayer fPlayer = FactionCommandUtils.getPlayerOrTemplate(player);
                                     return DatPermissions.hasPermission(player, FactionPermissions.FACTION_UNCLAIM_LEVEL) && fPlayer.getRole().hasPermission(ERolePermissions.UNCLAIMLEVEL);
                                 })
                                 .then(
@@ -137,7 +137,7 @@ public class FactionUnclaimCommand extends BaseFactionCommand {
                                 )
                                 .executes(c -> {
                                     final ServerPlayer player = c.getSource().getPlayer();
-                                    final FactionPlayer fPlayer = getPlayerOrTemplate(player);
+                                    final FactionPlayer fPlayer = FactionCommandUtils.getPlayerOrTemplate(player);
                                     final Faction faction = fPlayer.getFaction();
                                     final FactionLevel level = FLevelCollection.getInstance().getByKey(player.getLevel().dimension());
 
@@ -163,7 +163,7 @@ public class FactionUnclaimCommand extends BaseFactionCommand {
                         Commands.literal("all")
                                 .requires(commandSourceStack -> {
                                     final ServerPlayer player = commandSourceStack.getPlayer();
-                                    final FactionPlayer fPlayer = getPlayerOrTemplate(player);
+                                    final FactionPlayer fPlayer = FactionCommandUtils.getPlayerOrTemplate(player);
                                     return DatPermissions.hasPermission(player, FactionPermissions.FACTION_UNCLAIM_ALL) && fPlayer.getRole().hasPermission(ERolePermissions.UNCLAIMALL);
                                 })
                                 .then(
@@ -196,7 +196,7 @@ public class FactionUnclaimCommand extends BaseFactionCommand {
                                 )
                                 .executes(c -> {
                                     final ServerPlayer player = c.getSource().getPlayer();
-                                    final FactionPlayer fPlayer = getPlayerOrTemplate(player);
+                                    final FactionPlayer fPlayer = FactionCommandUtils.getPlayerOrTemplate(player);
                                     final Faction faction = fPlayer.getFaction();
                                     final FactionLevel level = FLevelCollection.getInstance().getByKey(player.getLevel().dimension());
 
@@ -221,7 +221,7 @@ public class FactionUnclaimCommand extends BaseFactionCommand {
     }
 
     public static int unclaimChunks(final ServerPlayer player, final List<ChunkPos> chunks, FactionLevel level) {
-        final FactionPlayer fPlayer = getPlayerOrTemplate(player);
+        final FactionPlayer fPlayer = FactionCommandUtils.getPlayerOrTemplate(player);
         final Faction faction = fPlayer.getFaction();
 
         // Event

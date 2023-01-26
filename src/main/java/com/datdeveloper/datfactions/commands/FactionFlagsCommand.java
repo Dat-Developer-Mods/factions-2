@@ -2,6 +2,7 @@ package com.datdeveloper.datfactions.commands;
 
 import com.datdeveloper.datfactions.FactionsConfig;
 import com.datdeveloper.datfactions.commands.suggestions.DatSuggestionProviders;
+import com.datdeveloper.datfactions.commands.util.FactionCommandUtils;
 import com.datdeveloper.datfactions.factionData.EFactionFlags;
 import com.datdeveloper.datfactions.factionData.Faction;
 import com.datdeveloper.datfactions.factionData.FactionPlayer;
@@ -21,14 +22,14 @@ import net.minecraft.server.level.ServerPlayer;
 
 import static com.datdeveloper.datfactions.commands.FactionPermissions.*;
 
-public class FactionFlagsCommand extends BaseFactionCommand {
+public class FactionFlagsCommand {
     static void register(final LiteralArgumentBuilder<CommandSourceStack> command) {
 
         final LiteralArgumentBuilder<CommandSourceStack> subCommand = Commands.literal("flags")
                 .requires(commandSourceStack -> {
                     if (!(commandSourceStack.isPlayer() && DatPermissions.hasAnyPermissions(commandSourceStack.getPlayer(), FACTION_FLAG_LIST, FACTION_FLAG_ADD, FACTION_FLAG_REMOVE)))
                         return false;
-                    final FactionPlayer fPlayer = getPlayerOrTemplate(commandSourceStack.getPlayer());
+                    final FactionPlayer fPlayer = FactionCommandUtils.getPlayerOrTemplate(commandSourceStack.getPlayer());
                     final Faction faction = fPlayer.getFaction();
                     return faction != null && fPlayer.getRole().hasAnyPermissions(ERolePermissions.FLAGLIST, ERolePermissions.FLAGADD, ERolePermissions.FLAGREMOVE);
                 })
@@ -47,7 +48,7 @@ public class FactionFlagsCommand extends BaseFactionCommand {
         return Commands.literal("list")
                 .requires(commandSourceStack -> {
                     final ServerPlayer player = commandSourceStack.getPlayer();
-                    final FactionPlayer fPlayer = getPlayerOrTemplate(player);
+                    final FactionPlayer fPlayer = FactionCommandUtils.getPlayerOrTemplate(player);
                     return DatPermissions.hasPermission(player, FACTION_FLAG_LIST) && fPlayer.getRole().hasPermission(ERolePermissions.FLAGLIST);
                 })
                 .then(
@@ -59,7 +60,7 @@ public class FactionFlagsCommand extends BaseFactionCommand {
 
     private static int executeList(final CommandSourceStack sourceStack, final int page) {
         final ServerPlayer player = sourceStack.getPlayer();
-        final FactionPlayer fPlayer = getPlayerOrTemplate(player);
+        final FactionPlayer fPlayer = FactionCommandUtils.getPlayerOrTemplate(player);
         final Faction faction = fPlayer.getFaction();
 
         AsyncHandler.runAsyncTask(() -> {
@@ -90,7 +91,7 @@ public class FactionFlagsCommand extends BaseFactionCommand {
         return Commands.literal("add")
                 .requires(commandSourceStack -> {
                     final ServerPlayer player = commandSourceStack.getPlayer();
-                    final FactionPlayer fPlayer = getPlayerOrTemplate(player);
+                    final FactionPlayer fPlayer = FactionCommandUtils.getPlayerOrTemplate(player);
                     return DatPermissions.hasPermission(player, FACTION_FLAG_ADD) && fPlayer.getRole().hasPermission(ERolePermissions.FLAGADD);
                 })
                 .then(
@@ -98,7 +99,7 @@ public class FactionFlagsCommand extends BaseFactionCommand {
                                 .suggests(DatSuggestionProviders.flagSuggestionProvider)
                                 .executes(c -> {
                                     final ServerPlayer player = c.getSource().getPlayer();
-                                    final FactionPlayer fPlayer = getPlayerOrTemplate(player);
+                                    final FactionPlayer fPlayer = FactionCommandUtils.getPlayerOrTemplate(player);
                                     final Faction faction = fPlayer.getFaction();
 
                                     final EFactionFlags flag;
@@ -141,7 +142,7 @@ public class FactionFlagsCommand extends BaseFactionCommand {
         return Commands.literal("remove")
                 .requires(commandSourceStack -> {
                     final ServerPlayer player = commandSourceStack.getPlayer();
-                    final FactionPlayer fPlayer = getPlayerOrTemplate(player);
+                    final FactionPlayer fPlayer = FactionCommandUtils.getPlayerOrTemplate(player);
                     return DatPermissions.hasPermission(player, FACTION_FLAG_REMOVE) && fPlayer.getRole().hasPermission(ERolePermissions.FLAGREMOVE);
                 })
                 .then(
@@ -149,7 +150,7 @@ public class FactionFlagsCommand extends BaseFactionCommand {
                                 .suggests(DatSuggestionProviders.flagSuggestionProvider)
                                 .executes(c -> {
                                     final ServerPlayer player = c.getSource().getPlayer();
-                                    final FactionPlayer fPlayer = getPlayerOrTemplate(player);
+                                    final FactionPlayer fPlayer = FactionCommandUtils.getPlayerOrTemplate(player);
                                     final Faction faction = fPlayer.getFaction();
 
                                     final EFactionFlags flag;

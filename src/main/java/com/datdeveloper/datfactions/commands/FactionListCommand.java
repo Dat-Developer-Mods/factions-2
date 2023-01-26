@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 
 import static com.datdeveloper.datfactions.commands.FactionPermissions.FACTION_LIST;
 
-public class FactionListCommand extends BaseFactionCommand {
+public class FactionListCommand {
     static void register(final LiteralArgumentBuilder<CommandSourceStack> command) {
         final LiteralCommandNode<CommandSourceStack> subCommand = Commands.literal("list")
                 .requires(FactionPermissions.hasPermission(FACTION_LIST))

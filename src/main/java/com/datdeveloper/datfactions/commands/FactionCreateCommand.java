@@ -22,12 +22,12 @@ import net.minecraftforge.common.MinecraftForge;
 
 import static com.datdeveloper.datfactions.commands.FactionPermissions.FACTION_CREATE;
 
-public class FactionCreateCommand extends BaseFactionCommand{
+public class FactionCreateCommand {
     static void register(final LiteralArgumentBuilder<CommandSourceStack> command) {
         command.then(Commands.literal("create")
                 .requires((commandSourceStack -> {
                     if (!(commandSourceStack.isPlayer() && DatPermissions.hasPermission(commandSourceStack.getPlayer(), FACTION_CREATE))) return false;
-                    final FactionPlayer fPlayer = getPlayerOrTemplate(commandSourceStack.getPlayer());
+                    final FactionPlayer fPlayer = FactionCommandUtils.getPlayerOrTemplate(commandSourceStack.getPlayer());
                     return !fPlayer.hasFaction();
                 }))
                 .then(Commands.argument("Faction Name", StringArgumentType.word())

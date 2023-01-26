@@ -4,6 +4,7 @@ import com.datdeveloper.datfactions.FactionsConfig;
 import com.datdeveloper.datfactions.api.events.*;
 import com.datdeveloper.datfactions.commands.suggestions.DatSuggestionProviders;
 import com.datdeveloper.datfactions.commands.suggestions.FactionRoleSuggestionProvider;
+import com.datdeveloper.datfactions.commands.util.FactionCommandUtils;
 import com.datdeveloper.datfactions.factionData.relations.EFactionRelation;
 import com.datdeveloper.datfactions.factionData.FPlayerCollection;
 import com.datdeveloper.datfactions.factionData.Faction;
@@ -30,14 +31,14 @@ import java.util.Set;
 
 import static com.datdeveloper.datfactions.commands.FactionPermissions.*;
 
-public class FactionRoleCommand extends BaseFactionCommand {
+public class FactionRoleCommand {
     static void register(final LiteralArgumentBuilder<CommandSourceStack> command) {
 
         final LiteralArgumentBuilder<CommandSourceStack> subCommand = Commands.literal("roles")
                 .requires(commandSourceStack -> {
                     if (!(commandSourceStack.isPlayer() && DatPermissions.hasAnyPermissions(commandSourceStack.getPlayer(), FACTION_ROLE_ADD, FACTION_ROLE_REMOVE, FACTION_ROLE_RENAME, FACTION_ROLE_LIST, FACTION_ROLE_INFO, FACTION_ROLE_MODIFY_PERMISSIONS, FACTION_ROLE_REORDER)))
                         return false;
-                    final FactionPlayer fPlayer = getPlayerOrTemplate(commandSourceStack.getPlayer());
+                    final FactionPlayer fPlayer = FactionCommandUtils.getPlayerOrTemplate(commandSourceStack.getPlayer());
                     return fPlayer.hasFaction() && fPlayer.getRole().hasAnyPermissions(ERolePermissions.ROLECREATE, ERolePermissions.ROLEREMOVE, ERolePermissions.ROLERENAME, ERolePermissions.ROLELIST, ERolePermissions.ROLEINFO, ERolePermissions.ROLEMODIFYPERMISSIONS, ERolePermissions.ROLEREORDER);
                 })
                 .then(buildRoleAddCommand())
@@ -59,7 +60,7 @@ public class FactionRoleCommand extends BaseFactionCommand {
         return Commands.literal("add")
                 .requires(commandSourceStack -> {
                     final ServerPlayer player = commandSourceStack.getPlayer();
-                    final FactionPlayer fPlayer = getPlayerOrTemplate(player);
+                    final FactionPlayer fPlayer = FactionCommandUtils.getPlayerOrTemplate(player);
                     return DatPermissions.hasPermission(player, FACTION_ROLE_ADD) && fPlayer.getRole().hasPermission(ERolePermissions.ROLECREATE);
                 })
                 .then(
@@ -69,7 +70,7 @@ public class FactionRoleCommand extends BaseFactionCommand {
                                                 .suggests(new FactionRoleSuggestionProvider(true, true))
                                                 .executes(c -> {
                                                     final ServerPlayer player = c.getSource().getPlayer();
-                                                    final FactionPlayer fPlayer = getPlayerOrTemplate(player);
+                                                    final FactionPlayer fPlayer = FactionCommandUtils.getPlayerOrTemplate(player);
                                                     final Faction faction = fPlayer.getFaction();
 
                                                     final String parentRoleName = c.getArgument("Parent Role", String.class);
@@ -126,7 +127,7 @@ public class FactionRoleCommand extends BaseFactionCommand {
         return Commands.literal("remove")
                 .requires(commandSourceStack -> {
                     final ServerPlayer player = commandSourceStack.getPlayer();
-                    final FactionPlayer fPlayer = getPlayerOrTemplate(player);
+                    final FactionPlayer fPlayer = FactionCommandUtils.getPlayerOrTemplate(player);
                     return DatPermissions.hasPermission(player, FACTION_ROLE_REMOVE) && fPlayer.getRole().hasPermission(ERolePermissions.ROLEREMOVE);
                 })
                 .then(
@@ -134,7 +135,7 @@ public class FactionRoleCommand extends BaseFactionCommand {
                                 .suggests(new FactionRoleSuggestionProvider(true, false))
                                 .executes(c -> {
                                     final ServerPlayer player = c.getSource().getPlayer();
-                                    final FactionPlayer fPlayer = getPlayerOrTemplate(player);
+                                    final FactionPlayer fPlayer = FactionCommandUtils.getPlayerOrTemplate(player);
                                     final Faction faction = fPlayer.getFaction();
 
                                     final String roleName = c.getArgument("Role", String.class);
@@ -173,7 +174,7 @@ public class FactionRoleCommand extends BaseFactionCommand {
         return Commands.literal("rename")
                 .requires(commandSourceStack -> {
                     final ServerPlayer player = commandSourceStack.getPlayer();
-                    final FactionPlayer fPlayer = getPlayerOrTemplate(player);
+                    final FactionPlayer fPlayer = FactionCommandUtils.getPlayerOrTemplate(player);
                     return DatPermissions.hasPermission(player, FACTION_ROLE_RENAME) && fPlayer.getRole().hasPermission(ERolePermissions.ROLERENAME);
                 })
                 .then(
@@ -183,7 +184,7 @@ public class FactionRoleCommand extends BaseFactionCommand {
                                         Commands.argument("New Name", StringArgumentType.word())
                                                 .executes(c -> {
                                                     final ServerPlayer player = c.getSource().getPlayer();
-                                                    final FactionPlayer fPlayer = getPlayerOrTemplate(player);
+                                                    final FactionPlayer fPlayer = FactionCommandUtils.getPlayerOrTemplate(player);
                                                     final Faction faction = fPlayer.getFaction();
 
                                                     final String roleName = c.getArgument("Role", String.class);
@@ -221,12 +222,12 @@ public class FactionRoleCommand extends BaseFactionCommand {
         return Commands.literal("list")
                 .requires(commandSourceStack -> {
                     final ServerPlayer player = commandSourceStack.getPlayer();
-                    final FactionPlayer fPlayer = getPlayerOrTemplate(player);
+                    final FactionPlayer fPlayer = FactionCommandUtils.getPlayerOrTemplate(player);
                     return DatPermissions.hasPermission(player, FACTION_ROLE_LIST) && fPlayer.getRole().hasPermission(ERolePermissions.ROLELIST);
                 })
                 .executes(c -> {
                     final ServerPlayer player = c.getSource().getPlayer();
-                    final Faction faction = getPlayerOrTemplate(player).getFaction();
+                    final Faction faction = FactionCommandUtils.getPlayerOrTemplate(player).getFaction();
                     final MutableComponent message = Component.empty()
                             .append(
                                     faction.getNameWithDescription(faction)
@@ -253,7 +254,7 @@ public class FactionRoleCommand extends BaseFactionCommand {
         return Commands.literal("info")
                 .requires(commandSourceStack -> {
                     final ServerPlayer player = commandSourceStack.getPlayer();
-                    final FactionPlayer fPlayer = getPlayerOrTemplate(player);
+                    final FactionPlayer fPlayer = FactionCommandUtils.getPlayerOrTemplate(player);
                     return DatPermissions.hasPermission(player, FACTION_ROLE_INFO) && fPlayer.getRole().hasPermission(ERolePermissions.ROLEINFO);
                 })
                 .then(
@@ -261,7 +262,7 @@ public class FactionRoleCommand extends BaseFactionCommand {
                                 .suggests(new FactionRoleSuggestionProvider(false, true))
                                 .executes(c -> {
                                     final ServerPlayer player = c.getSource().getPlayer();
-                                    final FactionPlayer fPlayer = getPlayerOrTemplate(player);
+                                    final FactionPlayer fPlayer = FactionCommandUtils.getPlayerOrTemplate(player);
                                     final Faction faction = fPlayer.getFaction();
 
                                     final String roleName = c.getArgument("Role", String.class);
@@ -279,7 +280,7 @@ public class FactionRoleCommand extends BaseFactionCommand {
                 )
                 .executes(c -> {
                     final ServerPlayer player = c.getSource().getPlayer();
-                    final FactionPlayer fPlayer = getPlayerOrTemplate(player);
+                    final FactionPlayer fPlayer = FactionCommandUtils.getPlayerOrTemplate(player);
 
                     final FactionRole role = fPlayer.getRole();
 
@@ -296,7 +297,7 @@ public class FactionRoleCommand extends BaseFactionCommand {
         return Commands.literal("permissions")
                 .requires(commandSourceStack -> {
                     final ServerPlayer player = commandSourceStack.getPlayer();
-                    final FactionPlayer fPlayer = getPlayerOrTemplate(player);
+                    final FactionPlayer fPlayer = FactionCommandUtils.getPlayerOrTemplate(player);
                     return DatPermissions.hasPermission(player, FACTION_ROLE_MODIFY_PERMISSIONS) && fPlayer.getRole().hasPermission(ERolePermissions.ROLEMODIFYPERMISSIONS);
                 })
                 .then(
@@ -308,7 +309,7 @@ public class FactionRoleCommand extends BaseFactionCommand {
                                 .then(buildRolePermissionsSetAdminCommand())
                                 .executes(c -> {
                                     final ServerPlayer player = c.getSource().getPlayer();
-                                    final FactionPlayer fPlayer = getPlayerOrTemplate(player);
+                                    final FactionPlayer fPlayer = FactionCommandUtils.getPlayerOrTemplate(player);
                                     final Faction faction = fPlayer.getFaction();
 
                                     final String roleName = c.getArgument("Role", String.class);
@@ -328,7 +329,7 @@ public class FactionRoleCommand extends BaseFactionCommand {
         return Commands.literal("list")
                 .executes(c -> {
                     final ServerPlayer player = c.getSource().getPlayer();
-                    final FactionPlayer fPlayer = getPlayerOrTemplate(player);
+                    final FactionPlayer fPlayer = FactionCommandUtils.getPlayerOrTemplate(player);
                     final Faction faction = fPlayer.getFaction();
 
                     final String roleName = c.getArgument("Role", String.class);
@@ -377,7 +378,7 @@ public class FactionRoleCommand extends BaseFactionCommand {
                                 .suggests(DatSuggestionProviders.permissionProvider)
                                 .executes(c -> {
                                     final ServerPlayer player = c.getSource().getPlayer();
-                                    final FactionPlayer fPlayer = getPlayerOrTemplate(player);
+                                    final FactionPlayer fPlayer = FactionCommandUtils.getPlayerOrTemplate(player);
                                     final Faction faction = fPlayer.getFaction();
 
                                     final String roleName = c.getArgument("Role", String.class);
@@ -432,7 +433,7 @@ public class FactionRoleCommand extends BaseFactionCommand {
                                 .suggests(DatSuggestionProviders.permissionProvider)
                                 .executes(c -> {
                                     final ServerPlayer player = c.getSource().getPlayer();
-                                    final FactionPlayer fPlayer = getPlayerOrTemplate(player);
+                                    final FactionPlayer fPlayer = FactionCommandUtils.getPlayerOrTemplate(player);
                                     final Faction faction = fPlayer.getFaction();
 
                                     final String roleName = c.getArgument("Role", String.class);
@@ -484,14 +485,14 @@ public class FactionRoleCommand extends BaseFactionCommand {
         return Commands.literal("setadmin")
                 .requires(commandSourceStack -> {
                     final ServerPlayer player = commandSourceStack.getPlayer();
-                    final FactionPlayer fPlayer = getPlayerOrTemplate(player);
+                    final FactionPlayer fPlayer = FactionCommandUtils.getPlayerOrTemplate(player);
                     return fPlayer.getRole().isAdministrator();
                 })
                 .then(
                         Commands.argument("Admin", BoolArgumentType.bool())
                                 .executes(c -> {
                                     final ServerPlayer player = c.getSource().getPlayer();
-                                    final FactionPlayer fPlayer = getPlayerOrTemplate(player);
+                                    final FactionPlayer fPlayer = FactionCommandUtils.getPlayerOrTemplate(player);
                                     final Faction faction = fPlayer.getFaction();
 
                                     final String roleName = c.getArgument("Role", String.class);
@@ -531,7 +532,7 @@ public class FactionRoleCommand extends BaseFactionCommand {
         return Commands.literal("reorder")
                 .requires(commandSourceStack -> {
                     final ServerPlayer player = commandSourceStack.getPlayer();
-                    final FactionPlayer fPlayer = getPlayerOrTemplate(player);
+                    final FactionPlayer fPlayer = FactionCommandUtils.getPlayerOrTemplate(player);
                     return DatPermissions.hasPermission(player, FACTION_ROLE_REORDER) && fPlayer.getRole().hasPermission(ERolePermissions.ROLEREORDER);
                 })
                 .then(
@@ -542,7 +543,7 @@ public class FactionRoleCommand extends BaseFactionCommand {
                                                 .suggests(new FactionRoleSuggestionProvider(true, true))
                                                 .executes(c -> {
                                                     final ServerPlayer player = c.getSource().getPlayer();
-                                                    final FactionPlayer fPlayer = getPlayerOrTemplate(player);
+                                                    final FactionPlayer fPlayer = FactionCommandUtils.getPlayerOrTemplate(player);
                                                     final Faction faction = fPlayer.getFaction();
 
                                                     final String roleName = c.getArgument("Role", String.class);

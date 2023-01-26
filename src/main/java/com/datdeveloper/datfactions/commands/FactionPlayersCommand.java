@@ -5,6 +5,7 @@ import com.datdeveloper.datfactions.api.events.FactionPlayerChangeMembershipEven
 import com.datdeveloper.datfactions.api.events.FactionPlayerChangeRoleEvent;
 import com.datdeveloper.datfactions.commands.suggestions.FactionRoleSuggestionProvider;
 import com.datdeveloper.datfactions.commands.suggestions.OwnFPlayerSuggestionProvider;
+import com.datdeveloper.datfactions.commands.util.FactionCommandUtils;
 import com.datdeveloper.datfactions.factionData.FPlayerCollection;
 import com.datdeveloper.datfactions.factionData.Faction;
 import com.datdeveloper.datfactions.factionData.FactionPlayer;
@@ -32,14 +33,14 @@ import java.util.List;
 
 import static com.datdeveloper.datfactions.commands.FactionPermissions.*;
 
-public class FactionPlayersCommand extends BaseFactionCommand {
+public class FactionPlayersCommand {
     static void register(final LiteralArgumentBuilder<CommandSourceStack> command) {
 
         final LiteralArgumentBuilder<CommandSourceStack> subCommand = Commands.literal("players")
                 .requires(commandSourceStack -> {
                     if (!(commandSourceStack.isPlayer() && DatPermissions.hasAnyPermissions(commandSourceStack.getPlayer(), FACTION_LIST_PLAYERS, FACTION_PROMOTE, FACTION_DEMOTE, FACTION_SET_ROLE, FACTION_SET_OWNER, FACTION_KICK)))
                         return false;
-                    final FactionPlayer fPlayer = getPlayerOrTemplate(commandSourceStack.getPlayer());
+                    final FactionPlayer fPlayer = FactionCommandUtils.getPlayerOrTemplate(commandSourceStack.getPlayer());
                     final Faction faction = fPlayer.getFaction();
                     return faction != null && fPlayer.getRole().hasAnyPermissions(ERolePermissions.LISTPLAYERS, ERolePermissions.PROMOTE, ERolePermissions.DEMOTE, ERolePermissions.SETROLE, ERolePermissions.KICK);
                 })
@@ -61,7 +62,7 @@ public class FactionPlayersCommand extends BaseFactionCommand {
         return Commands.literal("list")
                 .requires(commandSourceStack -> {
                     final ServerPlayer player = commandSourceStack.getPlayer();
-                    final FactionPlayer fPlayer = getPlayerOrTemplate(player);
+                    final FactionPlayer fPlayer = FactionCommandUtils.getPlayerOrTemplate(player);
                     return DatPermissions.hasPermission(player, FACTION_LIST_PLAYERS) && fPlayer.getRole().hasPermission(ERolePermissions.LISTPLAYERS);
                 })
                 .then(
@@ -73,7 +74,7 @@ public class FactionPlayersCommand extends BaseFactionCommand {
 
     private static int executeList(final CommandSourceStack sourceStack, final int page) {
         final ServerPlayer player = sourceStack.getPlayer();
-        final FactionPlayer fPlayer = getPlayerOrTemplate(player);
+        final FactionPlayer fPlayer = FactionCommandUtils.getPlayerOrTemplate(player);
         final Faction faction = fPlayer.getFaction();
 
         AsyncHandler.runAsyncTask(() -> {
@@ -117,7 +118,7 @@ public class FactionPlayersCommand extends BaseFactionCommand {
         return Commands.literal("promote")
                 .requires(commandSourceStack -> {
                     final ServerPlayer player = commandSourceStack.getPlayer();
-                    final FactionPlayer fPlayer = getPlayerOrTemplate(player);
+                    final FactionPlayer fPlayer = FactionCommandUtils.getPlayerOrTemplate(player);
                     return DatPermissions.hasPermission(player, FACTION_PROMOTE) && fPlayer.getRole().hasPermission(ERolePermissions.PROMOTE);
                 })
                 .then(
@@ -125,7 +126,7 @@ public class FactionPlayersCommand extends BaseFactionCommand {
                                 .suggests(new OwnFPlayerSuggestionProvider(true))
                                 .executes(c -> {
                                     final ServerPlayer player = c.getSource().getPlayer();
-                                    final FactionPlayer fPlayer = getPlayerOrTemplate(player);
+                                    final FactionPlayer fPlayer = FactionCommandUtils.getPlayerOrTemplate(player);
                                     final Faction faction = fPlayer.getFaction();
 
                                     final String targetName = c.getArgument("Target Player", String.class);
@@ -166,7 +167,7 @@ public class FactionPlayersCommand extends BaseFactionCommand {
         return Commands.literal("demote")
                 .requires(commandSourceStack -> {
                     final ServerPlayer player = commandSourceStack.getPlayer();
-                    final FactionPlayer fPlayer = getPlayerOrTemplate(player);
+                    final FactionPlayer fPlayer = FactionCommandUtils.getPlayerOrTemplate(player);
                     return DatPermissions.hasPermission(player, FACTION_DEMOTE) && fPlayer.getRole().hasPermission(ERolePermissions.DEMOTE);
                 })
                 .then(
@@ -174,7 +175,7 @@ public class FactionPlayersCommand extends BaseFactionCommand {
                                 .suggests(new OwnFPlayerSuggestionProvider(true))
                                 .executes(c -> {
                                     final ServerPlayer player = c.getSource().getPlayer();
-                                    final FactionPlayer fPlayer = getPlayerOrTemplate(player);
+                                    final FactionPlayer fPlayer = FactionCommandUtils.getPlayerOrTemplate(player);
                                     final Faction faction = fPlayer.getFaction();
 
                                     final String targetName = c.getArgument("Target Player", String.class);
@@ -221,7 +222,7 @@ public class FactionPlayersCommand extends BaseFactionCommand {
         return Commands.literal("setrole")
                 .requires(commandSourceStack -> {
                     final ServerPlayer player = commandSourceStack.getPlayer();
-                    final FactionPlayer fPlayer = getPlayerOrTemplate(player);
+                    final FactionPlayer fPlayer = FactionCommandUtils.getPlayerOrTemplate(player);
                     return DatPermissions.hasPermission(player, FACTION_SET_ROLE) && fPlayer.getRole().hasPermission(ERolePermissions.SETROLE);
                 })
                 .then(
@@ -232,7 +233,7 @@ public class FactionPlayersCommand extends BaseFactionCommand {
                                                 .suggests(new FactionRoleSuggestionProvider(true, false))
                                                 .executes(c -> {
                                                     final ServerPlayer player = c.getSource().getPlayer();
-                                                    final FactionPlayer fPlayer = getPlayerOrTemplate(player);
+                                                    final FactionPlayer fPlayer = FactionCommandUtils.getPlayerOrTemplate(player);
                                                     final Faction faction = fPlayer.getFaction();
 
                                                     final String targetName = c.getArgument("Target Player", String.class);
@@ -269,7 +270,7 @@ public class FactionPlayersCommand extends BaseFactionCommand {
         return Commands.literal("setowner")
                 .requires(commandSourceStack -> {
                     final ServerPlayer player = commandSourceStack.getPlayer();
-                    final FactionPlayer fPlayer = getPlayerOrTemplate(player);
+                    final FactionPlayer fPlayer = FactionCommandUtils.getPlayerOrTemplate(player);
                     return DatPermissions.hasPermission(player, FACTION_SET_OWNER) && fPlayer.getRole().equals(fPlayer.getFaction().getOwnerRole());
                 })
                 .then(
@@ -277,7 +278,7 @@ public class FactionPlayersCommand extends BaseFactionCommand {
                                 .suggests(new OwnFPlayerSuggestionProvider(true))
                                 .executes(c -> {
                                     final ServerPlayer player = c.getSource().getPlayer();
-                                    final FactionPlayer fPlayer = getPlayerOrTemplate(player);
+                                    final FactionPlayer fPlayer = FactionCommandUtils.getPlayerOrTemplate(player);
                                     final Faction faction = fPlayer.getFaction();
 
                                     final String targetName = c.getArgument("Target Player", String.class);
@@ -338,7 +339,7 @@ public class FactionPlayersCommand extends BaseFactionCommand {
         return Commands.literal("kick")
                 .requires(commandSourceStack -> {
                     final ServerPlayer player = commandSourceStack.getPlayer();
-                    final FactionPlayer fPlayer = getPlayerOrTemplate(player);
+                    final FactionPlayer fPlayer = FactionCommandUtils.getPlayerOrTemplate(player);
                     return DatPermissions.hasPermission(player, FACTION_KICK) && fPlayer.getRole().hasPermission(ERolePermissions.KICK);
                 })
                 .then(
@@ -346,7 +347,7 @@ public class FactionPlayersCommand extends BaseFactionCommand {
                                 .suggests(new OwnFPlayerSuggestionProvider(true))
                                 .executes(c -> {
                                     final ServerPlayer player = c.getSource().getPlayer();
-                                    final FactionPlayer fPlayer = getPlayerOrTemplate(player);
+                                    final FactionPlayer fPlayer = FactionCommandUtils.getPlayerOrTemplate(player);
                                     final Faction faction = fPlayer.getFaction();
 
                                     final String targetName = c.getArgument("Target Player", String.class);

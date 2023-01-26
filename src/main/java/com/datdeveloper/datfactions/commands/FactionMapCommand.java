@@ -13,7 +13,7 @@ import net.minecraft.world.level.ChunkPos;
 
 import static com.datdeveloper.datfactions.commands.FactionPermissions.FACTION_MAP;
 
-public class FactionMapCommand extends BaseFactionCommand {
+public class FactionMapCommand {
     static void register(final LiteralArgumentBuilder<CommandSourceStack> command) {
         final LiteralCommandNode<CommandSourceStack> subCommand = Commands.literal("map")
                 .requires((source) -> source.source instanceof ServerPlayer && DatPermissions.hasPermission(source.source, FACTION_MAP))

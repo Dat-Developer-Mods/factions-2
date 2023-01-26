@@ -8,11 +8,6 @@ import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 public class FactionsCommand {
-    @SubscribeEvent
-    public void registerCommands(final RegisterCommandsEvent event) {
-        register(event.getDispatcher());
-    }
-
     public static void register(final CommandDispatcher<CommandSourceStack> dispatcher) {
         final LiteralArgumentBuilder<CommandSourceStack> command = LiteralArgumentBuilder.literal("factions");
         FactionListCommand.register(command);

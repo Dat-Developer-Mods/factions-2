@@ -19,14 +19,14 @@ import net.minecraftforge.common.MinecraftForge;
 
 import static com.datdeveloper.datfactions.commands.FactionPermissions.FACTION_LEAVE;
 
-public class FactionLeaveCommand extends BaseFactionCommand {
+public class FactionLeaveCommand {
     static void register(final LiteralArgumentBuilder<CommandSourceStack> command) {
 
         final LiteralCommandNode<CommandSourceStack> subCommand = Commands.literal("leave")
                 .requires(commandSourceStack -> {
                     if (!(commandSourceStack.isPlayer() && DatPermissions.hasPermission(commandSourceStack.getPlayer(), FACTION_LEAVE)))
                         return false;
-                    final FactionPlayer fPlayer1 = getPlayerOrTemplate(commandSourceStack.getPlayer());
+                    final FactionPlayer fPlayer1 = FactionCommandUtils.getPlayerOrTemplate(commandSourceStack.getPlayer());
                     return fPlayer1.hasFaction();
                 })
                 .executes(c -> {
@@ -64,6 +64,6 @@ public class FactionLeaveCommand extends BaseFactionCommand {
                 }).build();
 
         command.then(subCommand);
-        command.then(buildRedirect("quit", subCommand));
+        command.then(FactionCommandUtils.buildRedirect("quit", subCommand));
     }
 }

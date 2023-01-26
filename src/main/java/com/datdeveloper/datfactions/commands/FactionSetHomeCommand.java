@@ -1,6 +1,7 @@
 package com.datdeveloper.datfactions.commands;
 
 import com.datdeveloper.datfactions.api.events.FactionSetHomeEvent;
+import com.datdeveloper.datfactions.commands.util.FactionCommandUtils;
 import com.datdeveloper.datfactions.factionData.*;
 import com.datdeveloper.datfactions.factionData.permissions.ERolePermissions;
 import com.datdeveloper.datmoddingapi.permissions.DatPermissions;
@@ -17,14 +18,14 @@ import net.minecraftforge.common.MinecraftForge;
 
 import static com.datdeveloper.datfactions.commands.FactionPermissions.FACTION_SET_HOME;
 
-public class FactionSetHomeCommand extends BaseFactionCommand {
+public class FactionSetHomeCommand {
     static void register(final LiteralArgumentBuilder<CommandSourceStack> command) {
 
         final LiteralCommandNode<CommandSourceStack> subCommand = Commands.literal("sethome")
                 .requires(commandSourceStack -> {
                     if (!(commandSourceStack.isPlayer() && DatPermissions.hasPermission(commandSourceStack.getPlayer(), FACTION_SET_HOME)))
                         return false;
-                    final FactionPlayer fPlayer1 = getPlayerOrTemplate(commandSourceStack.getPlayer());
+                    final FactionPlayer fPlayer1 = FactionCommandUtils.getPlayerOrTemplate(commandSourceStack.getPlayer());
                     return fPlayer1.hasFaction() && fPlayer1.getRole().hasPermission(ERolePermissions.SETHOME);
                 })
                 .executes(c -> {

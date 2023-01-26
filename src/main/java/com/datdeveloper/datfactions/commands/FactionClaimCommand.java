@@ -1,5 +1,6 @@
 package com.datdeveloper.datfactions.commands;
 
+import com.datdeveloper.datfactions.commands.util.FactionCommandUtils;
 import com.datdeveloper.datfactions.factionData.*;
 import com.datdeveloper.datfactions.factionData.permissions.ERolePermissions;
 import com.datdeveloper.datfactions.util.ClaimUtil;
@@ -17,21 +18,21 @@ import net.minecraft.world.level.ChunkPos;
 
 import java.util.*;
 
-public class FactionClaimCommand extends BaseFactionCommand {
+public class FactionClaimCommand {
     static void register(final LiteralArgumentBuilder<CommandSourceStack> command) {
 
         final LiteralCommandNode<CommandSourceStack> claimCommand = Commands.literal("claim")
                 .requires(commandSourceStack1 -> {
                     if (!(commandSourceStack1.isPlayer() && DatPermissions.hasAnyPermissions(commandSourceStack1.source, FactionPermissions.FACTION_CLAIM_ONE, FactionPermissions.FACTION_CLAIM_SQUARE, FactionPermissions.FACTION_CLAIM_AUTO)))
                         return false;
-                    final FactionPlayer fPlayer1 = getPlayerOrTemplate(commandSourceStack1.getPlayer());
+                    final FactionPlayer fPlayer1 = FactionCommandUtils.getPlayerOrTemplate(commandSourceStack1.getPlayer());
                     return fPlayer1.hasFaction() && fPlayer1.getRole().hasAnyPermissions(ERolePermissions.CLAIMONE, ERolePermissions.CLAIMSQUARE, ERolePermissions.AUTOCLAIM);
                 })
                 .then(
                         Commands.literal("one")
                                 .requires(commandSourceStack -> {
                                     final ServerPlayer player = commandSourceStack.getPlayer();
-                                    final FactionPlayer fPlayer = getPlayerOrTemplate(player);
+                                    final FactionPlayer fPlayer = FactionCommandUtils.getPlayerOrTemplate(player);
                                     return DatPermissions.hasPermission(player, FactionPermissions.FACTION_CLAIM_ONE) && fPlayer.getRole().hasPermission(ERolePermissions.CLAIMONE);
                                 })
                                 .executes(c -> {
@@ -45,7 +46,7 @@ public class FactionClaimCommand extends BaseFactionCommand {
                         Commands.literal("square")
                                 .requires(commandSourceStack -> {
                                     final ServerPlayer player = commandSourceStack.getPlayer();
-                                    final FactionPlayer fPlayer = getPlayerOrTemplate(player);
+                                    final FactionPlayer fPlayer = FactionCommandUtils.getPlayerOrTemplate(player);
                                     return DatPermissions.hasPermission(player, FactionPermissions.FACTION_CLAIM_SQUARE) && fPlayer.getRole().hasPermission(ERolePermissions.CLAIMSQUARE);
                                 })
                                 .then(
@@ -82,12 +83,12 @@ public class FactionClaimCommand extends BaseFactionCommand {
                         Commands.literal("auto")
                                 .requires(commandSourceStack -> {
                                     final ServerPlayer player = commandSourceStack.getPlayer();
-                                    final FactionPlayer fPlayer = getPlayerOrTemplate(player);
+                                    final FactionPlayer fPlayer = FactionCommandUtils.getPlayerOrTemplate(player);
                                     return DatPermissions.hasPermission(player, FactionPermissions.FACTION_CLAIM_AUTO) && fPlayer.getRole().hasPermission(ERolePermissions.AUTOCLAIM);
                                 })
                                 .executes(c -> {
                                     final ServerPlayer player = c.getSource().getPlayer();
-                                    final FactionPlayer fPlayer = getPlayerOrTemplate(player);
+                                    final FactionPlayer fPlayer = FactionCommandUtils.getPlayerOrTemplate(player);
 
                                     final boolean autoClaim = fPlayer.isAutoClaim();
                                     if (autoClaim) {

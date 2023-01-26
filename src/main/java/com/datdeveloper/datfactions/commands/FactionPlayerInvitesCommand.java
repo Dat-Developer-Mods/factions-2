@@ -1,5 +1,6 @@
 package com.datdeveloper.datfactions.commands;
 
+import com.datdeveloper.datfactions.commands.util.FactionCommandUtils;
 import com.datdeveloper.datfactions.factionData.FPlayerCollection;
 import com.datdeveloper.datfactions.factionData.Faction;
 import com.datdeveloper.datfactions.factionData.FactionCollection;
@@ -21,7 +22,7 @@ import java.util.stream.Collectors;
 
 import static com.datdeveloper.datfactions.commands.FactionPermissions.FACTION_PLAYER_INVITES;
 
-public class FactionPlayerInvitesCommand extends BaseFactionCommand {
+public class FactionPlayerInvitesCommand {
     static void register(final LiteralArgumentBuilder<CommandSourceStack> command) {
         final LiteralCommandNode<CommandSourceStack> subCommand = Commands.literal("myinvites")
                 .requires(FactionPermissions.hasPermission(FACTION_PLAYER_INVITES))
@@ -31,8 +32,8 @@ public class FactionPlayerInvitesCommand extends BaseFactionCommand {
                 .build();
 
         command.then(subCommand);
-        command.then(buildRedirect("pinvites", subCommand));
-        command.then(buildRedirect("playerinvites", subCommand));
+        command.then(FactionCommandUtils.buildRedirect("pinvites", subCommand));
+        command.then(FactionCommandUtils.buildRedirect("playerinvites", subCommand));
     }
 
     private static int execute(final CommandContext<CommandSourceStack> context, final int page) {

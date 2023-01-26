@@ -1,6 +1,7 @@
 package com.datdeveloper.datfactions.commands;
 
 import com.datdeveloper.datfactions.commands.suggestions.DatSuggestionProviders;
+import com.datdeveloper.datfactions.commands.util.FactionCommandUtils;
 import com.datdeveloper.datfactions.factionData.FPlayerCollection;
 import com.datdeveloper.datfactions.factionData.FactionPlayer;
 import com.datdeveloper.datmoddingapi.asyncTask.AsyncHandler;
@@ -15,7 +16,7 @@ import net.minecraft.network.chat.Component;
 
 import static com.datdeveloper.datfactions.commands.FactionPermissions.FACTION_PLAYER_INFO;
 
-public class FactionPlayerInfoCommand extends BaseFactionCommand {
+public class FactionPlayerInfoCommand {
     static void register(final LiteralArgumentBuilder<CommandSourceStack> command) {
         final LiteralCommandNode<CommandSourceStack> subCommand = Commands.literal("playerinfo")
                 .requires(FactionPermissions.hasPermission(FACTION_PLAYER_INFO))
@@ -42,8 +43,8 @@ public class FactionPlayerInfoCommand extends BaseFactionCommand {
                 .build();
 
         command.then(subCommand);
-        command.then(buildRedirect("pinfo", subCommand));
-        command.then(buildRedirect("showplayer", subCommand));
+        command.then(FactionCommandUtils.buildRedirect("pinfo", subCommand));
+        command.then(FactionCommandUtils.buildRedirect("showplayer", subCommand));
     }
 
     static int execute(final CommandContext<CommandSourceStack> context, final FactionPlayer player, final FactionPlayer target) {
