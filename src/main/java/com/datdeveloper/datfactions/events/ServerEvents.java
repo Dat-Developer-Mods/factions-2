@@ -16,6 +16,7 @@ import net.minecraft.world.Container;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.piston.PistonStructureResolver;
 import net.minecraftforge.common.util.BlockSnapshot;
 import net.minecraftforge.common.util.FakePlayer;
@@ -283,6 +284,34 @@ public class ServerEvents {
 //                        )
 //        );
         event.setUseBlock(Event.Result.DENY);
+    }
+
+    /**
+     * Prevents players from modifying a block's state using a tool
+     */
+    @SubscribeEvent
+    public static void preventToolInteraction(final BlockEvent.BlockToolModificationEvent event) {
+        if (!(event.getPlayer() instanceof ServerPlayer player) || player instanceof FakePlayer) return;
+        final FactionPlayer fPlayer = FPlayerCollection.getInstance().getPlayer(player);
+
+        final FactionLevel level = FLevelCollection.getInstance().getByKey(event.getPlayer().getLevel().dimension());
+        final Faction chunkOwner = level.getChunkOwningFaction(new ChunkPos(event.getPos()));
+
+        if (checkPlayerHasBuildPermission(
+                fPlayer,
+                chunkOwner,
+                ERolePermissions.INTERACT
+        )) return;
+
+        final Faction faction = fPlayer.getFaction();
+        fPlayer.sendHotbarMessage(
+                Component.literal(DatChatFormatting.TextColour.ERROR + "You do not have permission to interact with blocks owned by ")
+                        .append(
+                                chunkOwner.getNameWithDescription(faction)
+                                        .withStyle(RelationUtil.getRelation(faction, chunkOwner).formatting)
+                        )
+        );
+        event.setCanceled(true);
     }
 
 
