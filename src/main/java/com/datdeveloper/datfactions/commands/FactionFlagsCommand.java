@@ -1,6 +1,7 @@
 package com.datdeveloper.datfactions.commands;
 
 import com.datdeveloper.datfactions.FactionsConfig;
+import com.datdeveloper.datfactions.api.events.FactionChangeFlagsEvent;
 import com.datdeveloper.datfactions.commands.suggestions.DatSuggestionProviders;
 import com.datdeveloper.datfactions.commands.util.FactionCommandUtils;
 import com.datdeveloper.datfactions.factionData.EFactionFlags;
@@ -19,6 +20,10 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraftforge.common.MinecraftForge;
+
+import java.util.HashSet;
+import java.util.Set;
 
 import static com.datdeveloper.datfactions.commands.FactionPermissions.*;
 
@@ -102,13 +107,18 @@ public class FactionFlagsCommand {
                                     final FactionPlayer fPlayer = FactionCommandUtils.getPlayerOrTemplate(player);
                                     final Faction faction = fPlayer.getFaction();
 
-                                    final EFactionFlags flag;
+                                    final Set<EFactionFlags> flags = new HashSet<>();
                                     try {
-                                        flag = EFactionFlags.valueOf(c.getArgument("Flag", String.class).toUpperCase());
+                                        flags.add(EFactionFlags.valueOf(c.getArgument("Flag", String.class).toUpperCase()));
                                     } catch (final IllegalArgumentException ignored) {
                                         c.getSource().sendFailure(Component.literal("Unknown Flag"));
                                         return 2;
                                     }
+
+
+
+                                    final FactionChangeFlagsEvent.PreAdd pre = new FactionChangeFlagsEvent.PreAdd(c.getSource().source, faction, flags);
+                                    MinecraftForge.EVENT_BUS.post(pre);
 
                                     if (flag.admin || !FactionsConfig.getFlagWhitelisted(flag)) {
                                         c.getSource().sendFailure(Component.literal("You're not allowed to use that flag"));

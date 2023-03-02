@@ -33,20 +33,25 @@ public class FactionDescriptionCommand {
                 .then(Commands.argument("Description", StringArgumentType.greedyString())
                         .executes(c -> {
                             final String newDescription = c.getArgument("Description", String.class);
+                            final FactionPlayer fPlayer = FPlayerCollection.getInstance().getPlayer(c.getSource().getPlayer());
+                            final Faction faction = fPlayer.getFaction();
 
-                            if (newDescription.length() > FactionsConfig.getMaxFactionNameLength()) {
+                            final FactionChangeDescriptionEvent.Pre pre = new FactionChangeDescriptionEvent.Pre(c.getSource().source, faction, newDescription);
+                            MinecraftForge.EVENT_BUS.post(pre);
+                            if (pre.isCanceled()) return 0;
+
+                            if (!pre.isSkipDefaultChecks() && newDescription.length() > FactionsConfig.getMaxFactionNameLength()) {
                                 c.getSource().sendFailure(Component.literal("Your faction description cannot be longer than " + FactionsConfig.getMaxFactionDescriptionLength()));
                                 return 2;
                             }
 
-                            final FactionPlayer fPlayer = FPlayerCollection.getInstance().getPlayer(c.getSource().getPlayer());
-                            final Faction faction = fPlayer.getFaction();
+                            final String oldDescription = faction.getDescription();
 
-                            final FactionChangeDescriptionEvent event = new FactionChangeDescriptionEvent(c.getSource().source, faction, newDescription);
-                            MinecraftForge.EVENT_BUS.post(event);
-                            if (event.isCanceled()) return 0;
+                            faction.setDescription(pre.getNewDescription());
 
-                            faction.setDescription(event.getNewDescription());
+                            final FactionChangeDescriptionEvent.Post post = new FactionChangeDescriptionEvent.Post(c.getSource().source, faction, pre.getNewDescription(), oldDescription);
+                            MinecraftForge.EVENT_BUS.post(post);
+
                             c.getSource().sendSuccess(MutableComponent.create(ComponentContents.EMPTY)
                                     .append(DatChatFormatting.TextColour.INFO + "Successfully set your faction's description")
                             ,false);
