@@ -97,56 +97,56 @@ public class FactionPermissions {
     /* ========================================= */
 
     // Player
-    public static final PermissionNode<Boolean> ADMIN_PLAYER_SETPOWER = createNode("datfactions.admin.player.setpower");
-    public static final PermissionNode<Boolean> ADMIN_PLAYER_SETMAXPOWER = createNode("datfactions.admin.player.setmaxpower");
-    public static final PermissionNode<Boolean> ADMIN_PLAYER_SETFACTION = createNode("datfactions.admin.player.setfaction");
-    public static final PermissionNode<Boolean> ADMIN_PLAYER_SETROLE = createNode("datfactions.admin.player.setrole");
-    public static final PermissionNode<Boolean> ADMIN_PLAYER_SETAUTOCLAIM = createNode("datfactions.admin.player.setautoclaim");
-    public static final PermissionNode<Boolean> ADMIN_PLAYER_SETCHATMODE = createNode("datfactions.admin.player.setchatmode");
-    public static final PermissionNode<Boolean> ADMIN_PLAYER_SETCHUNKALERTMODE = createNode("datfactions.admin.player.setchunkalertmode");
-    public static final PermissionNode<Boolean> ADMIN_PLAYER_DELETE = createNode("datfactions.admin.player.delete");
+    public static final PermissionNode<Boolean> ADMIN_PLAYER_SETPOWER = createOpNode("datfactions.admin.player.setpower");
+    public static final PermissionNode<Boolean> ADMIN_PLAYER_SETMAXPOWER = createOpNode("datfactions.admin.player.setmaxpower");
+    public static final PermissionNode<Boolean> ADMIN_PLAYER_SETFACTION = createModNode("datfactions.admin.player.setfaction");
+    public static final PermissionNode<Boolean> ADMIN_PLAYER_SETROLE = createModNode("datfactions.admin.player.setrole");
+    public static final PermissionNode<Boolean> ADMIN_PLAYER_SETAUTOCLAIM = createOpNode("datfactions.admin.player.setautoclaim");
+    public static final PermissionNode<Boolean> ADMIN_PLAYER_SETCHATMODE = createOpNode("datfactions.admin.player.setchatmode");
+    public static final PermissionNode<Boolean> ADMIN_PLAYER_SETCHUNKALERTMODE = createOpNode("datfactions.admin.player.setchunkalertmode");
+    public static final PermissionNode<Boolean> ADMIN_PLAYER_DELETE = createOpNode("datfactions.admin.player.delete");
 
     // Faction
-    public static final PermissionNode<Boolean> ADMIN_FACTION_SETNAME = createNode("datfactions.admin.faction.setname");
-    public static final PermissionNode<Boolean> ADMIN_FACTION_SETDESCRIPTION = createNode("datfactions.admin.faction.setdescription");
-    public static final PermissionNode<Boolean> ADMIN_FACTION_SETMOTD = createNode("datfactions.admin.faction.setmotd");
-    public static final PermissionNode<Boolean> ADMIN_FACTION_SETBONUSPOWER = createNode("datfactions.admin.faction.setbonuspower");
-    public static final PermissionNode<Boolean> ADMIN_FACTION_SETHOME = createNode("datfactions.admin.faction.sethome.self");
-    public static final PermissionNode<Boolean> ADMIN_FACTION_SETHOMECOORD = createNode("datfactions.admin.faction.sethome.coord");
-    public static final PermissionNode<Boolean> ADMIN_FACTION_INVITE_LIST = createNode("datfactions.admin.faction.invites.list");
-    public static final PermissionNode<Boolean> ADMIN_FACTION_INVITE_ADD = createNode("datfactions.admin.faction.invites.add");
-    public static final PermissionNode<Boolean> ADMIN_FACTION_INVITE_REMOVE = createNode("datfactions.admin.faction.invites.remove");
-    public static final PermissionNode<Boolean> ADMIN_FACTION_ROLE_LIST = createNode("datfactions.admin.faction.role.list");
-    public static final PermissionNode<Boolean> ADMIN_FACTION_ROLE_ADD = createNode("datfactions.admin.faction.role.add");
-    public static final PermissionNode<Boolean> ADMIN_FACTION_ROLE_REMOVE = createNode("datfactions.admin.faction.role.remove");
-    public static final PermissionNode<Boolean> ADMIN_FACTION_ROLE_REORDER = createNode("datfactions.admin.faction.role.reorder");
-    public static final PermissionNode<Boolean> ADMIN_FACTION_ROLE_PERMISSIONS = createNode("datfactions.admin.faction.role.permissions");
-    public static final PermissionNode<Boolean> ADMIN_FACTION_FLAG_LIST = createNode("datfactions.admin.faction.flag.list");
-    public static final PermissionNode<Boolean> ADMIN_FACTION_FLAG_ADD = createNode("datfactions.admin.faction.flag.add");
-    public static final PermissionNode<Boolean> ADMIN_FACTION_FLAG_REMOVE = createNode("datfactions.admin.faction.flag.remove");
-    public static final PermissionNode<Boolean> ADMIN_FACTION_RELATIONS_LISTS = createNode("datfactions.admin.faction.relation.list");
-    public static final PermissionNode<Boolean> ADMIN_FACTION_RELATIONS_SET = createNode("datfactions.admin.faction.relation.set");
-    public static final PermissionNode<Boolean> ADMIN_FACTION_PLAYER_LIST = createNode("datfactions.admin.faction.player.list");
-    public static final PermissionNode<Boolean> ADMIN_FACTION_PLAYER_KICK = createNode("datfactions.admin.faction.player.kick");
-    public static final PermissionNode<Boolean> ADMIN_FACTION_PLAYER_SETOWNER = createNode("datfactions.admin.faction.player.setowner");
-    public static final PermissionNode<Boolean> ADMIN_FACTION_PLAYER_SETROLE = createNode("datfactions.admin.faction.player.setrole");
-    public static final PermissionNode<Boolean> ADMIN_FACTION_CLAIM_ONE = createNode("datfactions.admin.faction.claim.one");
-    public static final PermissionNode<Boolean> ADMIN_FACTION_CLAIM_SQUARE = createNode("datfactions.admin.faction.claim.square");
-    public static final PermissionNode<Boolean> ADMIN_FACTION_UNCLAIM_ONE = createNode("datfactions.admin.faction.unclaim.one");
-    public static final PermissionNode<Boolean> ADMIN_FACTION_UNCLAIM_SQUARE = createNode("datfactions.admin.faction.unclaim.square");
-    public static final PermissionNode<Boolean> ADMIN_FACTION_UNCLAIM_ALL = createNode("datfactions.admin.faction.unclaim.all");
-    public static final PermissionNode<Boolean> ADMIN_FACTION_MESSAGE = createNode("datfactions.admin.faction.message");
-    public static final PermissionNode<Boolean> ADMIN_FACTION_DISBAND = createNode("datfactions.admin.faction.disband");
+    public static final PermissionNode<Boolean> ADMIN_FACTION_SETNAME = createModNode("datfactions.admin.faction.setname");
+    public static final PermissionNode<Boolean> ADMIN_FACTION_SETDESCRIPTION = createModNode("datfactions.admin.faction.setdescription");
+    public static final PermissionNode<Boolean> ADMIN_FACTION_SETMOTD = createModNode("datfactions.admin.faction.setmotd");
+    public static final PermissionNode<Boolean> ADMIN_FACTION_SETBONUSPOWER = createOpNode("datfactions.admin.faction.setbonuspower");
+    public static final PermissionNode<Boolean> ADMIN_FACTION_SETHOME = createModNode("datfactions.admin.faction.sethome.self");
+    public static final PermissionNode<Boolean> ADMIN_FACTION_SETHOMECOORD = createModNode("datfactions.admin.faction.sethome.coord");
+    public static final PermissionNode<Boolean> ADMIN_FACTION_INVITE_LIST = createModNode("datfactions.admin.faction.invites.list");
+    public static final PermissionNode<Boolean> ADMIN_FACTION_INVITE_ADD = createOpNode("datfactions.admin.faction.invites.add");
+    public static final PermissionNode<Boolean> ADMIN_FACTION_INVITE_REMOVE = createOpNode("datfactions.admin.faction.invites.remove");
+    public static final PermissionNode<Boolean> ADMIN_FACTION_ROLE_LIST = createModNode("datfactions.admin.faction.role.list");
+    public static final PermissionNode<Boolean> ADMIN_FACTION_ROLE_ADD = createOpNode("datfactions.admin.faction.role.add");
+    public static final PermissionNode<Boolean> ADMIN_FACTION_ROLE_REMOVE = createOpNode("datfactions.admin.faction.role.remove");
+    public static final PermissionNode<Boolean> ADMIN_FACTION_ROLE_REORDER = createOpNode("datfactions.admin.faction.role.reorder");
+    public static final PermissionNode<Boolean> ADMIN_FACTION_ROLE_PERMISSIONS = createOpNode("datfactions.admin.faction.role.permissions");
+    public static final PermissionNode<Boolean> ADMIN_FACTION_FLAG_LIST = createModNode("datfactions.admin.faction.flag.list");
+    public static final PermissionNode<Boolean> ADMIN_FACTION_FLAG_ADD = createModNode("datfactions.admin.faction.flag.add");
+    public static final PermissionNode<Boolean> ADMIN_FACTION_FLAG_REMOVE = createModNode("datfactions.admin.faction.flag.remove");
+    public static final PermissionNode<Boolean> ADMIN_FACTION_RELATIONS_LISTS = createModNode("datfactions.admin.faction.relation.list");
+    public static final PermissionNode<Boolean> ADMIN_FACTION_RELATIONS_SET = createModNode("datfactions.admin.faction.relation.set");
+    public static final PermissionNode<Boolean> ADMIN_FACTION_PLAYER_LIST = createModNode("datfactions.admin.faction.player.list");
+    public static final PermissionNode<Boolean> ADMIN_FACTION_PLAYER_KICK = createModNode("datfactions.admin.faction.player.kick");
+    public static final PermissionNode<Boolean> ADMIN_FACTION_PLAYER_SETOWNER = createOpNode("datfactions.admin.faction.player.setowner");
+    public static final PermissionNode<Boolean> ADMIN_FACTION_PLAYER_SETROLE = createOpNode("datfactions.admin.faction.player.setrole");
+    public static final PermissionNode<Boolean> ADMIN_FACTION_CLAIM_ONE = createModNode("datfactions.admin.faction.claim.one");
+    public static final PermissionNode<Boolean> ADMIN_FACTION_CLAIM_SQUARE = createOpNode("datfactions.admin.faction.claim.square");
+    public static final PermissionNode<Boolean> ADMIN_FACTION_UNCLAIM_ONE = createModNode("datfactions.admin.faction.unclaim.one");
+    public static final PermissionNode<Boolean> ADMIN_FACTION_UNCLAIM_SQUARE = createOpNode("datfactions.admin.faction.unclaim.square");
+    public static final PermissionNode<Boolean> ADMIN_FACTION_UNCLAIM_ALL = createOpNode("datfactions.admin.faction.unclaim.all");
+    public static final PermissionNode<Boolean> ADMIN_FACTION_MESSAGE = createModNode("datfactions.admin.faction.message");
+    public static final PermissionNode<Boolean> ADMIN_FACTION_DISBAND = createOpNode("datfactions.admin.faction.disband");
 
     // Level
-    public static final PermissionNode<Boolean> ADMIN_LEVEL_CONFIGURE = createNode("datfactions.admin.level.configure");
-    public static final PermissionNode<Boolean> ADMIN_LEVEL_SETCHUNKOWNER = createNode("datfactions.admin.level.setchunkowner");
-    public static final PermissionNode<Boolean> ADMIN_LEVEL_RELEASEALL = createNode("datfactions.admin.level.releaseall");
+    public static final PermissionNode<Boolean> ADMIN_LEVEL_CONFIGURE = createOpNode("datfactions.admin.level.configure");
+    public static final PermissionNode<Boolean> ADMIN_LEVEL_SETCHUNKOWNER = createOpNode("datfactions.admin.level.setchunkowner");
+    public static final PermissionNode<Boolean> ADMIN_LEVEL_RELEASEALL = createOpNode("datfactions.admin.level.releaseall");
 
     // Util
-    public static final PermissionNode<Boolean> ADMIN_MAP = createNode("datfactions.admin.map");
-    public static final PermissionNode<Boolean> ADMIN_BUILDOVERRIDE = createNode("datfactions.admin.buildoverride");
-    public static final PermissionNode<Boolean> ADMIN_CHATSPY = createNode("datfactions.admin.chatspy");
+    public static final PermissionNode<Boolean> ADMIN_MAP = createOpNode("datfactions.admin.map");
+    public static final PermissionNode<Boolean> ADMIN_BUILDOVERRIDE = createOpNode("datfactions.admin.buildoverride");
+    public static final PermissionNode<Boolean> ADMIN_CHATSPY = createModNode("datfactions.admin.chatspy");
 
     /* ========================================= */
     /* Permission Builders
@@ -154,6 +154,9 @@ public class FactionPermissions {
 
     private static PermissionNode<Boolean> createNode(final String node) {
         return nodeBuilder(node, PLAYER_ALL);
+    }
+    private static PermissionNode<Boolean> createModNode(final String node) {
+        return nodeBuilder(node, PLAYER_MOD);
     }
     private static PermissionNode<Boolean> createOpNode(final String node) {
         return nodeBuilder(node, PLAYER_OP);
