@@ -53,7 +53,7 @@ public class FactionLeaveCommand {
 
                     fPlayer.setFaction(newFaction != null ? newFaction.getId() : null, newRole != null ? newRole.getId() : null, FactionPlayerChangeMembershipEvent.EChangeFactionReason.LEAVE);
 
-                    c.getSource().sendSuccess(
+                    c.getSource().sendSuccess(() ->
                             Component.literal(DatChatFormatting.TextColour.INFO + "Successfully left ")
                                     .append(
                                             faction.getNameWithDescription(newFaction)

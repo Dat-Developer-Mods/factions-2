@@ -33,7 +33,7 @@ public class FactionSetHomeCommand {
                     final FactionPlayer fPlayer = FPlayerCollection.getInstance().getPlayer(player);
                     final Faction faction = fPlayer.getFaction();
 
-                    FactionLevel newHomeLevel = FLevelCollection.getInstance().getByKey(player.getLevel().dimension());
+                    FactionLevel newHomeLevel = FLevelCollection.getInstance().getByKey(player.level().dimension());
                     BlockPos newHomePos = player.getOnPos().above();
 
                     final FactionSetHomeEvent event = new FactionSetHomeEvent(c.getSource().source, faction, newHomeLevel, newHomePos);
@@ -51,7 +51,7 @@ public class FactionSetHomeCommand {
                     }
 
                     faction.setFactionHome(newHomeLevel.getId(), newHomePos);
-                    c.getSource().sendSuccess(Component.literal(DatChatFormatting.TextColour.INFO + "Successfully set your faction's home pos")
+                    c.getSource().sendSuccess(() -> Component.literal(DatChatFormatting.TextColour.INFO + "Successfully set your faction's home pos")
                     ,false);
                     return 1;
                 }).build();

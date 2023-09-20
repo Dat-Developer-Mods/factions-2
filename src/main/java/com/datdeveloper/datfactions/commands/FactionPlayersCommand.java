@@ -13,7 +13,7 @@ import com.datdeveloper.datfactions.factionData.permissions.ERolePermissions;
 import com.datdeveloper.datfactions.factionData.permissions.FactionRole;
 import com.datdeveloper.datfactions.factionData.relations.EFactionRelation;
 import com.datdeveloper.datfactions.util.RelationUtil;
-import com.datdeveloper.datmoddingapi.asyncTask.AsyncHandler;
+import com.datdeveloper.datmoddingapi.concurrentTask.ConcurrentHandler;
 import com.datdeveloper.datmoddingapi.command.util.Pager;
 import com.datdeveloper.datmoddingapi.permissions.DatPermissions;
 import com.datdeveloper.datmoddingapi.util.DatChatFormatting;
@@ -77,7 +77,7 @@ public class FactionPlayersCommand {
         final FactionPlayer fPlayer = FactionCommandUtils.getPlayerOrTemplate(player);
         final Faction faction = fPlayer.getFaction();
 
-        AsyncHandler.runAsyncTask(() -> {
+        ConcurrentHandler.runConcurrentTask(() -> {
             final List<FactionPlayer> values = faction.getPlayers().stream()
                     .sorted(Comparator.comparingInt((FactionPlayer player2) -> faction.getRoleIndex(player2.getRoleId())).thenComparing(FactionPlayer::getName))
                     .toList();
@@ -301,7 +301,7 @@ public class FactionPlayersCommand {
                                     executeSetRole(c, faction, fPlayer, faction.getRoles().get(1), FactionPlayerChangeRoleEvent.EChangeRoleReason.CHANGE_OWNER, false);
                                     executeSetRole(c, faction, target, faction.getOwnerRole(), FactionPlayerChangeRoleEvent.EChangeRoleReason.CHANGE_OWNER, false);
 
-                                    c.getSource().sendSuccess(
+                                    c.getSource().sendSuccess(() ->
                                             Component.literal(DatChatFormatting.TextColour.INFO + "Successfully made ")
                                                     .append(
                                                             target.getNameWithDescription(faction)
@@ -380,7 +380,7 @@ public class FactionPlayersCommand {
                                             FactionPlayerChangeMembershipEvent.EChangeFactionReason.KICK
                                     );
 
-                                    c.getSource().sendSuccess(
+                                    c.getSource().sendSuccess(() ->
                                             Component.literal(DatChatFormatting.TextColour.INFO + "Successfully kicked ")
                                                     .append(
                                                             target.getNameWithDescription(faction)
@@ -399,21 +399,21 @@ public class FactionPlayersCommand {
     /* Util
     /* ========================================= */
 
-    private static int executeSetRole(final CommandContext<CommandSourceStack> c, final Faction faction, final FactionPlayer target, FactionRole newRole, final FactionPlayerChangeRoleEvent.EChangeRoleReason reason, final boolean notify) {
+    private static int executeSetRole(final CommandContext<CommandSourceStack> c, final Faction faction, final FactionPlayer target, final FactionRole role, final FactionPlayerChangeRoleEvent.EChangeRoleReason reason, final boolean notify) {
         final FactionPlayerChangeRoleEvent event = new FactionPlayerChangeRoleEvent(
                 c.getSource().source,
                 target,
-                newRole,
+                role,
                 reason
         );
         MinecraftForge.EVENT_BUS.post(event);
         if (event.isCanceled()) return 0;
 
-        newRole = event.getNewRole();
+        final FactionRole newRole = event.getNewRole();
         target.setRole(newRole.getId());
 
         if (notify) {
-            c.getSource().sendSuccess(
+            c.getSource().sendSuccess(() ->
                     Component.literal(DatChatFormatting.TextColour.INFO + "Successfully set the role of ")
                             .append(
                                     target.getNameWithDescription(faction)

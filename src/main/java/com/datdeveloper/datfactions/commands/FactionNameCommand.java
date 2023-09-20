@@ -51,7 +51,7 @@ public class FactionNameCommand {
                             if (event.isCanceled()) return 0;
 
                             faction.setName(event.getNewName());
-                            c.getSource().sendSuccess(MutableComponent.create(ComponentContents.EMPTY)
+                            c.getSource().sendSuccess(() -> MutableComponent.create(ComponentContents.EMPTY)
                                     .append(DatChatFormatting.TextColour.INFO + "Successfully set your faction's name to ")
                                     .append(EFactionRelation.SELF.formatting + event.getNewName())
                             ,false);

@@ -948,6 +948,6 @@ public class Faction extends DatabaseEntity {
 
     @Override
     public boolean equals(final Object obj) {
-        return (obj instanceof Faction faction) && this.getId().equals(faction.getId());
+        return (obj instanceof final Faction faction) && this.getId().equals(faction.getId());
     }
 }

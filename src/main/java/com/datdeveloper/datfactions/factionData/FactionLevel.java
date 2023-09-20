@@ -226,6 +226,6 @@ public class FactionLevel extends DatabaseEntity {
 
     @Override
     public boolean equals(final Object obj) {
-        return (obj instanceof FactionLevel fLevel) && this.getId().equals(fLevel.getId());
+        return (obj instanceof final FactionLevel fLevel) && this.getId().equals(fLevel.getId());
     }
 }

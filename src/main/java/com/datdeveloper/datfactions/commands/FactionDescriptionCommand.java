@@ -52,7 +52,7 @@ public class FactionDescriptionCommand {
                             final FactionChangeDescriptionEvent.Post post = new FactionChangeDescriptionEvent.Post(c.getSource().source, faction, pre.getNewDescription(), oldDescription);
                             MinecraftForge.EVENT_BUS.post(post);
 
-                            c.getSource().sendSuccess(MutableComponent.create(ComponentContents.EMPTY)
+                            c.getSource().sendSuccess(() -> MutableComponent.create(ComponentContents.EMPTY)
                                     .append(DatChatFormatting.TextColour.INFO + "Successfully set your faction's description")
                             ,false);
                             return 1;

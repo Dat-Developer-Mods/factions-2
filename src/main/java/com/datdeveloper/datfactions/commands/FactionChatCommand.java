@@ -107,7 +107,7 @@ public class FactionChatCommand {
 
     static int execute(final CommandContext<CommandSourceStack> context, final FactionPlayer fPlayer, final EFPlayerChatMode chatMode) {
         fPlayer.setChatMode(chatMode);
-        context.getSource().sendSuccess(
+        context.getSource().sendSuccess(() ->
                 Component.literal(DatChatFormatting.TextColour.INFO + "Successfully set chatmode to ")
                         .append(
                                 Component.literal(chatMode.name())

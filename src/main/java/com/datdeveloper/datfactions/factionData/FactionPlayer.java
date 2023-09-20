@@ -416,6 +416,6 @@ public class FactionPlayer extends DatabaseEntity {
 
     @Override
     public boolean equals(final Object obj) {
-        return (obj instanceof FactionPlayer fPlayer) && this.getId().equals(fPlayer.getId());
+        return (obj instanceof final FactionPlayer fPlayer) && this.getId().equals(fPlayer.getId());
     }
 }

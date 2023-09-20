@@ -16,7 +16,7 @@ public class ClaimUtil {
     public static int claimChunks(final ServerPlayer player, final List<ChunkPos> chunks) {
         final FactionPlayer fPlayer = FPlayerCollection.getInstance().getPlayer(player);
         Faction faction = fPlayer.getFaction();
-        FactionLevel level = FLevelCollection.getInstance().getByKey(player.getLevel().dimension());
+        FactionLevel level = FLevelCollection.getInstance().getByKey(player.level().dimension());
 
         // Event
         final FactionLandChangeOwnerEvent event = new FactionLandChangeOwnerEvent(

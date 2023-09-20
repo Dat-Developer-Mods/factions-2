@@ -105,7 +105,7 @@ public class FactionEvents {
         // Check chunks are connected
         if (level.getSettings().isRequireConnect()) {
             int lastSize = -1;
-            while (connectedChunks.size() != lastSize && chunks.size() > 0) {
+            while (connectedChunks.size() != lastSize && !chunks.isEmpty()) {
                 lastSize = connectedChunks.size();
 
                 for (final Iterator<ChunkPos> iterator = chunks.iterator(); iterator.hasNext(); ) {

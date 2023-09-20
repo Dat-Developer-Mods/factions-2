@@ -52,7 +52,7 @@ public class FactionDisbandCommand {
                     final FactionPlayer fPlayer = FPlayerCollection.getInstance().getPlayer(player);
                     final Faction faction = fPlayer.getFaction();
 
-                    c.getSource().sendSuccess(Component.literal(
+                    c.getSource().sendSuccess(() -> Component.literal(
                             DatChatFormatting.TextColour.ERROR + "Are you sure you want to disband ")
                                     .append(
                                             faction.getNameWithDescription(faction)

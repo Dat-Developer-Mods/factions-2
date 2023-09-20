@@ -4,7 +4,7 @@ import com.datdeveloper.datfactions.commands.suggestions.DatSuggestionProviders;
 import com.datdeveloper.datfactions.commands.util.FactionCommandUtils;
 import com.datdeveloper.datfactions.factionData.FPlayerCollection;
 import com.datdeveloper.datfactions.factionData.FactionPlayer;
-import com.datdeveloper.datmoddingapi.asyncTask.AsyncHandler;
+import com.datdeveloper.datmoddingapi.concurrentTask.ConcurrentHandler;
 import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
@@ -48,7 +48,7 @@ public class FactionPlayerInfoCommand {
     }
 
     static int execute(final CommandContext<CommandSourceStack> context, final FactionPlayer player, final FactionPlayer target) {
-        AsyncHandler.runAsyncTask(() -> context.getSource().sendSystemMessage(target.getChatSummary(player.getFaction())));
+        ConcurrentHandler.runConcurrentTask(() -> context.getSource().sendSystemMessage(target.getChatSummary(player.getFaction())));
         return 1;
     }
 }

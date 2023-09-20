@@ -391,6 +391,6 @@ public class FactionRole extends DatabaseEntity {
 
     @Override
     public boolean equals(final Object obj) {
-        return (obj instanceof FactionRole role) && role.id.equals(this.id);
+        return (obj instanceof final FactionRole role) && role.id.equals(this.id);
     }
 }

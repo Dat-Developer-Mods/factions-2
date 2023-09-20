@@ -16,13 +16,12 @@ import net.minecraft.world.Container;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.level.ChunkPos;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.piston.PistonStructureResolver;
 import net.minecraftforge.common.util.BlockSnapshot;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.entity.EntityMobGriefingEvent;
-import net.minecraftforge.event.entity.living.LivingSpawnEvent;
+import net.minecraftforge.event.entity.living.MobSpawnEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.level.BlockEvent;
 import net.minecraftforge.event.level.ExplosionEvent;
@@ -86,15 +85,15 @@ public class ServerEvents {
      * Block mobs from spawning on land owned by factions that have the "NOANIMALS" or "NOMONSTERS" flags
      */
     @SubscribeEvent
-    public static void blockMobSpawn(final LivingSpawnEvent.CheckSpawn event) {
-        final FactionLevel level = FLevelCollection.getInstance().getByKey(event.getEntity().getLevel().dimension());
-        final Faction chunkOwner = level.getChunkOwningFaction(new ChunkPos(new BlockPos(event.getX(), event.getY(), event.getZ())));
+    public static void blockMobSpawn(final MobSpawnEvent.FinalizeSpawn event) {
+        final FactionLevel level = FLevelCollection.getInstance().getByKey(event.getEntity().level().dimension());
+        final Faction chunkOwner = level.getChunkOwningFaction(new ChunkPos(new BlockPos((int) event.getX(), (int) event.getY(), (int) event.getZ())));
 
         final MobCategory category = event.getEntity().getType().getCategory();
 
         if (chunkOwner.hasFlag(EFactionFlags.NOANIMALS) && animalCategories.contains(category)
                 || chunkOwner.hasFlag(EFactionFlags.NOMONSTERS) && hostileCategories.contains(category)) {
-            event.setResult(Event.Result.DENY);
+            event.setSpawnCancelled(true);
         }
     }
 
@@ -108,7 +107,7 @@ public class ServerEvents {
     @SubscribeEvent
     public static void blockMobGrief(final EntityMobGriefingEvent event) {
         final Entity mob = event.getEntity();
-        final FactionLevel level = FLevelCollection.getInstance().getByKey(mob.getLevel().dimension());
+        final FactionLevel level = FLevelCollection.getInstance().getByKey(mob.level().dimension());
         final Faction chunkOwner = level.getChunkOwningFaction(new ChunkPos(mob.getOnPos()));
 
         if (chunkOwner.hasFlag(EFactionFlags.NOMOBGRIEF)) {
@@ -173,7 +172,7 @@ public class ServerEvents {
      */
     @SubscribeEvent
     public static void blockBreak(final BlockEvent.BreakEvent event) {
-        if (!(event.getPlayer() instanceof ServerPlayer player) || player instanceof FakePlayer) return;
+        if (!(event.getPlayer() instanceof final ServerPlayer player) || player instanceof FakePlayer) return;
         final FactionPlayer fPlayer = FPlayerCollection.getInstance().getPlayer(player);
 
         final FactionLevel level = FLevelCollection.getInstance().getByKey(((ServerLevel) event.getLevel()).dimension());
@@ -199,7 +198,7 @@ public class ServerEvents {
      */
     @SubscribeEvent
     public static void blockPlace(final BlockEvent.EntityPlaceEvent event) {
-        if (event.getEntity() == null || !(event.getEntity() instanceof ServerPlayer player) || player instanceof FakePlayer) return;
+        if (event.getEntity() == null || !(event.getEntity() instanceof final ServerPlayer player) || player instanceof FakePlayer) return;
 
         final FactionPlayer fPlayer = FPlayerCollection.getInstance().getPlayer(player);
 
@@ -225,7 +224,7 @@ public class ServerEvents {
      */
     @SubscribeEvent
     public static void multiBlockPlace(final BlockEvent.EntityMultiPlaceEvent event) {
-        if (event.getEntity() == null || !(event.getEntity() instanceof ServerPlayer player) || player instanceof FakePlayer) return;
+        if (event.getEntity() == null || !(event.getEntity() instanceof final ServerPlayer player) || player instanceof FakePlayer) return;
 
         final FactionPlayer fPlayer = FPlayerCollection.getInstance().getPlayer(player);
         final Faction faction = fPlayer.getFaction();
@@ -261,7 +260,7 @@ public class ServerEvents {
      */
     @SubscribeEvent
     public static void blockInteract(final PlayerInteractEvent.RightClickBlock event) {
-        if (!(event.getEntity() instanceof ServerPlayer player) || player instanceof FakePlayer) return;
+        if (!(event.getEntity() instanceof final ServerPlayer player) || player instanceof FakePlayer) return;
         final FactionPlayer fPlayer = FPlayerCollection.getInstance().getPlayer(player);
 
         final FactionLevel level = FLevelCollection.getInstance().getByKey(event.getLevel().dimension());
@@ -291,10 +290,10 @@ public class ServerEvents {
      */
     @SubscribeEvent
     public static void preventToolInteraction(final BlockEvent.BlockToolModificationEvent event) {
-        if (!(event.getPlayer() instanceof ServerPlayer player) || player instanceof FakePlayer) return;
+        if (!(event.getPlayer() instanceof final ServerPlayer player) || player instanceof FakePlayer) return;
         final FactionPlayer fPlayer = FPlayerCollection.getInstance().getPlayer(player);
 
-        final FactionLevel level = FLevelCollection.getInstance().getByKey(event.getPlayer().getLevel().dimension());
+        final FactionLevel level = FLevelCollection.getInstance().getByKey(event.getPlayer().level().dimension());
         final Faction chunkOwner = level.getChunkOwningFaction(new ChunkPos(event.getPos()));
 
         if (checkPlayerHasBuildPermission(
@@ -325,7 +324,7 @@ public class ServerEvents {
      * @see com.datdeveloper.datfactions.FactionsConfig#preventCropTrampling
      */
     public static void trampleFarmland(final BlockEvent.FarmlandTrampleEvent event) {
-        if (event.getEntity() == null || !(event.getEntity() instanceof ServerPlayer player) || player instanceof FakePlayer) return;
+        if (event.getEntity() == null || !(event.getEntity() instanceof final ServerPlayer player) || player instanceof FakePlayer) return;
 
         final FactionPlayer fPlayer = FPlayerCollection.getInstance().getPlayer(player);
 

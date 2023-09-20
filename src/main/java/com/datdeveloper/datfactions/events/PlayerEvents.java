@@ -43,7 +43,7 @@ public class PlayerEvents {
      */
     @SubscribeEvent
     public static void playerJoin(final PlayerEvent.PlayerLoggedInEvent event) {
-        if (!(event.getEntity() instanceof ServerPlayer player)) return;
+        if (!(event.getEntity() instanceof final ServerPlayer player)) return;
         final FactionPlayer fPlayer = FPlayerCollection.getInstance().getPlayer(player);
         DelayedEventsHandler.addEvent(new PowerDelayedEvent(fPlayer));
     }
@@ -53,7 +53,7 @@ public class PlayerEvents {
      */
     @SubscribeEvent
     public static void playerLeave(final PlayerEvent.PlayerLoggedOutEvent event) {
-        if (!(event.getEntity() instanceof ServerPlayer player)) return;
+        if (!(event.getEntity() instanceof final ServerPlayer player)) return;
         Database.instance.storePlayer(FPlayerCollection.getInstance().getPlayer(player));
     }
 
@@ -62,13 +62,13 @@ public class PlayerEvents {
      */
     @SubscribeEvent
     public static void playerDamaged(final LivingAttackEvent event) {
-        if (!(event.getEntity() instanceof ServerPlayer target)) return;
+        if (!(event.getEntity() instanceof final ServerPlayer target)) return;
 
         final FactionPlayer targetPlayer = FPlayerCollection.getInstance().getPlayer(target);
         final Faction targetFaction = targetPlayer.getFaction();
 
         // Friendly Fire
-        if (event.getSource().getEntity() instanceof ServerPlayer source) {
+        if (event.getSource().getEntity() instanceof final ServerPlayer source) {
             final FactionPlayer sourcePlayer = FPlayerCollection.getInstance().getPlayer(source);
             final Faction sourceFaction = sourcePlayer.getFaction();
             if (sourceFaction != null && targetFaction != null) {
@@ -93,7 +93,7 @@ public class PlayerEvents {
 
         // Land protection
         {
-            final FactionLevel level = FLevelCollection.getInstance().getByKey(target.getLevel().dimension());
+            final FactionLevel level = FLevelCollection.getInstance().getByKey(target.level().dimension());
             final Faction landOwner = level.getChunkOwningFaction(new ChunkPos(target.getOnPos()));
             if (landOwner.hasFlag(EFactionFlags.OPENSHELTER)
                     || (landOwner.equals(targetFaction) && landOwner.hasFlag(EFactionFlags.SHELTERED))
@@ -112,7 +112,7 @@ public class PlayerEvents {
      */
     @SubscribeEvent
     public static void playerKill(final LivingDeathEvent event) {
-        if (!(event.getSource().getEntity() instanceof ServerPlayer source)) return;
+        if (!(event.getSource().getEntity() instanceof final ServerPlayer source)) return;
 
         final FactionPlayer sourceFPlayer = FPlayerCollection.getInstance().getPlayer(source);
         final Faction sourceFaction = sourceFPlayer.getFaction();
@@ -123,7 +123,7 @@ public class PlayerEvents {
 
         // Level multipliers
         {
-            final FactionLevel level = FLevelCollection.getInstance().getByKey(source.getLevel().dimension());
+            final FactionLevel level = FLevelCollection.getInstance().getByKey(source.level().dimension());
 
             final Faction chunkOwner = level.getChunkOwningFaction(new ChunkPos(source.getOnPos()));
             if (chunkOwner.hasFlag(EFactionFlags.NOPOWER)) return;
@@ -134,7 +134,7 @@ public class PlayerEvents {
         }
 
         // Player
-        if (event.getEntity() instanceof ServerPlayer target) {
+        if (event.getEntity() instanceof final ServerPlayer target) {
             final FactionPlayer targetFPlayer = FPlayerCollection.getInstance().getPlayer(target);
             final Faction targetFaction = targetFPlayer.getFaction();
 
@@ -177,7 +177,7 @@ public class PlayerEvents {
      */
     @SubscribeEvent
     public static void playerKilled(final LivingDeathEvent event) {
-        if (!(event.getEntity() instanceof ServerPlayer target)) return;
+        if (!(event.getEntity() instanceof final ServerPlayer target)) return;
 
         final FactionPlayer targetFPlayer = FPlayerCollection.getInstance().getPlayer(target);
         final Faction targetFaction = targetFPlayer.getFaction();
@@ -188,7 +188,7 @@ public class PlayerEvents {
 
         // Level multipliers
         {
-            final FactionLevel level = FLevelCollection.getInstance().getByKey(target.getLevel().dimension());
+            final FactionLevel level = FLevelCollection.getInstance().getByKey(target.level().dimension());
 
             final Faction chunkOwner = level.getChunkOwningFaction(new ChunkPos(target.getOnPos()));
             if (chunkOwner.hasFlag(EFactionFlags.NOPOWER)) return;
@@ -204,7 +204,7 @@ public class PlayerEvents {
         }
 
         // Player
-        else if (event.getSource().getEntity() instanceof ServerPlayer source) {
+        else if (event.getSource().getEntity() instanceof final ServerPlayer source) {
             final FactionPlayer sourceFPlayer = FPlayerCollection.getInstance().getPlayer(source);
             final Faction sourceFaction = sourceFPlayer.getFaction();
 
@@ -246,10 +246,10 @@ public class PlayerEvents {
      */
     @SubscribeEvent
     public static void enterChunk(final EntityEvent.EnteringSection event) {
-        if (!(event.getEntity() instanceof ServerPlayer player)) return;
+        if (!(event.getEntity() instanceof final ServerPlayer player)) return;
         if (!event.didChunkChange()) return;
 
-        final FactionLevel level = FLevelCollection.getInstance().getByKey(player.getLevel().dimension());
+        final FactionLevel level = FLevelCollection.getInstance().getByKey(player.level().dimension());
 
         final FactionPlayer fPlayer = FPlayerCollection.getInstance().getPlayer(player);
 
@@ -304,7 +304,7 @@ public class PlayerEvents {
      * Handle faction chat
      */
     @SubscribeEvent(priority = EventPriority.LOWEST)
-    public static void playerChat(final ServerChatEvent.Submitted event) {
+    public static void playerChat(final ServerChatEvent event) {
         if (!FactionsConfig.getUseFactionChat()) return;
 
         final ServerPlayer player = event.getPlayer();

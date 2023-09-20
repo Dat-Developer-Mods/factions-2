@@ -33,7 +33,7 @@ public class PowerDelayedEvent extends TimeDelayedEvent {
         if (fPlayer.isPlayerOnline()){
             final ServerPlayer player = fPlayer.getServerPlayer();
 
-            final FactionLevel level = FLevelCollection.getInstance().getByKey(player.getLevel().dimension());
+            final FactionLevel level = FLevelCollection.getInstance().getByKey(player.level().dimension());
             multipliers.put("Level", level.getSettings().getPassivePowerGainMultiplier());
 
 

@@ -6,7 +6,7 @@ import com.datdeveloper.datfactions.factionData.Faction;
 import com.datdeveloper.datfactions.factionData.FactionCollection;
 import com.datdeveloper.datfactions.factionData.FactionPlayer;
 import com.datdeveloper.datfactions.util.RelationUtil;
-import com.datdeveloper.datmoddingapi.asyncTask.AsyncHandler;
+import com.datdeveloper.datmoddingapi.concurrentTask.ConcurrentHandler;
 import com.datdeveloper.datmoddingapi.command.util.Pager;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
@@ -38,7 +38,7 @@ public class FactionPlayerInvitesCommand {
 
     private static int execute(final CommandContext<CommandSourceStack> context, final int page) {
         final FactionPlayer player = FPlayerCollection.getInstance().getPlayer(context.getSource().getPlayer());
-        AsyncHandler.runAsyncTask(() -> {
+        ConcurrentHandler.runConcurrentTask(() -> {
             final Collection<Faction> factions = FactionCollection.getInstance().getAll().values().stream()
                     .filter(faction -> faction.getPlayerInvites().contains(player.getId()))
                     .sorted(Comparator.comparing(Faction::getName))

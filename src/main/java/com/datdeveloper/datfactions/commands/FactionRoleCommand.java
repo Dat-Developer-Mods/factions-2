@@ -111,7 +111,7 @@ public class FactionRoleCommand {
         if (event.isCanceled()) return 0;
 
         final FactionRole newRole = faction.createNewRole(event.getNewRoleName(), event.getNewRoleParent());
-        source.sendSuccess(Component.literal(DatChatFormatting.TextColour.INFO + "Successfully Created new role ")
+        source.sendSuccess(() -> Component.literal(DatChatFormatting.TextColour.INFO + "Successfully Created new role ")
                 .append(newRole.getNameWithDescription().withStyle(ChatFormatting.DARK_PURPLE)),
                 false
         );
@@ -155,7 +155,7 @@ public class FactionRoleCommand {
 
                                     faction.removeRole(role);
 
-                                    c.getSource().sendSuccess(
+                                    c.getSource().sendSuccess(() ->
                                             Component.literal(DatChatFormatting.TextColour.INFO + "Successfully removed ")
                                                     .append(role.getNameWithDescription().withStyle(ChatFormatting.DARK_PURPLE)),
                                             false
@@ -202,7 +202,7 @@ public class FactionRoleCommand {
                                                     if (event.isCanceled()) return 0;
                                                     role.setName(newName);
 
-                                                    c.getSource().sendSuccess(
+                                                    c.getSource().sendSuccess(() ->
                                                             Component.literal(DatChatFormatting.TextColour.INFO + "Successfully changed " + roleName + " to ")
                                                                     .append(role.getNameWithDescription().withStyle(ChatFormatting.DARK_PURPLE)),
                                                             false
@@ -416,7 +416,7 @@ public class FactionRoleCommand {
                                         role.addPermission(newPermission);
                                     }
 
-                                    c.getSource().sendSuccess(
+                                    c.getSource().sendSuccess(() ->
                                             Component.literal(DatChatFormatting.TextColour.INFO + "Successfully added permission"),
                                             false
                                     );
@@ -471,7 +471,7 @@ public class FactionRoleCommand {
                                         role.removePermission(newPermission);
                                     }
 
-                                    c.getSource().sendSuccess(
+                                    c.getSource().sendSuccess(() ->
                                             Component.literal(DatChatFormatting.TextColour.INFO + "Successfully removed permission"),
                                             false
                                     );
@@ -512,7 +512,7 @@ public class FactionRoleCommand {
 
                                     role.setAdministrator(newAdmin);
 
-                                    c.getSource().sendSuccess(
+                                    c.getSource().sendSuccess(() ->
                                             Component.literal(DatChatFormatting.TextColour.INFO + "Successfully set ")
                                                     .append(role.getNameWithDescription().withStyle(ChatFormatting.DARK_PURPLE))
                                                     .append(DatChatFormatting.TextColour.INFO + " to be " + (newAdmin ? "" : "not ") + "an admin"),
@@ -574,7 +574,7 @@ public class FactionRoleCommand {
                                                     newParentRole = event.getNewParent();
 
                                                     faction.setRoleParent(role.getId(), newParentRole.getId());
-                                                    c.getSource().sendSuccess(
+                                                    c.getSource().sendSuccess(() ->
                                                             Component.literal(DatChatFormatting.TextColour.INFO + "Successfully changed the parent of ")
                                                                     .append(role.getNameWithDescription().withStyle(ChatFormatting.DARK_PURPLE)),
                                                             false

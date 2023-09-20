@@ -12,7 +12,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.ChunkPos;
@@ -343,7 +343,7 @@ public class FlatFileDatabase extends Database {
                         final int index = name.lastIndexOf('.');
                         return index != -1 ? name.substring(0, index) : name;
                     })
-                    .map(name -> ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation(URLDecoder.decode(name, Charset.defaultCharset()))))
+                    .map(name -> ResourceKey.create(Registries.DIMENSION, new ResourceLocation(URLDecoder.decode(name, Charset.defaultCharset()))))
                     .collect(Collectors.toList());
         } catch (final IOException e) {
             throw new RuntimeException("Failed to get files in " + getLevelsPath(), e);

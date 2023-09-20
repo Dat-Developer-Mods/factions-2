@@ -56,7 +56,7 @@ public class FactionCreateCommand {
 
                             fPlayer.setFaction(newFaction.getId(), newFaction.getOwnerRole().getId(), FactionPlayerChangeMembershipEvent.EChangeFactionReason.CREATE);
 
-                            c.getSource().sendSuccess(MutableComponent.create(ComponentContents.EMPTY)
+                            c.getSource().sendSuccess(() -> MutableComponent.create(ComponentContents.EMPTY)
                                     .append(DatChatFormatting.TextColour.INFO + "Successfully created faction ")
                                     .append(
                                             newFaction.getNameWithDescription(newFaction)

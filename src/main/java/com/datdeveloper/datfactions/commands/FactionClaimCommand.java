@@ -54,7 +54,7 @@ public class FactionClaimCommand {
                                                 .executes(c -> {
                                                     final ServerPlayer player = c.getSource().getPlayer();
                                                     final FactionPlayer fPlayer = FPlayerCollection.getInstance().getPlayer(player);
-                                                    final FactionLevel level = FLevelCollection.getInstance().getByKey(player.getLevel().dimension());
+                                                    final FactionLevel level = FLevelCollection.getInstance().getByKey(player.level().dimension());
 
                                                     final int radius = c.getArgument("radius", int.class);
 

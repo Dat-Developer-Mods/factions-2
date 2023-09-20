@@ -43,7 +43,7 @@ public class FactionUnclaimCommand {
                                 .executes(c -> {
                                     final ServerPlayer player = c.getSource().getPlayer();
                                     final FactionPlayer fPlayer = FPlayerCollection.getInstance().getPlayer(player);
-                                    final FactionLevel level = FLevelCollection.getInstance().getByKey(player.getLevel().dimension());
+                                    final FactionLevel level = FLevelCollection.getInstance().getByKey(player.level().dimension());
                                     final ChunkPos chunk = new ChunkPos(player.getOnPos());
 
                                     if (!level.getChunkOwningFaction(chunk).equals(fPlayer.getFaction())) {
@@ -67,7 +67,7 @@ public class FactionUnclaimCommand {
                                                 .executes(c -> {
                                                     final ServerPlayer player = c.getSource().getPlayer();
                                                     final FactionPlayer fPlayer = FPlayerCollection.getInstance().getPlayer(player);
-                                                    final FactionLevel level = FLevelCollection.getInstance().getByKey(player.getLevel().dimension());
+                                                    final FactionLevel level = FLevelCollection.getInstance().getByKey(player.level().dimension());
 
                                                     final int radius = c.getArgument("radius", int.class);
 
@@ -115,7 +115,7 @@ public class FactionUnclaimCommand {
                                                     final ServerPlayer player = c.getSource().getPlayer();
                                                     final FactionPlayer fPlayer = FPlayerCollection.getInstance().getPlayer(player);
                                                     final Faction faction = fPlayer.getFaction();
-                                                    final FactionLevel level = FLevelCollection.getInstance().getByKey(player.getLevel().dimension());
+                                                    final FactionLevel level = FLevelCollection.getInstance().getByKey(player.level().dimension());
 
                                                     final boolean areYouSure = BoolArgumentType.getBool(c, "areyousure");
                                                     if (!areYouSure) return 2;
@@ -139,9 +139,9 @@ public class FactionUnclaimCommand {
                                     final ServerPlayer player = c.getSource().getPlayer();
                                     final FactionPlayer fPlayer = FactionCommandUtils.getPlayerOrTemplate(player);
                                     final Faction faction = fPlayer.getFaction();
-                                    final FactionLevel level = FLevelCollection.getInstance().getByKey(player.getLevel().dimension());
+                                    final FactionLevel level = FLevelCollection.getInstance().getByKey(player.level().dimension());
 
-                                    c.getSource().sendSuccess(Component.literal(
+                                    c.getSource().sendSuccess(() -> Component.literal(
                                                             DatChatFormatting.TextColour.ERROR + "Are you sure you want to release all ")
                                                     .append(
                                                             faction.getNameWithDescription(faction)
@@ -198,9 +198,9 @@ public class FactionUnclaimCommand {
                                     final ServerPlayer player = c.getSource().getPlayer();
                                     final FactionPlayer fPlayer = FactionCommandUtils.getPlayerOrTemplate(player);
                                     final Faction faction = fPlayer.getFaction();
-                                    final FactionLevel level = FLevelCollection.getInstance().getByKey(player.getLevel().dimension());
+                                    final FactionLevel level = FLevelCollection.getInstance().getByKey(player.level().dimension());
 
-                                    c.getSource().sendSuccess(Component.literal(
+                                    c.getSource().sendSuccess(() -> Component.literal(
                                                             DatChatFormatting.TextColour.ERROR + "Are you sure you want to release all ")
                                                     .append(
                                                             faction.getNameWithDescription(faction)

@@ -11,8 +11,8 @@ import com.datdeveloper.datfactions.factionData.permissions.ERolePermissions;
 import com.datdeveloper.datfactions.factionData.relations.EFactionRelation;
 import com.datdeveloper.datfactions.factionData.relations.FactionRelation;
 import com.datdeveloper.datfactions.util.RelationUtil;
-import com.datdeveloper.datmoddingapi.asyncTask.AsyncHandler;
 import com.datdeveloper.datmoddingapi.command.util.Pager;
+import com.datdeveloper.datmoddingapi.concurrentTask.ConcurrentHandler;
 import com.datdeveloper.datmoddingapi.permissions.DatPermissions;
 import com.datdeveloper.datmoddingapi.util.DatChatFormatting;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
@@ -27,6 +27,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.common.MinecraftForge;
 
 import java.util.List;
+import java.util.function.Supplier;
 
 import static com.datdeveloper.datfactions.commands.FactionPermissions.*;
 
@@ -74,7 +75,7 @@ public class FactionRelationCommand {
         final FactionPlayer fPlayer = FactionCommandUtils.getPlayerOrTemplate(player);
         final Faction faction = fPlayer.getFaction();
 
-        AsyncHandler.runAsyncTask(() -> {
+        ConcurrentHandler.runConcurrentTask(() -> {
             final List<Faction> values = faction.getRelations().keySet().stream()
                     .map(uuid -> FactionCollection.getInstance().getByKey(uuid))
                     .toList();
@@ -159,7 +160,7 @@ public class FactionRelationCommand {
         final FactionPlayer fPlayer = FactionCommandUtils.getPlayerOrTemplate(player);
         final Faction faction = fPlayer.getFaction();
 
-        AsyncHandler.runAsyncTask(() -> {
+        ConcurrentHandler.runConcurrentTask(() -> {
             final List<Faction> values = FactionCollection.getInstance().getAll().values().stream()
                     .filter(factionEl -> {
                         final FactionRelation relationFrom = factionEl.getRelation(faction);
@@ -304,7 +305,7 @@ public class FactionRelationCommand {
      * @param relation The new relation
      * @return the return code representing the result
      */
-    private static int executeRelation(final CommandContext<CommandSourceStack> c, EFactionRelation relation) {
+    private static int executeRelation(final CommandContext<CommandSourceStack> c, final EFactionRelation relation) {
         final ServerPlayer player = c.getSource().getPlayer();
         final FactionPlayer fPlayer = FactionCommandUtils.getPlayerOrTemplate(player);
         final Faction faction = fPlayer.getFaction();
@@ -346,32 +347,35 @@ public class FactionRelationCommand {
         MinecraftForge.EVENT_BUS.post(event);
         if (event.isCanceled()) return 0;
 
-        relation = event.getNewRelation();
-        faction.setRelation(target, relation);
-        target.informRelation(faction, relation);
-        final MutableComponent message = Component.literal(DatChatFormatting.TextColour.INFO + "Successfully ");
+        final EFactionRelation newRelation = event.getNewRelation();
+        faction.setRelation(target, newRelation);
+        target.informRelation(faction, newRelation);
+        final Supplier<Component> messageSupplier = () -> {
+            final MutableComponent message = Component.literal(DatChatFormatting.TextColour.INFO + "Successfully ");
 
-        switch (relation) {
-            case ALLY, ENEMY -> message.append("declared ")
-                    .append(
-                            target.getNameWithDescription(faction)
-                                    .withStyle(relation.formatting)
-                    )
-                    .append(" an " + relation.name().toLowerCase());
-            case TRUCE -> message.append("declared a truce with ")
-                    .append(
-                            target.getNameWithDescription(faction)
-                                    .withStyle(relation.formatting)
-                    );
-            case NEUTRAL -> message.append("removed relation with ")
-                    .append(
-                            target.getNameWithDescription(faction)
-                                    .withStyle(relation.formatting)
-                    );
-        }
+            switch (newRelation) {
+                case ALLY, ENEMY -> message.append("declared ")
+                        .append(
+                                target.getNameWithDescription(faction)
+                                        .withStyle(newRelation.formatting)
+                        )
+                        .append(" an " + newRelation.name().toLowerCase());
+                case TRUCE -> message.append("declared a truce with ")
+                        .append(
+                                target.getNameWithDescription(faction)
+                                        .withStyle(newRelation.formatting)
+                        );
+                case NEUTRAL -> message.append("removed relation with ")
+                        .append(
+                                target.getNameWithDescription(faction)
+                                        .withStyle(newRelation.formatting)
+                        );
+            }
+            return message;
+        };
 
         c.getSource().sendSuccess(
-                message,
+                messageSupplier,
                 false
         );
 

@@ -6,7 +6,7 @@ import com.datdeveloper.datfactions.factionData.FPlayerCollection;
 import com.datdeveloper.datfactions.factionData.Faction;
 import com.datdeveloper.datfactions.factionData.FactionCollection;
 import com.datdeveloper.datfactions.factionData.FactionPlayer;
-import com.datdeveloper.datmoddingapi.asyncTask.AsyncHandler;
+import com.datdeveloper.datmoddingapi.concurrentTask.ConcurrentHandler;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
@@ -52,7 +52,7 @@ public class FactionInfoCommand {
     }
 
     static int execute(final CommandContext<CommandSourceStack> context, final FactionPlayer from, final Faction targetFaction) {
-        AsyncHandler.runAsyncTask(() -> context.getSource().sendSystemMessage(targetFaction.getChatSummary(from.getFaction())));
+        ConcurrentHandler.runConcurrentTask(() -> context.getSource().sendSystemMessage(targetFaction.getChatSummary(from.getFaction())));
         return 1;
     }
 }

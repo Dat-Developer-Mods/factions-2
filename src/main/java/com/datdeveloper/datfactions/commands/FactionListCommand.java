@@ -1,7 +1,7 @@
 package com.datdeveloper.datfactions.commands;
 
 import com.datdeveloper.datfactions.factionData.*;
-import com.datdeveloper.datmoddingapi.asyncTask.AsyncHandler;
+import com.datdeveloper.datmoddingapi.concurrentTask.ConcurrentHandler;
 import com.datdeveloper.datmoddingapi.command.util.Pager;
 import com.datdeveloper.datmoddingapi.util.DatChatFormatting;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
@@ -32,7 +32,7 @@ public class FactionListCommand {
 
     private static int execute(final CommandContext<CommandSourceStack> context, final int page) {
         final FactionPlayer player = FPlayerCollection.getInstance().getPlayer(context.getSource().getPlayer());
-        AsyncHandler.runAsyncTask(() -> {
+        ConcurrentHandler.runConcurrentTask(() -> {
             final Collection<Faction> factions = FactionCollection.getInstance().getAll().values().stream()
                     .filter(faction -> !faction.hasFlag(EFactionFlags.DEFAULT))
                     .sorted(Comparator.comparing(Faction::getName))

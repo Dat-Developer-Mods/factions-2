@@ -20,7 +20,7 @@ public class FactionMapCommand {
                 .executes(c -> {
                     final ServerPlayer player = c.getSource().getPlayer();
                     final FactionPlayer factionPlayer = FPlayerCollection.getInstance().getPlayer(c.getSource().getPlayer());
-                    final MapUtil map = new MapUtil(new ChunkPos(player.getOnPos()), player.getYRot(), player.getLevel().dimension(), factionPlayer);
+                    final MapUtil map = new MapUtil(new ChunkPos(player.getOnPos()), player.getYRot(), player.level().dimension(), factionPlayer);
 
                     player.sendSystemMessage(map.build());
                     return 1;

@@ -10,6 +10,7 @@ import com.datdeveloper.datmoddingapi.permissions.DatPermissions;
 import com.datdeveloper.datmoddingapi.util.DatChatFormatting;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -34,61 +35,71 @@ public class FactionJoinCommand {
                             // Get factions
                             return builder.buildFuture();
                         })
-                        .executes(c -> {
-                            final String targetName = c.getArgument("Target Faction", String.class);
-                            Faction target = FactionCollection.getInstance().getByName(targetName);
-                            final FactionPlayer fPlayer = FPlayerCollection.getInstance().getPlayer(c.getSource().getPlayer());
-                            if (target == null) {
-                                c.getSource().sendFailure(Component.literal("Cannot find a faction with that name"));
-                                return 2;
-                            } else if (!target.hasFlag(EFactionFlags.OPEN) && !target.hasInvitedPlayer(fPlayer.getId())) {
-                                c.getSource().sendFailure(Component.literal("You are not allowed to join that faction"));
-
-                                target.sendFactionWideMessage(
-                                        fPlayer.getNameWithDescription(target)
-                                                .withStyle(RelationUtil.getRelation(target, fPlayer).formatting)
-                                                .append(DatChatFormatting.TextColour.INFO + " attempted to join your faction but couldn't").append("\n")
-                                                .append(DatChatFormatting.TextColour.INFO + "You can allow them to join by inviting them with ")
-                                                .append(FactionCommandUtils.wrapCommand("/f invite " + fPlayer.getName()))
-                                );
-
-                                return 2;
-                            }
-
-                            final FactionPlayerChangeMembershipEvent event = new FactionPlayerChangeMembershipEvent(
-                                    c.getSource().source,
-                                    fPlayer,
-                                    target,
-                                    target.getRecruitRole(),
-                                    FactionPlayerChangeMembershipEvent.EChangeFactionReason.JOIN
-                            );
-                            MinecraftForge.EVENT_BUS.post(event);
-                            if (event.isCanceled()) return 0;
-
-                            target = event.getNewFaction();
-                            final FactionRole role = event.getNewRole();
-
-                            fPlayer.setFaction(
-                                    target != null ? target.getId() : null,
-                                    role != null ? role.getId() : null,
-                                    FactionPlayerChangeMembershipEvent.EChangeFactionReason.JOIN
-                            );
-
-                            if (target != null) target.removeInvite(fPlayer.getId());
-
-                            c.getSource().sendSuccess(
-                                    Component.literal(DatChatFormatting.TextColour.INFO + "Successfully joined ")
-                                            .append(
-                                                    target.getNameWithDescription(target)
-                                                            .withStyle(EFactionRelation.SELF.formatting)
-                                            ),
-                                    false
-                            );
-
-                            return 1;
-                        }))
+                        .executes(FactionJoinCommand::run))
                 .build();
 
         command.then(subCommand);
+    }
+
+    private static int run(final CommandContext<CommandSourceStack> c) {
+        final String targetName = c.getArgument("Target Faction", String.class);
+        final Faction target = FactionCollection.getInstance().getByName(targetName);
+        final FactionPlayer fPlayer = FPlayerCollection.getInstance().getPlayer(c.getSource().getPlayer());
+
+        if (target == null) {
+            c.getSource().sendFailure(Component.literal("Cannot find a faction with that name"));
+            return 2;
+        } else if (!target.hasFlag(EFactionFlags.OPEN) && !target.hasInvitedPlayer(fPlayer.getId())) {
+            c.getSource().sendFailure(Component.literal("You are not allowed to join that faction"));
+
+            target.sendFactionWideMessage(
+                    fPlayer.getNameWithDescription(target)
+                            .withStyle(RelationUtil.getRelation(target, fPlayer).formatting)
+                            .append(DatChatFormatting.TextColour.INFO + " attempted to join your faction but couldn't").append("\n")
+                            .append(DatChatFormatting.TextColour.INFO + "You can allow them to join by inviting them with ")
+                            .append(FactionCommandUtils.wrapCommand("/f invite " + fPlayer.getName()))
+            );
+
+            return 2;
+        }
+
+        final FactionPlayerChangeMembershipEvent event = new FactionPlayerChangeMembershipEvent(
+                c.getSource().source,
+                fPlayer,
+                target,
+                target.getRecruitRole(),
+                FactionPlayerChangeMembershipEvent.EChangeFactionReason.JOIN
+        );
+        MinecraftForge.EVENT_BUS.post(event);
+        if (event.isCanceled()) return 0;
+
+        final Faction newTarget = event.getNewFaction();
+        final FactionRole role = event.getNewRole();
+
+        fPlayer.setFaction(
+                newTarget != null ? newTarget.getId() : null,
+                role != null ? role.getId() : null,
+                FactionPlayerChangeMembershipEvent.EChangeFactionReason.JOIN
+        );
+
+        if (newTarget != null) {
+            newTarget.removeInvite(fPlayer.getId());
+
+            c.getSource().sendSuccess(() ->
+                            Component.literal(DatChatFormatting.TextColour.INFO + "Successfully joined ")
+                                    .append(
+                                            newTarget.getNameWithDescription(newTarget)
+                                                    .withStyle(EFactionRelation.SELF.formatting)
+                                    ),
+                    false
+            );
+        } else {
+            c.getSource().sendSuccess(() ->
+                            Component.literal(DatChatFormatting.TextColour.INFO + "You are no longer a part of a faction"),
+                    false
+            );
+        }
+
+        return 1;
     }
 }

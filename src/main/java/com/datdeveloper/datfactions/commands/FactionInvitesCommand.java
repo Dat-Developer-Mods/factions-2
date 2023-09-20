@@ -11,7 +11,7 @@ import com.datdeveloper.datfactions.factionData.FactionPlayer;
 import com.datdeveloper.datfactions.factionData.permissions.ERolePermissions;
 import com.datdeveloper.datfactions.factionData.relations.EFactionRelation;
 import com.datdeveloper.datfactions.util.RelationUtil;
-import com.datdeveloper.datmoddingapi.asyncTask.AsyncHandler;
+import com.datdeveloper.datmoddingapi.concurrentTask.ConcurrentHandler;
 import com.datdeveloper.datmoddingapi.command.util.Pager;
 import com.datdeveloper.datmoddingapi.permissions.DatPermissions;
 import com.datdeveloper.datmoddingapi.util.DatChatFormatting;
@@ -70,7 +70,7 @@ public class FactionInvitesCommand {
         final FactionPlayer fPlayer = FactionCommandUtils.getPlayerOrTemplate(player);
         final Faction faction = fPlayer.getFaction();
 
-        AsyncHandler.runAsyncTask(() -> {
+        ConcurrentHandler.runConcurrentTask(() -> {
             final List<FactionPlayer> values = faction.getPlayerInvites().stream()
                     .map(playerId -> FPlayerCollection.getInstance().getByKey(playerId))
                     .sorted(Comparator.comparing(FactionPlayer::getName))
@@ -154,7 +154,7 @@ public class FactionInvitesCommand {
                                     if (event.isCanceled()) return 0;
 
                                     faction.addInvite(target.getId());
-                                    c.getSource().sendSuccess(
+                                    c.getSource().sendSuccess(() ->
                                             Component.literal(DatChatFormatting.TextColour.INFO + "Successfully invited ")
                                                     .append(
                                                             target.getNameWithDescription(faction)
@@ -225,7 +225,7 @@ public class FactionInvitesCommand {
                                     if (event.isCanceled()) return 0;
 
                                     faction.addInvite(target.getId());
-                                    c.getSource().sendSuccess(
+                                    c.getSource().sendSuccess(() ->
                                             Component.literal(DatChatFormatting.TextColour.INFO + "Successfully revoked ")
                                                     .append(
                                                             target.getNameWithDescription(faction)

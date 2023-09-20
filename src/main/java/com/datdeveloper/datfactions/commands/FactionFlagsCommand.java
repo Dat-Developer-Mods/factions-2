@@ -8,7 +8,7 @@ import com.datdeveloper.datfactions.factionData.EFactionFlags;
 import com.datdeveloper.datfactions.factionData.Faction;
 import com.datdeveloper.datfactions.factionData.FactionPlayer;
 import com.datdeveloper.datfactions.factionData.permissions.ERolePermissions;
-import com.datdeveloper.datmoddingapi.asyncTask.AsyncHandler;
+import com.datdeveloper.datmoddingapi.concurrentTask.ConcurrentHandler;
 import com.datdeveloper.datmoddingapi.command.util.Pager;
 import com.datdeveloper.datmoddingapi.permissions.DatPermissions;
 import com.datdeveloper.datmoddingapi.util.DatChatFormatting;
@@ -68,7 +68,7 @@ public class FactionFlagsCommand {
         final FactionPlayer fPlayer = FactionCommandUtils.getPlayerOrTemplate(player);
         final Faction faction = fPlayer.getFaction();
 
-        AsyncHandler.runAsyncTask(() -> {
+        ConcurrentHandler.runConcurrentTask(() -> {
             if (faction.getFlags().isEmpty()) {
                 sourceStack.sendFailure(
                         Component.literal("Your faction doesn't have any flags")
@@ -181,7 +181,7 @@ public class FactionFlagsCommand {
 
                                     faction.removeFlag(flag);
 
-                                    c.getSource().sendSuccess(
+                                    c.getSource().sendSuccess(() ->
                                             Component.literal(DatChatFormatting.TextColour.INFO + "Successfully removed the ")
                                                     .append(
                                                             flag.getChatComponent()
