@@ -2,9 +2,9 @@ package com.datdeveloper.datfactions.commands;
 
 import com.datdeveloper.datfactions.api.events.FactionLandChangeOwnerEvent;
 import com.datdeveloper.datfactions.commands.util.FactionCommandUtils;
-import com.datdeveloper.datfactions.factionData.*;
-import com.datdeveloper.datfactions.factionData.permissions.ERolePermissions;
-import com.datdeveloper.datfactions.factionData.relations.EFactionRelation;
+import com.datdeveloper.datfactions.factiondata.*;
+import com.datdeveloper.datfactions.factiondata.permissions.ERolePermissions;
+import com.datdeveloper.datfactions.factiondata.relations.EFactionRelation;
 import com.datdeveloper.datmoddingapi.permissions.DatPermissions;
 import com.datdeveloper.datmoddingapi.util.DatChatFormatting;
 import com.mojang.brigadier.arguments.BoolArgumentType;
@@ -198,7 +198,6 @@ public class FactionUnclaimCommand {
                                     final ServerPlayer player = c.getSource().getPlayer();
                                     final FactionPlayer fPlayer = FactionCommandUtils.getPlayerOrTemplate(player);
                                     final Faction faction = fPlayer.getFaction();
-                                    final FactionLevel level = FLevelCollection.getInstance().getByKey(player.level().dimension());
 
                                     c.getSource().sendSuccess(() -> Component.literal(
                                                             DatChatFormatting.TextColour.ERROR + "Are you sure you want to release all ")
@@ -222,7 +221,6 @@ public class FactionUnclaimCommand {
 
     public static int unclaimChunks(final ServerPlayer player, final List<ChunkPos> chunks, FactionLevel level) {
         final FactionPlayer fPlayer = FactionCommandUtils.getPlayerOrTemplate(player);
-        final Faction faction = fPlayer.getFaction();
 
         // Event
         final FactionLandChangeOwnerEvent event = new FactionLandChangeOwnerEvent(

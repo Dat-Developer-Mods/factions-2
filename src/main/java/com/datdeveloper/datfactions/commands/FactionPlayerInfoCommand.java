@@ -2,8 +2,8 @@ package com.datdeveloper.datfactions.commands;
 
 import com.datdeveloper.datfactions.commands.suggestions.DatSuggestionProviders;
 import com.datdeveloper.datfactions.commands.util.FactionCommandUtils;
-import com.datdeveloper.datfactions.factionData.FPlayerCollection;
-import com.datdeveloper.datfactions.factionData.FactionPlayer;
+import com.datdeveloper.datfactions.factiondata.FPlayerCollection;
+import com.datdeveloper.datfactions.factiondata.FactionPlayer;
 import com.datdeveloper.datmoddingapi.concurrentTask.ConcurrentHandler;
 import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;

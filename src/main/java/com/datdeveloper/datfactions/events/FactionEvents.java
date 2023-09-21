@@ -3,10 +3,10 @@ package com.datdeveloper.datfactions.events;
 import com.datdeveloper.datfactions.Datfactions;
 import com.datdeveloper.datfactions.FactionsConfig;
 import com.datdeveloper.datfactions.api.events.FactionLandChangeOwnerEvent;
-import com.datdeveloper.datfactions.factionData.EFactionFlags;
-import com.datdeveloper.datfactions.factionData.Faction;
-import com.datdeveloper.datfactions.factionData.FactionCollection;
-import com.datdeveloper.datfactions.factionData.FactionLevel;
+import com.datdeveloper.datfactions.factiondata.EFactionFlags;
+import com.datdeveloper.datfactions.factiondata.Faction;
+import com.datdeveloper.datfactions.factiondata.FactionCollection;
+import com.datdeveloper.datfactions.factiondata.FactionLevel;
 import com.datdeveloper.datfactions.util.RelationUtil;
 import com.datdeveloper.datmoddingapi.util.DatChatFormatting;
 import net.minecraft.ChatFormatting;
@@ -77,7 +77,7 @@ public class FactionEvents {
                 return;
             }
 
-            stolenChunks.computeIfAbsent(owner, (key) -> new HashSet<>()).add(chunk);
+            stolenChunks.computeIfAbsent(owner, key -> new HashSet<>()).add(chunk);
             if (!level.getSettings().isRequireLandStealConnect()) {
                 connectedChunks.add(chunk);
                 iterator.remove();

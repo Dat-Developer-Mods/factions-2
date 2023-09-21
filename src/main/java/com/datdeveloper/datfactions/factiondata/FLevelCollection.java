@@ -1,4 +1,4 @@
-package com.datdeveloper.datfactions.factionData;
+package com.datdeveloper.datfactions.factiondata;
 
 import com.datdeveloper.datfactions.database.Database;
 import net.minecraft.resources.ResourceKey;
@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 import static com.datdeveloper.datfactions.Datfactions.logger;
+
 
 public class FLevelCollection extends BaseCollection<ResourceKey<Level>, FactionLevel>{
     private static final FLevelCollection instance = new FLevelCollection();

@@ -1,4 +1,4 @@
-package com.datdeveloper.datfactions.database.jsonAdapters;
+package com.datdeveloper.datfactions.database.jsonadapters;
 
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;

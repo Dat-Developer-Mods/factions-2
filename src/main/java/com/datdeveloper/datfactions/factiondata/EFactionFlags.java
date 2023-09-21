@@ -1,4 +1,4 @@
-package com.datdeveloper.datfactions.factionData;
+package com.datdeveloper.datfactions.factiondata;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;

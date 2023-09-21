@@ -1,6 +1,6 @@
 package com.datdeveloper.datfactions.api.events;
 
-import com.datdeveloper.datfactions.factionData.FactionPlayer;
+import com.datdeveloper.datfactions.factiondata.FactionPlayer;
 import net.minecraft.commands.CommandSource;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

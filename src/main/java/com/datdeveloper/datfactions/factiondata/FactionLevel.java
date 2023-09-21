@@ -1,4 +1,4 @@
-package com.datdeveloper.datfactions.factionData;
+package com.datdeveloper.datfactions.factiondata;
 
 import com.datdeveloper.datfactions.database.DatabaseEntity;
 import com.datdeveloper.datfactions.util.RelationUtil;

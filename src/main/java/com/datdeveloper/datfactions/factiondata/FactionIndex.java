@@ -1,4 +1,4 @@
-package com.datdeveloper.datfactions.factionData;
+package com.datdeveloper.datfactions.factiondata;
 
 import java.util.*;
 
@@ -11,7 +11,7 @@ public class FactionIndex {
 
     boolean initialised = false;
 
-    private final static FactionIndex instance = new FactionIndex();
+    private static final FactionIndex instance = new FactionIndex();
     public static FactionIndex getInstance() {
         return instance;
     }

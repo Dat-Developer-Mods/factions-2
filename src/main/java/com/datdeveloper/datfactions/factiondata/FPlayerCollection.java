@@ -1,4 +1,4 @@
-package com.datdeveloper.datfactions.factionData;
+package com.datdeveloper.datfactions.factiondata;
 
 import com.datdeveloper.datfactions.api.events.FactionPlayerChangeMembershipEvent;
 import com.datdeveloper.datfactions.database.Database;

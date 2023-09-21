@@ -1,4 +1,4 @@
-package com.datdeveloper.datfactions.factionData.relations;
+package com.datdeveloper.datfactions.factiondata.relations;
 
 import net.minecraft.ChatFormatting;
 

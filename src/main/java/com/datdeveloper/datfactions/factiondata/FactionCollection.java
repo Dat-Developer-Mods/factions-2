@@ -1,10 +1,10 @@
-package com.datdeveloper.datfactions.factionData;
+package com.datdeveloper.datfactions.factiondata;
 
 import com.datdeveloper.datfactions.api.events.FactionPlayerChangeMembershipEvent;
 import com.datdeveloper.datfactions.api.events.FactionLandChangeOwnerEvent;
 import com.datdeveloper.datfactions.database.Database;
-import com.datdeveloper.datfactions.factionData.permissions.FactionRole;
-import com.datdeveloper.datfactions.factionData.relations.EFactionRelation;
+import com.datdeveloper.datfactions.factiondata.permissions.FactionRole;
+import com.datdeveloper.datfactions.factiondata.relations.EFactionRelation;
 import com.datdeveloper.datmoddingapi.util.DatChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.ChunkPos;
@@ -126,10 +126,10 @@ public class FactionCollection extends BaseCollection<UUID, Faction> {
         }
 
         // Create wilderness if it doesn't exist
-        final UUID WildernessId = new UUID(0, 1);
-        WILDERNESS = getByKey(WildernessId);
+        final UUID wildernessId = new UUID(0, 1);
+        WILDERNESS = getByKey(wildernessId);
         if (WILDERNESS == null) {
-            WILDERNESS = new Faction(WildernessId, "Wilderness");
+            WILDERNESS = new Faction(wildernessId, "Wilderness");
             WILDERNESS.description = "Uncharted Territory";
             WILDERNESS.creationTime = 0;
             WILDERNESS.addFlag(EFactionFlags.DEFAULT);
@@ -143,7 +143,7 @@ public class FactionCollection extends BaseCollection<UUID, Faction> {
             WILDERNESS.addFlag(EFactionFlags.OPENBUILD);
             WILDERNESS.addFlag(EFactionFlags.WEAKBORDERS);
             Database.instance.storeFaction(WILDERNESS);
-            map.put(WildernessId, WILDERNESS);
+            map.put(wildernessId, WILDERNESS);
         }
     }
 

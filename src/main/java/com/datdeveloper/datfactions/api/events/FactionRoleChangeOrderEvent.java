@@ -1,7 +1,7 @@
 package com.datdeveloper.datfactions.api.events;
 
-import com.datdeveloper.datfactions.factionData.Faction;
-import com.datdeveloper.datfactions.factionData.permissions.FactionRole;
+import com.datdeveloper.datfactions.factiondata.Faction;
+import com.datdeveloper.datfactions.factiondata.permissions.FactionRole;
 import net.minecraft.commands.CommandSource;
 import net.minecraftforge.eventbus.api.Cancelable;
 import org.jetbrains.annotations.NotNull;

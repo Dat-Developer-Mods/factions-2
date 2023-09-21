@@ -1,7 +1,7 @@
 package com.datdeveloper.datfactions.commands;
 
-import com.datdeveloper.datfactions.factionData.FPlayerCollection;
-import com.datdeveloper.datfactions.factionData.FactionPlayer;
+import com.datdeveloper.datfactions.factiondata.FPlayerCollection;
+import com.datdeveloper.datfactions.factiondata.FactionPlayer;
 import com.datdeveloper.datfactions.util.MapUtil;
 import com.datdeveloper.datmoddingapi.permissions.DatPermissions;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
@@ -16,7 +16,7 @@ import static com.datdeveloper.datfactions.commands.FactionPermissions.FACTION_M
 public class FactionMapCommand {
     static void register(final LiteralArgumentBuilder<CommandSourceStack> command) {
         final LiteralCommandNode<CommandSourceStack> subCommand = Commands.literal("map")
-                .requires((source) -> source.source instanceof ServerPlayer && DatPermissions.hasPermission(source.source, FACTION_MAP))
+                .requires(source -> source.source instanceof ServerPlayer && DatPermissions.hasPermission(source.source, FACTION_MAP))
                 .executes(c -> {
                     final ServerPlayer player = c.getSource().getPlayer();
                     final FactionPlayer factionPlayer = FPlayerCollection.getInstance().getPlayer(c.getSource().getPlayer());

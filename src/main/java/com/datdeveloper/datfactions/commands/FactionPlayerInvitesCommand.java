@@ -1,10 +1,10 @@
 package com.datdeveloper.datfactions.commands;
 
 import com.datdeveloper.datfactions.commands.util.FactionCommandUtils;
-import com.datdeveloper.datfactions.factionData.FPlayerCollection;
-import com.datdeveloper.datfactions.factionData.Faction;
-import com.datdeveloper.datfactions.factionData.FactionCollection;
-import com.datdeveloper.datfactions.factionData.FactionPlayer;
+import com.datdeveloper.datfactions.factiondata.FPlayerCollection;
+import com.datdeveloper.datfactions.factiondata.Faction;
+import com.datdeveloper.datfactions.factiondata.FactionCollection;
+import com.datdeveloper.datfactions.factiondata.FactionPlayer;
 import com.datdeveloper.datfactions.util.RelationUtil;
 import com.datdeveloper.datmoddingapi.concurrentTask.ConcurrentHandler;
 import com.datdeveloper.datmoddingapi.command.util.Pager;
@@ -49,7 +49,7 @@ public class FactionPlayerInvitesCommand {
                 return;
             }
 
-            final Pager<Faction> pager = new Pager<>("/f myinvites", "Invites", factions, (faction) ->
+            final Pager<Faction> pager = new Pager<>("/f myinvites", "Invites", factions, faction ->
                     faction.getNameWithDescription(player.getFaction())
                         .withStyle(RelationUtil.getRelation(player, faction).formatting)
             );

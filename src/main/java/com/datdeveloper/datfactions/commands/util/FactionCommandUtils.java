@@ -1,7 +1,7 @@
 package com.datdeveloper.datfactions.commands.util;
 
-import com.datdeveloper.datfactions.factionData.FPlayerCollection;
-import com.datdeveloper.datfactions.factionData.FactionPlayer;
+import com.datdeveloper.datfactions.factiondata.FPlayerCollection;
+import com.datdeveloper.datfactions.factiondata.FactionPlayer;
 import com.datdeveloper.datmoddingapi.util.DatChatFormatting;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.tree.CommandNode;

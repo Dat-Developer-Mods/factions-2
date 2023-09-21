@@ -1,4 +1,4 @@
-package com.datdeveloper.datfactions.factionData;
+package com.datdeveloper.datfactions.factiondata;
 
 
 import com.datdeveloper.datfactions.database.Database;
@@ -9,13 +9,13 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * The baseclass for FactionObject collections
- * @param <Key> The key type for the store
- * @param <CollectionObject> The object being stored in the database
+ * @param <K> The key type for the store
+ * @param <V> The object being stored in the database
  */
-public abstract class BaseCollection<Key, CollectionObject extends DatabaseEntity> {
-    final Map<Key, CollectionObject> map = new ConcurrentHashMap<>();
+public abstract class BaseCollection<K, V extends DatabaseEntity> {
+    protected final Map<K, V> map = new ConcurrentHashMap<>();
 
-    public Map<Key, CollectionObject> getAll() {
+    public Map<K, V> getAll() {
         return map;
     }
 
@@ -24,7 +24,7 @@ public abstract class BaseCollection<Key, CollectionObject extends DatabaseEntit
      * @param key the key of the CollectionObject
      * @return the object in the collection
      */
-    public CollectionObject getByKey(final Key key) {
+    public V getByKey(final K key) {
         if (key == null) return null;
         return map.get(key);
     }
@@ -33,9 +33,7 @@ public abstract class BaseCollection<Key, CollectionObject extends DatabaseEntit
      * Save all the dirty CollectionObjects to the database
      */
     public void saveDirty() {
-        for (final Key key : map.keySet()) {
-            final CollectionObject object = map.get(key);
-
+        for (final V object: map.values()) {
             if (object.isDirty()) {
                 Database.instance.storeEntity(object);
                 object.markClean();

@@ -1,8 +1,8 @@
 package com.datdeveloper.datfactions.api;
 
-import com.datdeveloper.datfactions.factionData.FLevelCollection;
-import com.datdeveloper.datfactions.factionData.FPlayerCollection;
-import com.datdeveloper.datfactions.factionData.FactionCollection;
+import com.datdeveloper.datfactions.factiondata.FLevelCollection;
+import com.datdeveloper.datfactions.factiondata.FPlayerCollection;
+import com.datdeveloper.datfactions.factiondata.FactionCollection;
 
 public class FactionsAPI {
     /**

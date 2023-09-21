@@ -1,4 +1,4 @@
-package com.datdeveloper.datfactions.factionData.permissions;
+package com.datdeveloper.datfactions.factiondata.permissions;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;

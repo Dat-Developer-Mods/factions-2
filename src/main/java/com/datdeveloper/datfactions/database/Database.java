@@ -1,9 +1,9 @@
 package com.datdeveloper.datfactions.database;
 
-import com.datdeveloper.datfactions.factionData.Faction;
-import com.datdeveloper.datfactions.factionData.FactionLevel;
-import com.datdeveloper.datfactions.factionData.FactionLevelSettings;
-import com.datdeveloper.datfactions.factionData.FactionPlayer;
+import com.datdeveloper.datfactions.factiondata.Faction;
+import com.datdeveloper.datfactions.factiondata.FactionLevel;
+import com.datdeveloper.datfactions.factiondata.FactionLevelSettings;
+import com.datdeveloper.datfactions.factiondata.FactionPlayer;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.Level;
 import org.apache.commons.lang3.NotImplementedException;

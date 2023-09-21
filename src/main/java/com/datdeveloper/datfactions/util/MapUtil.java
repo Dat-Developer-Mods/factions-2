@@ -1,6 +1,6 @@
 package com.datdeveloper.datfactions.util;
 
-import com.datdeveloper.datfactions.factionData.*;
+import com.datdeveloper.datfactions.factiondata.*;
 import com.datdeveloper.datmoddingapi.util.DatChatFormatting;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.*;
@@ -14,18 +14,18 @@ import java.util.List;
 import java.util.Map;
 
 public class MapUtil {
-    final static CompassDirection[][] COMPASS = {
+    static final CompassDirection[][] COMPASS = {
             {CompassDirection.NW, CompassDirection.N, CompassDirection.NE},
             {CompassDirection.W, CompassDirection.NONE, CompassDirection.E},
             {CompassDirection.SW, CompassDirection.S, CompassDirection.SE}
     };
 
-    final static Component DEFAULTCHAR = Component.literal("-").withStyle(ChatFormatting.DARK_GRAY);
+    static final Component DEFAULTCHAR = Component.literal("-").withStyle(ChatFormatting.DARK_GRAY);
 
-    final static char[] SYMBOLS = "/\\#?!%$&*£[]{}abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789".toCharArray();
+    static final char[] SYMBOLS = "/\\#?!%$&*£[]{}abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789".toCharArray();
 
-    final static int HALFWIDTH = 20;
-    final static int HALFHEIGHT = 5;
+    static final int HALFWIDTH = 20;
+    static final int HALFHEIGHT = 5;
     private final ChunkPos centre;
     private final CompassDirection rotation;
     private final FactionLevel level;

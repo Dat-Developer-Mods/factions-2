@@ -1,7 +1,7 @@
-package com.datdeveloper.datfactions.factionData.relations;
+package com.datdeveloper.datfactions.factiondata.relations;
 
-import com.datdeveloper.datfactions.factionData.Faction;
-import com.datdeveloper.datfactions.factionData.FactionCollection;
+import com.datdeveloper.datfactions.factiondata.Faction;
+import com.datdeveloper.datfactions.factiondata.FactionCollection;
 
 import java.util.UUID;
 

@@ -1,6 +1,6 @@
 package com.datdeveloper.datfactions.commands.suggestions;
 
-import com.datdeveloper.datfactions.factionData.EFactionFlags;
+import com.datdeveloper.datfactions.factiondata.EFactionFlags;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 import com.mojang.brigadier.suggestion.Suggestions;

@@ -1,8 +1,8 @@
-package com.datdeveloper.datfactions.factionData.permissions;
+package com.datdeveloper.datfactions.factiondata.permissions;
 
 import com.datdeveloper.datfactions.database.DatabaseEntity;
-import com.datdeveloper.datfactions.factionData.Faction;
-import com.datdeveloper.datfactions.factionData.FactionCollection;
+import com.datdeveloper.datfactions.factiondata.Faction;
+import com.datdeveloper.datfactions.factiondata.FactionCollection;
 import com.datdeveloper.datmoddingapi.util.DatChatFormatting;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.*;

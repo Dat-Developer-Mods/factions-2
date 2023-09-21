@@ -1,9 +1,9 @@
 package com.datdeveloper.datfactions.commands.suggestions;
 
-import com.datdeveloper.datfactions.factionData.FPlayerCollection;
-import com.datdeveloper.datfactions.factionData.Faction;
-import com.datdeveloper.datfactions.factionData.FactionPlayer;
-import com.datdeveloper.datfactions.factionData.permissions.FactionRole;
+import com.datdeveloper.datfactions.factiondata.FPlayerCollection;
+import com.datdeveloper.datfactions.factiondata.Faction;
+import com.datdeveloper.datfactions.factiondata.FactionPlayer;
+import com.datdeveloper.datfactions.factiondata.permissions.FactionRole;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 import com.mojang.brigadier.suggestion.Suggestions;

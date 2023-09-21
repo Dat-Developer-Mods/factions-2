@@ -2,10 +2,10 @@ package com.datdeveloper.datfactions.commands;
 
 import com.datdeveloper.datfactions.commands.suggestions.DatSuggestionProviders;
 import com.datdeveloper.datfactions.commands.util.FactionCommandUtils;
-import com.datdeveloper.datfactions.factionData.FPlayerCollection;
-import com.datdeveloper.datfactions.factionData.Faction;
-import com.datdeveloper.datfactions.factionData.FactionCollection;
-import com.datdeveloper.datfactions.factionData.FactionPlayer;
+import com.datdeveloper.datfactions.factiondata.FPlayerCollection;
+import com.datdeveloper.datfactions.factiondata.Faction;
+import com.datdeveloper.datfactions.factiondata.FactionCollection;
+import com.datdeveloper.datfactions.factiondata.FactionPlayer;
 import com.datdeveloper.datmoddingapi.concurrentTask.ConcurrentHandler;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;

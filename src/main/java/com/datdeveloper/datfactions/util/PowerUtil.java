@@ -2,7 +2,7 @@ package com.datdeveloper.datfactions.util;
 
 import com.datdeveloper.datfactions.FactionsConfig;
 import com.datdeveloper.datfactions.api.events.FactionPlayerPowerChangeEvent;
-import com.datdeveloper.datfactions.factionData.FactionPlayer;
+import com.datdeveloper.datfactions.factiondata.FactionPlayer;
 import com.datdeveloper.datmoddingapi.util.DatChatFormatting;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.*;
@@ -10,9 +10,12 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.common.MinecraftForge;
 
 import java.util.Map;
-import java.util.stream.Collectors;
 
 public class PowerUtil {
+    private PowerUtil() {
+        throw new IllegalStateException("Utility class");
+    }
+
     public static void handlePowerChange(final FactionPlayer fPlayer, final int basePower, final int baseMaxPower, final Map<String, Float> multipliers) {
 
         final FactionPlayerPowerChangeEvent.PreFactionPlayerPowerChangeEvent preEvent = new FactionPlayerPowerChangeEvent.PreFactionPlayerPowerChangeEvent(null, fPlayer, null, basePower, baseMaxPower, multipliers, FactionPlayerPowerChangeEvent.EPowerChangeReason.PASSIVE);
@@ -41,7 +44,7 @@ public class PowerUtil {
                                                     Component.literal(DatChatFormatting.TextColour.INFO + "  %s: ".formatted(entry.getKey()))
                                                             .append(ChatFormatting.WHITE + "x%.2f".formatted(entry.getValue()))
                                             ))
-                                            .collect(Collectors.toList()),
+                                            .toList(),
                                     Component.literal("\n")
                             )).append("\n");
 

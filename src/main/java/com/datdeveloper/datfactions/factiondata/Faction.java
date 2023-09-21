@@ -1,12 +1,12 @@
-package com.datdeveloper.datfactions.factionData;
+package com.datdeveloper.datfactions.factiondata;
 
 import com.datdeveloper.datfactions.FactionsConfig;
 import com.datdeveloper.datfactions.api.events.FactionPlayerChangeRoleEvent;
 import com.datdeveloper.datfactions.commands.util.FactionCommandUtils;
 import com.datdeveloper.datfactions.database.DatabaseEntity;
-import com.datdeveloper.datfactions.factionData.permissions.FactionRole;
-import com.datdeveloper.datfactions.factionData.relations.EFactionRelation;
-import com.datdeveloper.datfactions.factionData.relations.FactionRelation;
+import com.datdeveloper.datfactions.factiondata.permissions.FactionRole;
+import com.datdeveloper.datfactions.factiondata.relations.EFactionRelation;
+import com.datdeveloper.datfactions.factiondata.relations.FactionRelation;
 import com.datdeveloper.datfactions.util.AgeUtil;
 import com.datdeveloper.datfactions.util.RelationUtil;
 import com.datdeveloper.datmoddingapi.collections.Pair;
@@ -690,7 +690,11 @@ public class Faction extends DatabaseEntity {
                     .append(DatChatFormatting.TextColour.INFO + "Power/Max: ")
                     .append(
                             Component.literal(powerStr)
-                                    .withStyle( power > 0.6666 * maxPower ? ChatFormatting.DARK_GREEN : (power > 0.3333 * maxPower ? ChatFormatting.GOLD : ChatFormatting.DARK_RED))
+                                    .withStyle( power > 0.6666 * maxPower
+                                            ? ChatFormatting.DARK_GREEN
+                                            : (power > 0.3333 * maxPower
+                                                    ? ChatFormatting.GOLD
+                                                    : ChatFormatting.DARK_RED))
                     )
                     .append(ChatFormatting.WHITE + "/" + maxPowerStr);
         }
@@ -811,7 +815,11 @@ public class Faction extends DatabaseEntity {
             component.append(DatChatFormatting.TextColour.INFO + "Power/Max: ")
                     .append(
                             Component.literal(powerStr)
-                                    .withStyle( power > 0.6666 * maxPower ? ChatFormatting.DARK_GREEN : (power > 0.3333 * maxPower ? ChatFormatting.GOLD : ChatFormatting.DARK_RED))
+                                    .withStyle( power > 0.6666 * maxPower
+                                            ? ChatFormatting.DARK_GREEN
+                                            : (power > 0.3333 * maxPower
+                                                    ? ChatFormatting.GOLD
+                                                    : ChatFormatting.DARK_RED))
                     )
                     .append(ChatFormatting.WHITE + "/" + maxPowerStr);
         }

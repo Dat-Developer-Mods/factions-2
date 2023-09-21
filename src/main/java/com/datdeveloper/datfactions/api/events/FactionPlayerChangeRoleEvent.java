@@ -1,7 +1,7 @@
 package com.datdeveloper.datfactions.api.events;
 
-import com.datdeveloper.datfactions.factionData.FactionPlayer;
-import com.datdeveloper.datfactions.factionData.permissions.FactionRole;
+import com.datdeveloper.datfactions.factiondata.FactionPlayer;
+import com.datdeveloper.datfactions.factiondata.permissions.FactionRole;
 import net.minecraft.commands.CommandSource;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

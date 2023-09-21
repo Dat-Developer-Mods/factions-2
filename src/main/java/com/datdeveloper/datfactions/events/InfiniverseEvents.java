@@ -1,7 +1,7 @@
 package com.datdeveloper.datfactions.events;
 
 import com.datdeveloper.datfactions.Datfactions;
-import com.datdeveloper.datfactions.factionData.FLevelCollection;
+import com.datdeveloper.datfactions.factiondata.FLevelCollection;
 import commoble.infiniverse.api.UnregisterDimensionEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;

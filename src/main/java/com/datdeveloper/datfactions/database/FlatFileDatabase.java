@@ -1,13 +1,13 @@
 package com.datdeveloper.datfactions.database;
 
-import com.datdeveloper.datfactions.database.jsonAdapters.BlockPosAdapter;
-import com.datdeveloper.datfactions.database.jsonAdapters.ChunkPosAdapter;
-import com.datdeveloper.datfactions.database.jsonAdapters.DatUUIDTypeAdapter;
-import com.datdeveloper.datfactions.database.jsonAdapters.ResourceKeyAdapterFactory;
-import com.datdeveloper.datfactions.factionData.Faction;
-import com.datdeveloper.datfactions.factionData.FactionLevel;
-import com.datdeveloper.datfactions.factionData.FactionLevelSettings;
-import com.datdeveloper.datfactions.factionData.FactionPlayer;
+import com.datdeveloper.datfactions.database.jsonadapters.BlockPosAdapter;
+import com.datdeveloper.datfactions.database.jsonadapters.ChunkPosAdapter;
+import com.datdeveloper.datfactions.database.jsonadapters.DatUUIDTypeAdapter;
+import com.datdeveloper.datfactions.database.jsonadapters.ResourceKeyAdapterFactory;
+import com.datdeveloper.datfactions.factiondata.Faction;
+import com.datdeveloper.datfactions.factiondata.FactionLevel;
+import com.datdeveloper.datfactions.factiondata.FactionLevelSettings;
+import com.datdeveloper.datfactions.factiondata.FactionPlayer;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;

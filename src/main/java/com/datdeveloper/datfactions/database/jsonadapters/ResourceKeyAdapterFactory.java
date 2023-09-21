@@ -1,4 +1,4 @@
-package com.datdeveloper.datfactions.database.jsonAdapters;
+package com.datdeveloper.datfactions.database.jsonadapters;
 
 import com.google.gson.Gson;
 import com.google.gson.TypeAdapter;

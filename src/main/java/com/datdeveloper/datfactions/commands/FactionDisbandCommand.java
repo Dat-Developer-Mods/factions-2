@@ -2,9 +2,9 @@ package com.datdeveloper.datfactions.commands;
 
 import com.datdeveloper.datfactions.api.events.FactionDisbandEvent;
 import com.datdeveloper.datfactions.commands.util.FactionCommandUtils;
-import com.datdeveloper.datfactions.factionData.*;
-import com.datdeveloper.datfactions.factionData.permissions.ERolePermissions;
-import com.datdeveloper.datfactions.factionData.relations.EFactionRelation;
+import com.datdeveloper.datfactions.factiondata.*;
+import com.datdeveloper.datfactions.factiondata.permissions.ERolePermissions;
+import com.datdeveloper.datfactions.factiondata.relations.EFactionRelation;
 import com.datdeveloper.datmoddingapi.permissions.DatPermissions;
 import com.datdeveloper.datmoddingapi.util.DatChatFormatting;
 import com.mojang.brigadier.arguments.BoolArgumentType;

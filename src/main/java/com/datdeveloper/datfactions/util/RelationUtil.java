@@ -1,14 +1,18 @@
 package com.datdeveloper.datfactions.util;
 
-import com.datdeveloper.datfactions.factionData.relations.EFactionRelation;
-import com.datdeveloper.datfactions.factionData.Faction;
-import com.datdeveloper.datfactions.factionData.FactionPlayer;
-import com.datdeveloper.datfactions.factionData.relations.FactionRelation;
+import com.datdeveloper.datfactions.factiondata.relations.EFactionRelation;
+import com.datdeveloper.datfactions.factiondata.Faction;
+import com.datdeveloper.datfactions.factiondata.FactionPlayer;
+import com.datdeveloper.datfactions.factiondata.relations.FactionRelation;
 
 /**
  * Utilities for getting relations between players and factions
  */
 public class RelationUtil {
+    private RelationUtil() {
+        throw new IllegalStateException("Utility class");
+    }
+
     /**
      * Get the relation between 2 players
      * @param from the player the relation is being tested for

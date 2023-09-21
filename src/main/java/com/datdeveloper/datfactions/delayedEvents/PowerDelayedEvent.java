@@ -1,7 +1,7 @@
 package com.datdeveloper.datfactions.delayedEvents;
 
 import com.datdeveloper.datfactions.FactionsConfig;
-import com.datdeveloper.datfactions.factionData.*;
+import com.datdeveloper.datfactions.factiondata.*;
 import com.datdeveloper.datfactions.util.PowerUtil;
 import com.datdeveloper.datmoddingapi.delayedEvents.TimeDelayedEvent;
 import net.minecraft.server.level.ServerPlayer;

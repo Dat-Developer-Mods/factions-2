@@ -3,9 +3,9 @@ package com.datdeveloper.datfactions.events;
 import com.datdeveloper.datfactions.Datfactions;
 import com.datdeveloper.datfactions.commands.FactionPermissions;
 import com.datdeveloper.datfactions.commands.FactionsCommand;
-import com.datdeveloper.datfactions.factionData.*;
-import com.datdeveloper.datfactions.factionData.permissions.ERolePermissions;
-import com.datdeveloper.datfactions.factionData.relations.EFactionRelation;
+import com.datdeveloper.datfactions.factiondata.*;
+import com.datdeveloper.datfactions.factiondata.permissions.ERolePermissions;
+import com.datdeveloper.datfactions.factiondata.relations.EFactionRelation;
 import com.datdeveloper.datfactions.util.RelationUtil;
 import com.datdeveloper.datmoddingapi.util.DatChatFormatting;
 import net.minecraft.core.BlockPos;
@@ -128,7 +128,7 @@ public class ServerEvents {
         final Map<ChunkPos, Set<BlockPos>> chunkMap = new HashMap<>();
 
         for (final BlockPos blockPos : event.getAffectedBlocks()) {
-            chunkMap.computeIfAbsent(new ChunkPos(blockPos), (chunkPos) -> new HashSet<>()).add(blockPos);
+            chunkMap.computeIfAbsent(new ChunkPos(blockPos), chunkPos -> new HashSet<>()).add(blockPos);
         }
 
         chunkMap.forEach((key, value) -> {
@@ -156,10 +156,10 @@ public class ServerEvents {
         if (chunkOwner.hasFlag(EFactionFlags.OPENBUILD)) return true;
 
         // If not owner then only allow allies
-        if (!Objects.equals(chunkOwner, faction)) {
-            if (RelationUtil.getMutualRelation(faction, chunkOwner) != EFactionRelation.ALLY) {
+        if (!Objects.equals(chunkOwner, faction)
+                && (RelationUtil.getMutualRelation(faction, chunkOwner) != EFactionRelation.ALLY)) {
                 return false;
-            }
+
         }
 
         // Ensure player has build permission

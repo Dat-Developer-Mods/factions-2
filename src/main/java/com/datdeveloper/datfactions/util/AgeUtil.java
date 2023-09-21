@@ -1,6 +1,9 @@
 package com.datdeveloper.datfactions.util;
 
 public class AgeUtil {
+    private AgeUtil() {
+        throw new IllegalStateException("Utility class");
+    }
     /**
      * Get a string explaining how long ago the timestamp was<br>
      * For example, if the timestamp represents 3500 seconds ago, it would return "58 minutes"

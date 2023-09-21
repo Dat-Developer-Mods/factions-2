@@ -1,7 +1,7 @@
 package com.datdeveloper.datfactions.delayedEvents;
 
 import com.datdeveloper.datfactions.FactionsConfig;
-import com.datdeveloper.datfactions.factionData.FactionCollection;
+import com.datdeveloper.datfactions.factiondata.FactionCollection;
 import com.datdeveloper.datmoddingapi.delayedEvents.TimeDelayedEvent;
 
 import static com.datdeveloper.datfactions.Datfactions.logger;

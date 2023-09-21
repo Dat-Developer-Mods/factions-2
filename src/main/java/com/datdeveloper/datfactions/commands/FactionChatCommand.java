@@ -2,11 +2,11 @@ package com.datdeveloper.datfactions.commands;
 
 import com.datdeveloper.datfactions.FactionsConfig;
 import com.datdeveloper.datfactions.commands.util.FactionCommandUtils;
-import com.datdeveloper.datfactions.factionData.EFPlayerChatMode;
-import com.datdeveloper.datfactions.factionData.FPlayerCollection;
-import com.datdeveloper.datfactions.factionData.Faction;
-import com.datdeveloper.datfactions.factionData.FactionPlayer;
-import com.datdeveloper.datfactions.factionData.permissions.ERolePermissions;
+import com.datdeveloper.datfactions.factiondata.EFPlayerChatMode;
+import com.datdeveloper.datfactions.factiondata.FPlayerCollection;
+import com.datdeveloper.datfactions.factiondata.Faction;
+import com.datdeveloper.datfactions.factiondata.FactionPlayer;
+import com.datdeveloper.datfactions.factiondata.permissions.ERolePermissions;
 import com.datdeveloper.datmoddingapi.permissions.DatPermissions;
 import com.datdeveloper.datmoddingapi.util.DatChatFormatting;
 import com.mojang.brigadier.arguments.StringArgumentType;
@@ -23,7 +23,7 @@ import static com.datdeveloper.datfactions.commands.FactionPermissions.FACTION_C
 public class FactionChatCommand {
     static void register(final LiteralArgumentBuilder<CommandSourceStack> command) {
         final LiteralCommandNode<CommandSourceStack> subCommand = Commands.literal("chat")
-                .requires((commandSourceStack) -> {
+                .requires(commandSourceStack -> {
                     if (!(FactionsConfig.getUseFactionChat() && commandSourceStack.isPlayer() && DatPermissions.hasPermission(commandSourceStack.getPlayer(), FACTION_CHAT)))
                         return false;
                     final FactionPlayer fPlayer = FactionCommandUtils.getPlayerOrTemplate(commandSourceStack.getPlayer());
@@ -92,9 +92,7 @@ public class FactionChatCommand {
                                 newChatMode = EFPlayerChatMode.PUBLIC;
                             }
                         }
-                        case ALLY -> {
-                            newChatMode = EFPlayerChatMode.PUBLIC;
-                        }
+                        case ALLY -> newChatMode = EFPlayerChatMode.PUBLIC;
                         default -> throw new IllegalStateException("Unexpected value: " + factionPlayer.getChatMode());
                     }
 

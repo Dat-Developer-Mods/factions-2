@@ -1,6 +1,6 @@
 package com.datdeveloper.datfactions.commands;
 
-import com.datdeveloper.datfactions.factionData.*;
+import com.datdeveloper.datfactions.factiondata.*;
 import com.datdeveloper.datmoddingapi.concurrentTask.ConcurrentHandler;
 import com.datdeveloper.datmoddingapi.command.util.Pager;
 import com.datdeveloper.datmoddingapi.util.DatChatFormatting;
@@ -43,7 +43,7 @@ public class FactionListCommand {
                 return;
             }
 
-            final Pager<Faction> pager = new Pager<>("/f list", "Factions", factions, (faction) ->
+            final Pager<Faction> pager = new Pager<>("/f list", "Factions", factions, faction ->
                     faction.getNameWithDescription(player.getFaction())
                     .withStyle(faction.isAnyoneOnline() ? DatChatFormatting.PlayerColour.ONLINE : DatChatFormatting.PlayerColour.OFFLINE)
             );

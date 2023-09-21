@@ -1,6 +1,6 @@
 package com.datdeveloper.datfactions;
 
-import com.datdeveloper.datfactions.factionData.EFactionFlags;
+import com.datdeveloper.datfactions.factiondata.EFactionFlags;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.ForgeConfigSpec.ConfigValue;
 

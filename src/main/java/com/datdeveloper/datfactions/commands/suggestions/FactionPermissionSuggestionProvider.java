@@ -1,6 +1,6 @@
 package com.datdeveloper.datfactions.commands.suggestions;
 
-import com.datdeveloper.datfactions.factionData.permissions.ERolePermissions;
+import com.datdeveloper.datfactions.factiondata.permissions.ERolePermissions;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 import com.mojang.brigadier.suggestion.Suggestions;

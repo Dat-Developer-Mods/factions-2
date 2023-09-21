@@ -1,7 +1,7 @@
 package com.datdeveloper.datfactions.api.events;
 
-import com.datdeveloper.datfactions.factionData.Faction;
-import com.datdeveloper.datfactions.factionData.FactionLevel;
+import com.datdeveloper.datfactions.factiondata.Faction;
+import com.datdeveloper.datfactions.factiondata.FactionLevel;
 import net.minecraft.commands.CommandSource;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraftforge.eventbus.api.EventPriority;

@@ -2,8 +2,8 @@ package com.datdeveloper.datfactions.commands;
 
 import com.datdeveloper.datfactions.api.events.FactionSetHomeEvent;
 import com.datdeveloper.datfactions.commands.util.FactionCommandUtils;
-import com.datdeveloper.datfactions.factionData.*;
-import com.datdeveloper.datfactions.factionData.permissions.ERolePermissions;
+import com.datdeveloper.datfactions.factiondata.*;
+import com.datdeveloper.datfactions.factiondata.permissions.ERolePermissions;
 import com.datdeveloper.datmoddingapi.permissions.DatPermissions;
 import com.datdeveloper.datmoddingapi.util.DatChatFormatting;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
@@ -43,11 +43,12 @@ public class FactionSetHomeCommand {
                     newHomeLevel = event.getNewHomeLevel();
                     newHomePos = event.getNewHomePos();
 
-                    if (!event.isSkipDefaultChecks()) {
-                        if (newHomeLevel.getSettings().isHomeRequiresOwnedChunk() && !faction.equals(newHomeLevel.getChunkOwningFaction(new ChunkPos(newHomePos)))) {
+                    if (!event.isSkipDefaultChecks()
+                            && (newHomeLevel.getSettings().isHomeRequiresOwnedChunk()
+                                    && !faction.equals(newHomeLevel.getChunkOwningFaction(new ChunkPos(newHomePos))))) {
                             c.getSource().sendFailure(Component.literal("You can only set your faction home on chunks you own"));
                             return -1;
-                        }
+
                     }
 
                     faction.setFactionHome(newHomeLevel.getId(), newHomePos);

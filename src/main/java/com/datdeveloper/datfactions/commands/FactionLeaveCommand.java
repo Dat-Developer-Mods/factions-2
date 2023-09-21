@@ -2,10 +2,10 @@ package com.datdeveloper.datfactions.commands;
 
 import com.datdeveloper.datfactions.api.events.FactionPlayerChangeMembershipEvent;
 import com.datdeveloper.datfactions.commands.util.FactionCommandUtils;
-import com.datdeveloper.datfactions.factionData.FPlayerCollection;
-import com.datdeveloper.datfactions.factionData.Faction;
-import com.datdeveloper.datfactions.factionData.FactionPlayer;
-import com.datdeveloper.datfactions.factionData.permissions.FactionRole;
+import com.datdeveloper.datfactions.factiondata.FPlayerCollection;
+import com.datdeveloper.datfactions.factiondata.Faction;
+import com.datdeveloper.datfactions.factiondata.FactionPlayer;
+import com.datdeveloper.datfactions.factiondata.permissions.FactionRole;
 import com.datdeveloper.datfactions.util.RelationUtil;
 import com.datdeveloper.datmoddingapi.permissions.DatPermissions;
 import com.datdeveloper.datmoddingapi.util.DatChatFormatting;

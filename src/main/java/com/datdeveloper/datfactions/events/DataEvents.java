@@ -4,7 +4,7 @@ import com.datdeveloper.datfactions.Datfactions;
 import com.datdeveloper.datfactions.FactionsConfig;
 import com.datdeveloper.datfactions.database.Database;
 import com.datdeveloper.datfactions.database.FlatFileDatabase;
-import com.datdeveloper.datfactions.factionData.*;
+import com.datdeveloper.datfactions.factiondata.*;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
@@ -32,6 +32,10 @@ import static com.datdeveloper.datfactions.Datfactions.logger;
  */
 @Mod.EventBusSubscriber(modid = Datfactions.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class DataEvents {
+    private DataEvents() {
+        throw new IllegalStateException("Utility class");
+    }
+
     /* ========================================= */
     /* Startup and shutdown
     /* ========================================= */
@@ -92,7 +96,7 @@ public class DataEvents {
     @SubscribeEvent
     public static void levelSave(final LevelEvent.Save event) {
         // This fires for all levels, we just want to save once, so only run on the overworld
-        if (!ServerLevel.OVERWORLD.equals(((ServerLevel) event.getLevel()).dimension())) return;
+        if (!Level.OVERWORLD.equals(((ServerLevel) event.getLevel()).dimension())) return;
 
         logger.info("Saving faction data");
         FactionCollection.getInstance().saveDirty();
