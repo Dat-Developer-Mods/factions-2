@@ -106,7 +106,7 @@ public class PlayerEvents {
     /**
      * Gain Power
      * <br>
-     * These functions have been split for readability and simplicities sake. They would be more efficient as one
+     * These functions have been split for readability and simplicities sake. They would be more efficient as one,
      * but it's not worth the headache
      * @see #playerKilled(LivingDeathEvent)
      */

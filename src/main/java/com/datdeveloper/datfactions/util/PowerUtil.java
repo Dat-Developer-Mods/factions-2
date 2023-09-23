@@ -17,7 +17,6 @@ public class PowerUtil {
     }
 
     public static void handlePowerChange(final FactionPlayer fPlayer, final int basePower, final int baseMaxPower, final Map<String, Float> multipliers) {
-
         final FactionPlayerPowerChangeEvent.PreFactionPlayerPowerChangeEvent preEvent = new FactionPlayerPowerChangeEvent.PreFactionPlayerPowerChangeEvent(null, fPlayer, null, basePower, baseMaxPower, multipliers, FactionPlayerPowerChangeEvent.EPowerChangeReason.PASSIVE);
         MinecraftForge.EVENT_BUS.post(preEvent);
         if (preEvent.isCanceled()) return;

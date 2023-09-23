@@ -159,7 +159,6 @@ public class ServerEvents {
         if (!Objects.equals(chunkOwner, faction)
                 && (RelationUtil.getMutualRelation(faction, chunkOwner) != EFactionRelation.ALLY)) {
                 return false;
-
         }
 
         // Ensure player has build permission
@@ -342,7 +341,8 @@ public class ServerEvents {
                                         .withStyle(RelationUtil.getRelation(faction, chunkOwner).formatting)
                         )
         );
-        event.setCanceled(true);    }
+        event.setCanceled(true);
+    }
 
     // Piston
     /**

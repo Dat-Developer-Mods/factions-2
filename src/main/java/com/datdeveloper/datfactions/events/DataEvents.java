@@ -173,6 +173,5 @@ public class DataEvents {
         if (!server.getPlayerList().getBans().isBanned(player.getGameProfile())) return;
 
         FPlayerCollection.getInstance().deregisterPlayer(player.getUUID());
-        // Handle Banned
     }
 }
