@@ -1,7 +1,7 @@
 import net.darkhax.curseforgegradle.TaskPublishCurseForge
 
 plugins {
-    id 'net.minecraftforge.gradle' version '[6.0,6.2)'
+    id 'net.neoforged.gradle' version '[6.0.18,6.2)'
     id 'org.parchmentmc.librarian.forgegradle' version '1.+'
 
     id 'idea'
@@ -25,6 +25,7 @@ java {
     withJavadocJar()
     withSourcesJar()
 }
+
 minecraft {
     mappings channel: mapping_channel, version: "${parchment_version}-${minecraft_version}"
 
@@ -94,7 +95,7 @@ repositories {
 }
 
 dependencies {
-    minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
+    minecraft "net.neoforged:forge:${minecraft_version}-${neo_version}"
 
     implementation "com.mojang:brigadier:${brigadier_version}"
     implementation "com.google.code.gson:gson:${gson_version}"
@@ -110,7 +111,7 @@ dependencies {
 tasks.named('processResources', ProcessResources).configure {
     var replaceProperties = [
             minecraft_version: minecraft_version, minecraft_version_range: minecraft_version_range,
-            forge_version: forge_version, forge_version_range: forge_version_range,
+            neo_version: neo_version, neo_version_range: neo_version_range,
             loader_version_range: loader_version_range,
             mod_id: mod_id, mod_name: mod_name, mod_license: mod_license, mod_version: mod_version,
             mod_authors: mod_authors, mod_description: mod_description,
@@ -220,14 +221,13 @@ tasks.register('publishCurseForge', TaskPublishCurseForge) {
     mainFile.changelog=System.getenv("CHANGELOG")
     mainFile.changelogType='markdown'
     mainFile.displayName="${mod_name} - ${version}"
-    mainFile.addModLoader("Forge")
+    mainFile.addModLoader("NeoForge")
     mainFile.addGameVersion(minecraft_version)
     mainFile.addJavaVersion("Java 17")
 }
 
 // Modrinth Publishing
 modrinth {
-    debugMode=true
     token=System.getenv("MODRINTH_TOKEN")
     projectId=modrinth_id
     versionName="${mod_name} - ${version}"
