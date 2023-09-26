@@ -4,8 +4,12 @@ import com.datdeveloper.datfactions.database.DatabaseEntity;
 import com.datdeveloper.datfactions.factiondata.Faction;
 import com.datdeveloper.datfactions.factiondata.FactionCollection;
 import com.datdeveloper.datmoddingapi.util.DatChatFormatting;
+import com.datdeveloper.datmoddingapi.util.DatCodec;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.*;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
@@ -13,6 +17,15 @@ import java.util.*;
  * A role inside the faction, representing the permissions a player has in the faction
  */
 public class FactionRole extends DatabaseEntity {
+    public static final Codec<FactionRole> ROLE_CODEC = RecordCodecBuilder.create(instance -> instance.group(
+        DatCodec.UUID_CODEC.fieldOf("id").forGetter(FactionRole::getId),
+        Codec.STRING.fieldOf("name").forGetter(FactionRole::getName),
+        Codec.BOOL.fieldOf("administrator").forGetter(FactionRole::isAdministrator),
+        DatCodec.getEnumCodec(ERolePermissions.class).listOf().fieldOf("permissions").forGetter(i -> i.getPermissions().stream().toList())
+    ).apply(instance, (id, name, administrator, permissionsList) ->
+            new FactionRole(id, name, administrator, new HashSet<>(permissionsList))
+    ));
+
     /**
      * The role's ID
      */
@@ -21,6 +34,7 @@ public class FactionRole extends DatabaseEntity {
     /**
      * The name of the role
      */
+    @NotNull
     String name;
 
     /**
@@ -33,11 +47,21 @@ public class FactionRole extends DatabaseEntity {
      */
     Set<ERolePermissions> permissions;
 
-    public FactionRole(final String name) {
+    public FactionRole(final @NotNull String name) {
         this.id = UUID.randomUUID();
         this.name = name;
         this.administrator = false;
         permissions = new HashSet<>();
+    }
+
+    /**
+     * Serialisation Constructor
+     */
+    private FactionRole(final UUID id, @NotNull final String name, final boolean administrator, final Set<ERolePermissions> permissions) {
+        this.id = id;
+        this.name = name;
+        this.administrator = administrator;
+        this.permissions = permissions;
     }
 
     /**

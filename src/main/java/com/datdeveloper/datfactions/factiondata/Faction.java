@@ -7,12 +7,16 @@ import com.datdeveloper.datfactions.database.DatabaseEntity;
 import com.datdeveloper.datfactions.factiondata.permissions.FactionRole;
 import com.datdeveloper.datfactions.factiondata.relations.EFactionRelation;
 import com.datdeveloper.datfactions.factiondata.relations.FactionRelation;
-import com.datdeveloper.datfactions.util.AgeUtil;
 import com.datdeveloper.datfactions.util.RelationUtil;
 import com.datdeveloper.datmoddingapi.collections.Pair;
+import com.datdeveloper.datmoddingapi.util.AgeUtil;
 import com.datdeveloper.datmoddingapi.util.DatChatFormatting;
+import com.datdeveloper.datmoddingapi.util.DatCodec;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.*;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
@@ -27,6 +31,20 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class Faction extends DatabaseEntity {
+    public static final Codec<Faction> FACTION_CODEC = RecordCodecBuilder.create(instance -> instance.group(
+            DatCodec.UUID_CODEC.fieldOf("id").forGetter(Faction::getId),
+            Codec.STRING.fieldOf("name").forGetter(Faction::getName),
+            Codec.STRING.fieldOf("description").forGetter(Faction::getDescription),
+            Codec.STRING.fieldOf("motd").forGetter(Faction::getMotd),
+            Codec.INT.fieldOf("factionPower").forGetter(Faction::getBonusPower),
+            Codec.LONG.fieldOf("creationTime").forGetter(Faction::getCreationTime),
+            BlockPos.CODEC.fieldOf("homeLocation").forGetter(Faction::getHomeLocation),
+            ResourceKey.codec(Registries.DIMENSION).fieldOf("homeLevel").forGetter(Faction::getHomeLevel),
+            DatCodec.UUID_CODEC.listOf().fieldOf("playerInvites").forGetter(i -> i.getPlayerInvites().stream().toList()),
+            FactionRole.ROLE_CODEC.listOf().fieldOf("roles").forGetter(Faction::getRoles)
+
+
+        ).apply());
     /**
      * The faction's ID
      */
@@ -215,16 +233,34 @@ public class Faction extends DatabaseEntity {
     /* Power
     /* ========================================= */
 
+    /**
+     * Get the amount of power provided by the faction to the total power
+     */
+    public int getBonusPower() {
+        return factionPower;
+    }
+
+    /**
+     * Get the total amount of power held by the faction, including the faction's power and the power contributed by
+     * all its players
+     */
     public int getTotalPower() {
         if (hasFlag(EFactionFlags.INFINITEPOWER)) return Integer.MAX_VALUE;
-        return Math.min(factionPower + getPlayers().stream().mapToInt(FactionPlayer::getPower).sum(), FactionsConfig.getFactionMaxPower());
+        return Math.min(getBonusPower() + getPlayers().stream().mapToInt(FactionPlayer::getPower).sum(), FactionsConfig.getFactionMaxPower());
     }
 
+    /**
+     * Get the total amount of max power held by the faction, including the faction's bonus power, and the max power
+     * contributed by all its players
+     */
     public int getTotalMaxPower() {
         if (hasFlag(EFactionFlags.INFINITEPOWER)) return Integer.MAX_VALUE;
-        return Math.min(factionPower + getPlayers().stream().mapToInt(FactionPlayer::getMaxPower).sum(), FactionsConfig.getFactionMaxPower());
+        return Math.min(getBonusPower() + getPlayers().stream().mapToInt(FactionPlayer::getMaxPower).sum(), FactionsConfig.getFactionMaxPower());
     }
 
+    /**
+     * Get the maximum amount of land worth this faction can hold
+     */
     public int getMaxLandWorth() {
         return (int) (getTotalPower() * FactionsConfig.getPowerLandMultiplier());
     }
