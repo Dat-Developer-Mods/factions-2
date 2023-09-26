@@ -6,7 +6,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Parent to Events that happen on a faction
+ * Parent to Events that occur on a faction
  */
 public class FactionEvent extends BaseFactionEvent {
     /**
@@ -18,7 +18,7 @@ public class FactionEvent extends BaseFactionEvent {
      * @param instigator The CommandSource that instigated the event
      * @param faction The faction the event is about
      */
-    FactionEvent(@Nullable final CommandSource instigator, @NotNull final Faction faction) {
+    protected FactionEvent(@Nullable final CommandSource instigator, @NotNull final Faction faction) {
         super(instigator);
         this.faction = faction;
     }

@@ -1,15 +1,13 @@
 package com.datdeveloper.datfactions.commands;
 
-import com.datdeveloper.datfactions.FactionsConfig;
-import com.datdeveloper.datfactions.api.events.FactionChangeFlagsEvent;
 import com.datdeveloper.datfactions.commands.suggestions.DatSuggestionProviders;
 import com.datdeveloper.datfactions.commands.util.FactionCommandUtils;
 import com.datdeveloper.datfactions.factiondata.EFactionFlags;
 import com.datdeveloper.datfactions.factiondata.Faction;
 import com.datdeveloper.datfactions.factiondata.FactionPlayer;
 import com.datdeveloper.datfactions.factiondata.permissions.ERolePermissions;
-import com.datdeveloper.datmoddingapi.concurrentTask.ConcurrentHandler;
 import com.datdeveloper.datmoddingapi.command.util.Pager;
+import com.datdeveloper.datmoddingapi.concurrentTask.ConcurrentHandler;
 import com.datdeveloper.datmoddingapi.permissions.DatPermissions;
 import com.datdeveloper.datmoddingapi.util.DatChatFormatting;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
@@ -20,7 +18,6 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraftforge.common.MinecraftForge;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -115,29 +112,27 @@ public class FactionFlagsCommand {
                                         return 2;
                                     }
 
-
-
-                                    final FactionChangeFlagsEvent.PreAdd pre = new FactionChangeFlagsEvent.PreAdd(c.getSource().source, faction, flags);
-                                    MinecraftForge.EVENT_BUS.post(pre);
-
-                                    if (flag.admin || !FactionsConfig.getFlagWhitelisted(flag)) {
-                                        c.getSource().sendFailure(Component.literal("You're not allowed to use that flag"));
-                                        return 3;
-                                    } else if (faction.hasFlag(flag)) {
-                                        c.getSource().sendFailure(Component.literal("Your faction already has that flag"));
-                                        return 4;
-                                    }
-
-                                    faction.addFlag(flag);
-
-                                    c.getSource().sendSuccess(
-                                            Component.literal(DatChatFormatting.TextColour.INFO + "Successfully added the ")
-                                                    .append(
-                                                            flag.getChatComponent()
-                                                                    .withStyle(ChatFormatting.DARK_PURPLE)
-                                                    )
-                                                    .append(DatChatFormatting.TextColour.INFO + " flag to your faction"),
-                                            false);
+//                                    final FactionChangeFlagsEvent.PreAdd pre = new FactionChangeFlagsEvent.PreAdd(c.getSource().source, faction, flags);
+//                                    MinecraftForge.EVENT_BUS.post(pre);
+//
+//                                    if (flag.admin || !FactionsConfig.getFlagWhitelisted(flag)) {
+//                                        c.getSource().sendFailure(Component.literal("You're not allowed to use that flag"));
+//                                        return 3;
+//                                    } else if (faction.hasFlag(flag)) {
+//                                        c.getSource().sendFailure(Component.literal("Your faction already has that flag"));
+//                                        return 4;
+//                                    }
+//
+//                                    faction.addFlag(flag);
+//
+//                                    c.getSource().sendSuccess(
+//                                            Component.literal(DatChatFormatting.TextColour.INFO + "Successfully added the ")
+//                                                    .append(
+//                                                            flag.getChatComponent()
+//                                                                    .withStyle(ChatFormatting.DARK_PURPLE)
+//                                                    )
+//                                                    .append(DatChatFormatting.TextColour.INFO + " flag to your faction"),
+//                                            false);
 
                                     return 1;
                                 })
