@@ -7,7 +7,7 @@ import com.datdeveloper.datfactions.database.DatabaseEntity;
 import com.datdeveloper.datfactions.factiondata.permissions.FactionRole;
 import com.datdeveloper.datfactions.factiondata.relations.EFactionRelation;
 import com.datdeveloper.datfactions.factiondata.relations.FactionRelation;
-import com.datdeveloper.datfactions.util.AgeUtil;
+import com.datdeveloper.datmoddingapi.util.AgeUtil;
 import com.datdeveloper.datfactions.util.RelationUtil;
 import com.datdeveloper.datmoddingapi.collections.Pair;
 import com.datdeveloper.datmoddingapi.util.DatChatFormatting;
@@ -27,63 +27,39 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class Faction extends DatabaseEntity {
-    /**
-     * The faction's ID
-     */
+    /** The faction's ID */
     final UUID id;
 
-    /**
-     * The faction's name
-     */
+    /** The faction's name */
     String name;
 
-    /**
-     * The faction's Description
-     */
+    /** The faction's Description */
     String description;
 
-    /**
-     * The faction's MOTD
-     */
+    /** The faction's MOTD */
     String motd;
 
-    /**
-     * The amount of bonus power that the faction has
-     */
+    /** The amount of bonus power that the faction has */
     int factionPower;
 
-    /**
-     * The timestamp the faction was created
-     */
+    /** The timestamp the faction was created */
     long creationTime;
 
-    /**
-     * The block position of the faction's home
-     */
+    /** The block position of the faction's home */
     BlockPos homeLocation;
 
-    /**
-     * The level of the faction's home
-     */
+    /** The level of the faction's home */
     ResourceKey<Level> homeLevel;
 
-    /**
-     * The invites to players the faction has
-     */
+    /** The invites to players the faction has */
     final Set<UUID> playerInvites;
 
-    /**
-     * The roles the faction has, in order from owner to recruit (owner at position 0, recruit in last place)
-     */
+    /** The roles the faction has, in order from owner to recruit (owner at position 0, recruit in last place) */
     final List<FactionRole> roles;
 
-    /**
-     * A set of flags the faction has
-     */
+    /** A set of flags the faction has */
     final Set<EFactionFlags> flags;
-    /**
-     * The relations the faction has
-     */
+    /** The relations the faction has */
     final Map<UUID, FactionRelation> relations;
 
     /**
@@ -143,12 +119,8 @@ public class Faction extends DatabaseEntity {
         this.relations = new HashMap<>();
     }
 
-    public Set<FactionPlayer> getPlayers() {
-        return FactionIndex.getInstance().getFactionPlayers(this);
-    }
-
     /* ========================================= */
-    /* Getters
+    /* Getters                                   */
     /* ========================================= */
 
     public UUID getId() {
@@ -179,6 +151,10 @@ public class Faction extends DatabaseEntity {
         return homeLevel;
     }
 
+    /* ========================================= */
+    /* Setters                                   */
+    /* ========================================= */
+
     public void setName(final String newName) {
         if (newName.equals(name) || newName.isEmpty()) return;
 
@@ -203,34 +179,86 @@ public class Faction extends DatabaseEntity {
         markDirty();
     }
 
+    /**
+     * Set the level and location of faction's home
+     * @param newHomeLevel The level the faction home is in
+     * @param newHomeLocation The location of the faction home
+     */
     public void setFactionHome(final ResourceKey<Level> newHomeLevel, final BlockPos newHomeLocation) {
         this.homeLocation = newHomeLocation;
         this.homeLevel = newHomeLevel;
         markDirty();
     }
 
-
-
     /* ========================================= */
-    /* Power
+    /* Player                                    */
     /* ========================================= */
 
+    public Set<FactionPlayer> getPlayers() {
+        return FactionIndex.getInstance().getFactionPlayers(this);
+    }
+
+    /**
+     * Get a set of players with the given role
+     * @param roleId The ID of the role to get the players of
+     * @return A set of players with the given role
+     */
+    public Set<FactionPlayer> getPlayersWithRole(final UUID roleId) {
+        return getPlayers().stream()
+                .filter(player -> roleId.equals(player.getRoleId()))
+                .collect(Collectors.toSet());
+    }
+
+    /**
+     * Get the owner of the faction
+     * @return The owner of the faction, or null if the faction isn't owned
+     */
+    @Nullable
+    public FactionPlayer getOwner() {
+        return getPlayers().stream()
+                .filter(player -> getOwnerRole().getId().equals(player.getRoleId()))
+                .findAny()
+                .orElse(null);
+    }
+
+    /* ========================================= */
+    /* Power                                     */
+    /* ========================================= */
+
+    /**
+     * Get the total amount of power the faction has
+     * <br>
+     * This calculates the amount of power using the faction's bonus power, plus the power of each of it's members
+     * @return The total power of the faction
+     */
     public int getTotalPower() {
         if (hasFlag(EFactionFlags.INFINITEPOWER)) return Integer.MAX_VALUE;
         return Math.min(factionPower + getPlayers().stream().mapToInt(FactionPlayer::getPower).sum(), FactionsConfig.getFactionMaxPower());
     }
 
+    /**
+     * Get the total amount of maxpower the faction has
+     * <br>
+     * This calculates the amount of max power using the faction's bonus power, plus the max power of each of it's members
+     * @return The total maxpower of the faction
+     */
     public int getTotalMaxPower() {
         if (hasFlag(EFactionFlags.INFINITEPOWER)) return Integer.MAX_VALUE;
         return Math.min(factionPower + getPlayers().stream().mapToInt(FactionPlayer::getMaxPower).sum(), FactionsConfig.getFactionMaxPower());
     }
 
+    /**
+     * Get the maximum amount of land worth this faction can hold
+     * <br>
+     * This is the total power the faction has multiplied by the power land multiplier in config
+     * @return The maximum amount of land worth this faction can own
+     */
     public int getMaxLandWorth() {
         return (int) (getTotalPower() * FactionsConfig.getPowerLandMultiplier());
     }
 
     /* ========================================= */
-    /* Owned Chunks
+    /* Owned Chunks                              */
     /* ========================================= */
 
     /**
@@ -282,7 +310,7 @@ public class Faction extends DatabaseEntity {
     }
 
     /* ========================================= */
-    /* Roles
+    /* Roles                                     */
     /* ========================================= */
 
     public List<FactionRole> getRoles() {
@@ -310,6 +338,7 @@ public class Faction extends DatabaseEntity {
      * @param roleId the ID of the role
      * @return the role with the given ID, or null if it doesn't exist
      */
+    @Nullable
     public FactionRole getRole(final UUID roleId) {
         return roles.stream()
                 .filter(role -> roleId.equals(role.getId()))
@@ -349,7 +378,7 @@ public class Faction extends DatabaseEntity {
     public int getRoleIndexByName(final String roleName) {
         return IntStream.range(0, roles.size())
                 .filter(i -> roleName.equals(roles.get(i).getName()))
-                .findFirst()
+                .findAny()
                 .orElse(-1);
     }
 
@@ -381,7 +410,7 @@ public class Faction extends DatabaseEntity {
      * @param roleId The id of the role to change
      * @param newParentId The new parent of the role
      */
-    public void setRoleParent(final UUID roleId, final UUID newParentId) {
+    public void setRoleParent(@NotNull final UUID roleId, final UUID newParentId) {
         final FactionRole role = getRole(roleId);
         if (role == null || roleId.equals(newParentId)) {
             return;
@@ -411,11 +440,7 @@ public class Faction extends DatabaseEntity {
      * Remove the roll with the given ID
      * @param role The role to remove
      */
-    public void removeRole(final FactionRole role) {
-        if (role == null) {
-            return;
-        }
-
+    public void removeRole(@NotNull final FactionRole role) {
         if (role.getId().equals(getOwnerRole().getId())) {
             return;
         }
@@ -442,29 +467,42 @@ public class Faction extends DatabaseEntity {
     }
 
     /* ========================================= */
-    /* Invites
+    /* Invites                                   */
     /* ========================================= */
 
     public Set<UUID> getPlayerInvites() {
         return playerInvites;
     }
 
+    /**
+     * Get if the faction has invited the given player
+     * @param playerId The ID of the player
+     * @return True if the faction has invited the player
+     */
     public boolean hasInvitedPlayer(final UUID playerId) {
         return getPlayerInvites().contains(playerId);
     }
 
+    /**
+     * Add an invite for the given player
+     * @param playerId The player to invite
+     */
     public void addInvite(final UUID playerId) {
         playerInvites.add(playerId);
         markDirty();
     }
 
+    /**
+     * Remove an invite to a player
+     * @param playerId The player to uninvite
+     */
     public void removeInvite(final UUID playerId) {
         playerInvites.remove(playerId);
         markDirty();
     }
 
     /* ========================================= */
-    /* Flags
+    /* Flags                                     */
     /* ========================================= */
 
     public Set<EFactionFlags> getFlags() {
@@ -507,19 +545,30 @@ public class Faction extends DatabaseEntity {
     }
 
     /* ========================================= */
-    /* Relations
+    /* Relations                                 */
     /* ========================================= */
 
     public Map<UUID, FactionRelation> getRelations() {
         return relations;
     }
 
+    /**
+     * Get the relation with the given faction
+     * @param otherFaction The faction to get the relation with
+     * @return The relation, or null if there is no relation
+     */
+    @Nullable
     public FactionRelation getRelation(final UUID otherFaction) {
         return relations.get(otherFaction);
     }
 
-    public FactionRelation getRelation(final Faction otherFaction) {
-        if (otherFaction == null) return null;
+    /**
+     * Get the relation with the given faction
+     * @param otherFaction The faction to get the relation with
+     * @return The relation, or null if there is no relation
+     */
+    @Nullable
+    public FactionRelation getRelation(@NotNull final Faction otherFaction) {
         return getRelation(otherFaction.getId());
     }
 
@@ -628,7 +677,7 @@ public class Faction extends DatabaseEntity {
     }
 
     /* ========================================= */
-    /* Chat Summaries
+    /* Chat Summaries                            */
     /* ========================================= */
 
     /**
@@ -657,7 +706,7 @@ public class Faction extends DatabaseEntity {
         // Last Online
         if (!isAnyoneOnline()) {
             final long factionOfflineExpiryTime = FactionsConfig.getFactionOfflineExpiryTime() * 1000L;
-            final MutableComponent component = Component.literal(AgeUtil.calculateAgeString(getLastOnline()))
+            final MutableComponent component = Component.literal(AgeUtil.getFriendlyRelativeTime(getLastOnline()))
                     .withStyle(
                             factionOfflineExpiryTime > 0 && System.currentTimeMillis() - getLastOnline() > Math.min(0.9 * factionOfflineExpiryTime, 604800)
                                 ? Style.EMPTY
@@ -676,7 +725,7 @@ public class Faction extends DatabaseEntity {
         // Age
         if (!hasFlag(EFactionFlags.DEFAULT)) {
             message.append("\n")
-                    .append(DatChatFormatting.TextColour.INFO + "Age: " + ChatFormatting.WHITE + AgeUtil.calculateAgeString(creationTime));
+                    .append(DatChatFormatting.TextColour.INFO + "Age: " + ChatFormatting.WHITE + AgeUtil.getFriendlyDifference(System.currentTimeMillis() - creationTime));
         }
 
         // Power
@@ -845,13 +894,13 @@ public class Faction extends DatabaseEntity {
         // Age
         if (!hasFlag(EFactionFlags.DEFAULT)) {
             component.append("\n")
-                    .append(DatChatFormatting.TextColour.INFO + "Age: " + ChatFormatting.WHITE + AgeUtil.calculateAgeString(creationTime));
+                    .append(DatChatFormatting.TextColour.INFO + "Age: " + ChatFormatting.WHITE + AgeUtil.getFriendlyDifference(System.currentTimeMillis() - creationTime));
         }
 
         // Last Online
         if (!isAnyoneOnline()) {
             component.append("\n")
-                    .append(DatChatFormatting.TextColour.INFO + "Last Online: " + ChatFormatting.WHITE + AgeUtil.calculateAgeString(getLastOnline()));
+                    .append(DatChatFormatting.TextColour.INFO + "Last Online: " + ChatFormatting.WHITE + AgeUtil.getFriendlyRelativeTime(getLastOnline()));
         }
 
         return component;
@@ -863,12 +912,12 @@ public class Faction extends DatabaseEntity {
 
         return players.stream()
                 .max(Comparator.comparing(FactionPlayer::getLastActiveTime))
-                .get()
-                .getLastActiveTime();
+                .map(FactionPlayer::getLastActiveTime)
+                .orElse(0L);
     }
 
     /* ========================================= */
-    /* Misc
+    /* Misc                                      */
     /* ========================================= */
 
     /**
@@ -933,6 +982,9 @@ public class Faction extends DatabaseEntity {
     /* Database Stuff
     /* ========================================= */
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void markClean() {
         super.markClean();
@@ -941,6 +993,9 @@ public class Faction extends DatabaseEntity {
         roles.forEach(DatabaseEntity::markClean);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean isDirty() {
         // Account for dirty roles
