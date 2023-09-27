@@ -2,6 +2,7 @@ package com.datdeveloper.datfactions.api.events;
 
 import com.datdeveloper.datfactions.factiondata.Faction;
 import net.minecraft.commands.CommandSource;
+import net.minecraftforge.eventbus.api.Cancelable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -51,16 +52,15 @@ public abstract class FactionChangeNameEvent extends FactionEvent {
      * <br>
      * The purpose of this event is to allow modifying/checking a faction's submitted Name before it is applied. For
      * example, filtering or denying profanity.
-     * <br>
-     * This event {@linkplain HasResult has a result}.<br>
-     * To change the result of this event, use {@link #setResult}. Results are interpreted in the following manner:
-     * <ul>
-     * <li>Allow - The check will succeed, and the name will be set to the value of newName as long as it's unique</li>
-     * <li>Default - The name will be accepted if it meets the configured maximum length requirements and is unique</li>
-     * <li>Deny - The check will fail, and the name will not be changed.</li>
-     * </ul>
+     * <p>
+     *     After this event, the new name will be checked to ensure it is unique and below the configured maximum length
+     * </p>
+     * <p>
+     *     This event is {@linkplain Cancelable cancellable}, and does not {@linkplain HasResult have a result}.
+     *     If the event is cancelled, the faction's name will not change.
+     * </p>
      */
-    @HasResult
+    @Cancelable
     public static class Pre extends FactionChangeNameEvent {
         /**
          * @param instigator The CommandSource that instigated the event
@@ -84,6 +84,7 @@ public abstract class FactionChangeNameEvent extends FactionEvent {
      * The intention of this event is to allow observing changes to the name to update other resources
      */
     public static class Post extends FactionChangeNameEvent {
+        /** The old name of the faction */
         final String oldName;
 
         /**

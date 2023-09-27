@@ -3,7 +3,6 @@ package com.datdeveloper.datfactions.api.events;
 import com.datdeveloper.datfactions.factiondata.EFactionFlags;
 import com.datdeveloper.datfactions.factiondata.Faction;
 import net.minecraft.commands.CommandSource;
-import net.minecraftforge.eventbus.api.Cancelable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -69,9 +68,10 @@ public abstract class FactionChangeFlagsEvent extends FactionEvent {
      * The purpose of this event is to allow for modifying/checking the flags that players are adding.
      * This could be used to ensure a flag is always added at the same time as another one, or to deny a specific flag
      * for specific factions.
-     * <br>
+     * <p>
      * This event {@linkplain HasResult has a result}.<br>
      * To change the result of this event, use {@link #setResult}. Results are interpreted in the following manner:
+     * </p>
      * <ul>
      * <li>Allow - The check will succeed, and the flags will be added to the faction</li>
      * <li>Default - The additional flags will be accepted if they are whitelisted and not admin flags</li>
@@ -96,16 +96,17 @@ public abstract class FactionChangeFlagsEvent extends FactionEvent {
      * The purpose of this event is to allow for modifying/checking the flags that a faction is removing.
      * This could be used to ensure a flag is always removed at the same time as another one, ensure specific factions
      * cannot remove a flag
-     * <br>
-     * This event {@linkplain HasResult has a result}.<br>
-     * To change the result of this event, use {@link #setResult}. Results are interpreted in the following manner:
+     * <p>
+     *     This event {@linkplain HasResult has a result}.<br>
+     *     To change the result of this event, use {@link #setResult}. Results are interpreted in the following manner:
+     * </p>
      * <ul>
-     * <li>Allow - The check will succeed, and the flags will be removed from the faction</li>
-     * <li>Default - The flags will be removed if they are not admin flags</li>
-     * <li>Deny - The check will fail, and the flags will not be removed.</li>
+     *     <li>Allow - The check will succeed, and the flags will be removed from the faction</li>
+     *     <li>Default - The flags will be removed if they are not admin flags</li>
+     *     <li>Deny - The check will fail, and the flags will not be removed.</li>
      * </ul>
      */
-    @Cancelable
+    @HasResult
     public static class PreRemove extends FactionChangeFlagsEvent {
         /**
          * @param instigator The CommandSource that instigated the event

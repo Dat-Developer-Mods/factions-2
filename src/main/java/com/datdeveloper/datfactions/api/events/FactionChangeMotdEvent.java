@@ -2,6 +2,7 @@ package com.datdeveloper.datfactions.api.events;
 
 import com.datdeveloper.datfactions.factiondata.Faction;
 import net.minecraft.commands.CommandSource;
+import net.minecraftforge.eventbus.api.Cancelable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -53,16 +54,13 @@ public abstract class FactionChangeMotdEvent extends FactionEvent {
      * <br>
      * The purpose of this event is to allow modifying/checking a faction's submitted MOTD before it is applied. For
      * example, filtering or denying profanity.
-     * <br>
-     * This event {@linkplain HasResult has a result}.<br>
-     * To change the result of this event, use {@link #setResult}. Results are interpreted in the following manner:
-     * <ul>
-     * <li>Allow - The check will succeed, and the MOTD will be set to the value of newMotd</li>
-     * <li>Default - The description will be accepted if it meets the configured maximum length requirements</li>
-     * <li>Deny - The check will fail, and the MOTD will not be changed.</li>
-     * </ul>
+     * <p>After this event, the new MOTD will be checked to ensure it is below the configured maximum length</p>
+     * <p>
+     *     This event is {@linkplain Cancelable cancellable}, and does not {@linkplain HasResult have a result}.
+     *     If the event is cancelled, the faction's MOTD will not change.
+     * </p>
      */
-    @HasResult
+    @Cancelable
     public static class Pre extends FactionChangeMotdEvent {
         /**
          * @param instigator The CommandSource that instigated the event
