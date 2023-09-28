@@ -56,12 +56,12 @@ public abstract class FactionChangeMotdEvent extends FactionEvent {
      * example, filtering or denying profanity.
      * <p>After this event, the new MOTD will be checked to ensure it is below the configured maximum length</p>
      * <p>
-     *     This event is {@linkplain Cancelable cancellable}, and does not {@linkplain HasResult have a result}.
+     *     This event is {@linkplain Cancelable cancellable}, and does not {@linkplain HasResult have a result}.<br>
      *     If the event is cancelled, the faction's MOTD will not change.
      * </p>
      */
     @Cancelable
-    public static class Pre extends FactionChangeMotdEvent {
+    public class Pre extends FactionChangeMotdEvent {
         /**
          * @param instigator The CommandSource that instigated the event
          * @param faction The faction the event is about
@@ -83,7 +83,7 @@ public abstract class FactionChangeMotdEvent extends FactionEvent {
      * <br>
      * The intention of this event is to allow observing changes to the MOTD to update other resources
      */
-    public static class Post extends FactionChangeMotdEvent {
+    public class Post extends FactionChangeMotdEvent {
         /** The old MOTD of the faction */
         final String oldMotd;
 

@@ -26,12 +26,12 @@ public class FactionDisbandEvent extends FactionEvent {
      * The purpose of this event is to allow preventing the disbanding of a faction, for example if there are some
      * relations that depend on the faction that need to be sorted first
      * <p>
-     *     This event is {@linkplain Cancelable cancellable}, and does not {@linkplain HasResult have a result}.
+     *     This event is {@linkplain Cancelable cancellable}, and does not {@linkplain HasResult have a result}.<br>
      *     If the event is cancelled, the faction will not be disbanded
      * </p>
      */
     @Cancelable
-    public static class Pre extends FactionDisbandEvent {
+    public class Pre extends FactionDisbandEvent {
         /**
          * @param instigator The CommandSource that instigated the event
          * @param faction    The faction the event is about
@@ -51,7 +51,7 @@ public class FactionDisbandEvent extends FactionEvent {
      * immediately following this event.
      * </p>
      */
-    public static class Post extends FactionDisbandEvent {
+    public class Post extends FactionDisbandEvent {
         /**
          * @param instigator The CommandSource that instigated the event
          * @param faction    The faction the event is about

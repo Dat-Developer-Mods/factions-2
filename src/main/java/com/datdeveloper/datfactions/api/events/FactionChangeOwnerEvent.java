@@ -47,12 +47,12 @@ public abstract class FactionChangeOwnerEvent extends FactionEvent {
      * The purpose of this event is to allow modifying/checking a faction's change of owner before it is applied, for
      * example, this could be used to prevent a player from being set to the owner of a faction for whitelist reasons
      * <p>
-     *     This event is {@linkplain Cancelable cancellable}, and does not {@linkplain HasResult have a result}.
+     *     This event is {@linkplain Cancelable cancellable}, and does not {@linkplain HasResult have a result}.<br>
      *     If the event is cancelled, the faction's owner will not change.
      * </p>
      */
     @Cancelable
-    public static class Pre extends FactionChangeOwnerEvent {
+    public class Pre extends FactionChangeOwnerEvent {
         /**
          * @param instigator The CommandSource that instigated the event
          * @param faction    The faction the event is about
@@ -88,7 +88,7 @@ public abstract class FactionChangeOwnerEvent extends FactionEvent {
      * <br>
      * The intention of this event is to allow observing faction owner changes to update other resources
      */
-    public static class Post extends FactionChangeOwnerEvent {
+    public class Post extends FactionChangeOwnerEvent {
         /** The old owner of the faction */
         final FactionPlayer oldOwner;
 

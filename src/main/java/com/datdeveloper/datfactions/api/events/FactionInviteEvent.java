@@ -61,12 +61,12 @@ public class FactionInviteEvent extends FactionEvent {
      *     have an invite
      * </p>
      * <p>
-     *     This event is {@linkplain Cancelable cancellable}, and does not {@linkplain HasResult have a result}.
+     *     This event is {@linkplain Cancelable cancellable}, and does not {@linkplain HasResult have a result}.<br>
      *     If the event is cancelled, the player will not be invited
      * </p>
      */
     @Cancelable
-    public static class Pre extends FactionInviteEvent {
+    public class Pre extends FactionInviteEvent {
         /**
          * @param instigator    The CommandSource that instigated the event
          * @param faction       The faction the event is about
@@ -91,7 +91,7 @@ public class FactionInviteEvent extends FactionEvent {
      * <br>
      * The intention of this event is to allow observing faction invites
      */
-    public static class Post extends FactionInviteEvent {
+    public class Post extends FactionInviteEvent {
         /**
          * @param instigator    The CommandSource that instigated the event
          * @param faction       The faction the event is about

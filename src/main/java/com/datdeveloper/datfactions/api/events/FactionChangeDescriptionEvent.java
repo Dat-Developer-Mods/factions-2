@@ -46,7 +46,7 @@ public abstract class FactionChangeDescriptionEvent extends FactionEvent {
      * For example, filtering or denying profanity.
      * <p>After this event, the new description will be checked to ensure it is below the configured maximum length</p>
      * <p>
-     *     This event is {@linkplain Cancelable cancellable}, and does not {@linkplain HasResult have a result}.
+     *     This event is {@linkplain Cancelable cancellable}, and does not {@linkplain HasResult have a result}. <br>
      *     If the event is cancelled, the faction's description will not change.
      * </p>
      */

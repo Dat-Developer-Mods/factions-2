@@ -56,12 +56,12 @@ public abstract class FactionChangeNameEvent extends FactionEvent {
      *     After this event, the new name will be checked to ensure it is unique and below the configured maximum length
      * </p>
      * <p>
-     *     This event is {@linkplain Cancelable cancellable}, and does not {@linkplain HasResult have a result}.
+     *     This event is {@linkplain Cancelable cancellable}, and does not {@linkplain HasResult have a result}.<br>
      *     If the event is cancelled, the faction's name will not change.
      * </p>
      */
     @Cancelable
-    public static class Pre extends FactionChangeNameEvent {
+    public class Pre extends FactionChangeNameEvent {
         /**
          * @param instigator The CommandSource that instigated the event
          * @param faction    The faction the event is about
@@ -83,7 +83,7 @@ public abstract class FactionChangeNameEvent extends FactionEvent {
      * <br>
      * The intention of this event is to allow observing changes to the name to update other resources
      */
-    public static class Post extends FactionChangeNameEvent {
+    public class Post extends FactionChangeNameEvent {
         /** The old name of the faction */
         final String oldName;
 

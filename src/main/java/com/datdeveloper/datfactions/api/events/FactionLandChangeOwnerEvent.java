@@ -43,7 +43,7 @@ public abstract class FactionLandChangeOwnerEvent extends BaseFactionEvent {
      * @param newOwner The new owner of the chunks
      * @param reason The reason the land is changing ownership
      */
-    public FactionLandChangeOwnerEvent(@Nullable final CommandSource instigator, @NotNull final Set<ChunkPos> chunks, final @NotNull FactionLevel level, @Nullable final Faction newOwner, final EChangeOwnerReason reason) {
+    protected FactionLandChangeOwnerEvent(@Nullable final CommandSource instigator, @NotNull final Set<ChunkPos> chunks, final @NotNull FactionLevel level, @Nullable final Faction newOwner, final EChangeOwnerReason reason) {
         super(instigator);
         this.chunks = chunks;
         this.level = level;
@@ -120,7 +120,7 @@ public abstract class FactionLandChangeOwnerEvent extends BaseFactionEvent {
      * </ul>
      */
     @HasResult
-    public static class Pre extends FactionLandChangeOwnerEvent {
+    public class Pre extends FactionLandChangeOwnerEvent {
         /**
          * @param instigator The CommandSource that instigated the event
          * @param chunks The chunks that are changing owner
@@ -152,8 +152,10 @@ public abstract class FactionLandChangeOwnerEvent extends BaseFactionEvent {
 
         /**
          * Set the chunks that are changing owner
+         * <br>
          * Note, this is disabled if the reason is disband, merge, or specialImmutable
          * @param chunks The chunks that are changing owner
+         * @throws UnsupportedOperationException When the reason is disband, merge, or specialImmutable
          */
         public void setChunks(final @NotNull Set<ChunkPos> chunks) {
             if (List.of(EChangeOwnerReason.DISBAND, EChangeOwnerReason.MERGE, EChangeOwnerReason.SPECIALIMMUTABLE).contains(getReason())) {
@@ -164,8 +166,10 @@ public abstract class FactionLandChangeOwnerEvent extends BaseFactionEvent {
 
         /**
          * Set the level containing the chunks that are being claimed
+         * <br>
          * Note, this is disabled if the reason is disband, merge, or specialImmutable
          * @param level The level containing the chunks that are changing owner
+         * @throws UnsupportedOperationException When the reason is disband, merge, or specialImmutable
          */
         public void setLevel(final @NotNull FactionLevel level) {
             if (List.of(EChangeOwnerReason.DISBAND, EChangeOwnerReason.MERGE, EChangeOwnerReason.SPECIALIMMUTABLE).contains(getReason())) {
@@ -195,7 +199,7 @@ public abstract class FactionLandChangeOwnerEvent extends BaseFactionEvent {
      * <br>
      * The intention of this event is to allow observing land ownership changes to update other resources
      */
-    public static class Post extends FactionLandChangeOwnerEvent {
+    public class Post extends FactionLandChangeOwnerEvent {
         /**
          * The previous owners of the chunks
          * <br>

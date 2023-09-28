@@ -28,12 +28,12 @@ public class FactionCreateEvent extends BaseFactionEvent {
      *     After this event, the new faction's name will be checked to ensure it is below the configured maximum length
      * </p>
      * <p>
-     *     This event is {@linkplain Cancelable cancellable}, and does not {@linkplain HasResult have a result}.
+     *     This event is {@linkplain Cancelable cancellable}, and does not {@linkplain HasResult have a result}.<br>
      *     If the event is cancelled, the faction's description will not change.
      * </p>
      */
     @HasResult
-    public static class Pre extends FactionCreateEvent {
+    public class Pre extends FactionCreateEvent {
         /** The name of the faction */
         String name;
 
@@ -68,7 +68,7 @@ public class FactionCreateEvent extends BaseFactionEvent {
      * <br>
      * The intention of this event is to allow observing when factions are created to update other resources
      */
-    public static class Post extends FactionCreateEvent {
+    public class Post extends FactionCreateEvent {
         /** The newly created faction */
         final Faction newFaction;
 

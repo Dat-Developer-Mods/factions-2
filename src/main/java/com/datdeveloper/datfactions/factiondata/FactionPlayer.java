@@ -227,6 +227,13 @@ public class FactionPlayer extends DatabaseEntity {
         this.markDirty();
     }
 
+    /**
+     * Set the role of the player
+     * <br>
+     * Note that if you set the players role whilst they are not in a faction, or you set their role to a role that
+     * doesn't belong to their faction, things will probably mess up rather badly
+     * @param role The new role of the player
+     */
     public void setRole(final UUID role) {
         this.role = role;
         updateCommands();

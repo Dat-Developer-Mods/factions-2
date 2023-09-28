@@ -58,12 +58,12 @@ public abstract class FactionChangeRelationEvent extends FactionEvent {
      * The purpose of this event is to allow modifying/checking a faction's change of relation before it is applied, for
      * example, this could be used to disallow certain faction relations
      * <p>
-     *     This event is {@linkplain Cancelable cancellable}, and does not {@linkplain HasResult have a result}.
+     *     This event is {@linkplain Cancelable cancellable}, and does not {@linkplain HasResult have a result}.<br>
      *     If the event is cancelled, the change in relation will not occur
      * </p>
      */
     @Cancelable
-    public static class Pre extends FactionChangeRelationEvent {
+    public class Pre extends FactionChangeRelationEvent {
         /**
          * @param instigator   The CommandSource that instigated the event
          * @param faction      The faction the event is about
@@ -109,7 +109,7 @@ public abstract class FactionChangeRelationEvent extends FactionEvent {
      * <br>
      * The intention of this event is to allow observing relation changes to update other resources
      */
-    public static class Post extends FactionChangeRelationEvent {
+    public class Post extends FactionChangeRelationEvent {
         /** The previous relation with the faction */
         final EFactionRelation oldRelation;
 
