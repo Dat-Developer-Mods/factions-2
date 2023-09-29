@@ -40,7 +40,8 @@ public abstract class FactionChangeFlagsEvent extends FactionEvent {
     }
 
     /**
-     * Superclass for pre flag events
+     * Superclass for pre flag change events
+     * <br>
      * Supplies a setter for the flags
      */
     public class Pre extends FactionChangeFlagsEvent {
@@ -69,13 +70,13 @@ public abstract class FactionChangeFlagsEvent extends FactionEvent {
      * This could be used to ensure a flag is always added at the same time as another one, or to deny a specific flag
      * for specific factions.
      * <p>
-     * This event {@linkplain HasResult has a result}.<br>
-     * To change the result of this event, use {@link #setResult}. Results are interpreted in the following manner:
+     *     This event {@linkplain HasResult has a result}.<br>
+     *     To change the result of this event, use {@link #setResult}. Results are interpreted in the following manner:
      * </p>
      * <ul>
-     * <li>Allow - The check will succeed, and the flags will be added to the faction</li>
-     * <li>Default - The additional flags will be accepted if they are whitelisted and not admin flags</li>
-     * <li>Deny - The check will fail, and the flags will not be added.</li>
+     *     <li>Allow - The check will succeed, and the flags will be added to the faction</li>
+     *     <li>Default - The additional flags will be accepted if they are whitelisted and not admin flags</li>
+     *     <li>Deny - The check will fail, and the flags will not be added.</li>
      * </ul>
      */
     @HasResult
@@ -120,6 +121,7 @@ public abstract class FactionChangeFlagsEvent extends FactionEvent {
 
     /**
      * Superclass for post flag events
+     * <br>
      * Sets the flags set to unmodifiable
      */
     private class Post extends FactionChangeFlagsEvent {

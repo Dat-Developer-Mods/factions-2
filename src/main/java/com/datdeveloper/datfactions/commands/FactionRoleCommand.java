@@ -200,6 +200,12 @@ public class FactionRoleCommand {
                                                     final FactionRoleChangeNameEvent event = new FactionRoleChangeNameEvent(c.getSource().source, faction, role, newName);
                                                     MinecraftForge.EVENT_BUS.post(event);
                                                     if (event.isCanceled()) return 0;
+
+                                                    if (!pre.isSkipDefaultChecks() && newName.length() > FactionsConfig.getMaxFactionRoleNameLength()) {
+                                                        c.getSource().sendFailure(Component.literal("Your faction description cannot be longer than " + FactionsConfig.getMaxFactionDescriptionLength()));
+                                                        return 2;
+                                                    }
+
                                                     role.setName(newName);
 
                                                     c.getSource().sendSuccess(() ->
@@ -408,7 +414,7 @@ public class FactionRoleCommand {
                                         return 8;
                                     }
 
-                                    final FactionRoleAddPermissionsEvent event = new FactionRoleAddPermissionsEvent(c.getSource().source, faction, role, new HashSet<>(Set.of(permission)));
+                                    final FactionRoleChangePermissionsEvent event = new FactionRoleChangePermissionsEvent(c.getSource().source, faction, role, new HashSet<>(Set.of(permission)));
                                     MinecraftForge.EVENT_BUS.post(event);
                                     if (event.isCanceled()) return 0;
 
