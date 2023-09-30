@@ -33,7 +33,7 @@ public class FactionCreateEvent extends BaseFactionEvent {
      * </p>
      */
     @HasResult
-    public class Pre extends FactionCreateEvent {
+    public static class Pre extends FactionCreateEvent {
         /** The name of the faction */
         String name;
 
@@ -68,7 +68,7 @@ public class FactionCreateEvent extends BaseFactionEvent {
      * <br>
      * The intention of this event is to allow observing when factions are created to update other resources
      */
-    public class Post extends FactionCreateEvent {
+    public static class Post extends FactionCreateEvent {
         /** The newly created faction */
         final Faction newFaction;
 

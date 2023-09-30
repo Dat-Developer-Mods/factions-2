@@ -201,7 +201,8 @@ public class FactionRoleCommand {
                                                     MinecraftForge.EVENT_BUS.post(event);
                                                     if (event.isCanceled()) return 0;
 
-                                                    if (!pre.isSkipDefaultChecks() && newName.length() > FactionsConfig.getMaxFactionRoleNameLength()) {
+                                                    // Check below max length, check unique
+                                                    if (newName.length() > FactionsConfig.getMaxFactionRoleNameLength()) {
                                                         c.getSource().sendFailure(Component.literal("Your faction description cannot be longer than " + FactionsConfig.getMaxFactionDescriptionLength()));
                                                         return 2;
                                                     }
@@ -573,7 +574,7 @@ public class FactionRoleCommand {
                                                         return 9;
                                                     }
 
-                                                    final FactionRoleChangeOrderEvent event = new FactionRoleChangeOrderEvent(c.getSource().source, faction, role, newParentRole);
+                                                    final FactionRoleChangeHierarchyEvent event = new FactionRoleChangeHierarchyEvent(c.getSource().source, faction, role, newParentRole);
                                                     MinecraftForge.EVENT_BUS.post(event);
                                                     if (event.isCanceled()) return 0;
 

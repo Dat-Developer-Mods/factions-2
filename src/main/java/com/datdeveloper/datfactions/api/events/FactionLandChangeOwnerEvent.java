@@ -120,7 +120,7 @@ public abstract class FactionLandChangeOwnerEvent extends BaseFactionEvent {
      * </ul>
      */
     @HasResult
-    public class Pre extends FactionLandChangeOwnerEvent {
+    public static class Pre extends FactionLandChangeOwnerEvent {
         /**
          * @param instigator The CommandSource that instigated the event
          * @param chunks The chunks that are changing owner
@@ -199,7 +199,7 @@ public abstract class FactionLandChangeOwnerEvent extends BaseFactionEvent {
      * <br>
      * The intention of this event is to allow observing land ownership changes to update other resources
      */
-    public class Post extends FactionLandChangeOwnerEvent {
+    public static class Post extends FactionLandChangeOwnerEvent {
         /**
          * The previous owners of the chunks
          * <br>

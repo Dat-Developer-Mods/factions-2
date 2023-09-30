@@ -169,7 +169,7 @@ public class FactionPlayerPowerChangeEvent extends FactionPlayerEvent {
      * </p>
      */
     @Cancelable
-    public class Pre extends FactionPlayerPowerChangeEvent {
+    public static class Pre extends FactionPlayerPowerChangeEvent {
         /**
          * @param instigator            The CommandSource that instigated the event
          * @param player                The player the event is for
@@ -220,7 +220,7 @@ public class FactionPlayerPowerChangeEvent extends FactionPlayerEvent {
      * <br>
      * The intention of this event is to allow observing changes to a player's power in order to update other resources
      */
-    public class Post extends FactionPlayerPowerChangeEvent {
+    public static class Post extends FactionPlayerPowerChangeEvent {
         /**
          * @param instigator     The CommandSource that instigated the event
          * @param player         The player the event is for

@@ -23,8 +23,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 public class Faction extends DatabaseEntity {
     /** The faction's ID */
@@ -54,8 +54,15 @@ public class Faction extends DatabaseEntity {
     /** The invites to players the faction has */
     final Set<UUID> playerInvites;
 
-    /** The roles the faction has, in order from owner to recruit (owner at position 0, recruit in last place) */
-    final List<FactionRole> roles;
+    /**
+     * The roles the faction has
+     */
+    final Map<UUID, FactionRole> roles;
+
+    /**
+     * The role that new members become when they join
+     */
+    @NotNull UUID defaultRoleId;
 
     /** A set of flags the faction has */
     final Set<EFactionFlags> flags;
@@ -68,7 +75,8 @@ public class Faction extends DatabaseEntity {
     protected Faction() {
         id = null;
         playerInvites = new HashSet<>();
-        roles = new ArrayList<>();
+        roles = new HashMap<>();
+        defaultRoleId = null;
         flags = new HashSet<>();
         relations = new HashMap<>();
     }
@@ -87,7 +95,12 @@ public class Faction extends DatabaseEntity {
         this.homeLevel = null;
 
         this.playerInvites = new HashSet<>();
-        this.roles = FactionRole.getDefaultRoles();
+
+        final List<FactionRole> defaultRoles = FactionRole.getDefaultRoles();
+        this.roles = defaultRoles.stream()
+                .collect(Collectors.toMap(FactionRole::getId, Function.identity()));
+        this.defaultRoleId = defaultRoles.get(defaultRoles.size() - 1).getId();
+
         this.flags = new HashSet<>();
         this.relations = new HashMap<>();
     }
@@ -108,10 +121,12 @@ public class Faction extends DatabaseEntity {
         this.playerInvites = new HashSet<>();
 
         // Deep Copy roles
-        this.roles = new ArrayList<>();
-        for (final FactionRole role : template.roles) {
-            this.roles.add(new FactionRole(role));
-        }
+        final HashMap<UUID, FactionRole> oldToNew = new HashMap<>();
+        template.getOwnerRole().deepCopy(null, oldToNew);
+
+        this.roles = oldToNew.values().stream()
+                .collect(Collectors.toMap(FactionRole::getId, Function.identity()));
+        this.defaultRoleId = oldToNew.get(template.defaultRoleId).getId();
 
         this.flags = new HashSet<>(template.flags);
 
@@ -313,7 +328,7 @@ public class Faction extends DatabaseEntity {
     /* Roles                                     */
     /* ========================================= */
 
-    public List<FactionRole> getRoles() {
+    public Map<UUID, FactionRole> getRoles() {
         return roles;
     }
 
@@ -322,15 +337,23 @@ public class Faction extends DatabaseEntity {
      * @return the owner role of the faction
      */
     public FactionRole getOwnerRole() {
-        return roles.get(0);
+        return roles.values().stream()
+                .filter(FactionRole::isRoot)
+                .findFirst()
+                .orElse(null);
+    }
+
+    @NotNull
+    public UUID getDefaultRoleId() {
+        return defaultRoleId;
     }
 
     /**
-     * Get the role that represents the recruits of the faction
-     * @return The recruit role of the faction
+     * Get the default role object
+     * @return The default role
      */
-    public FactionRole getRecruitRole() {
-        return roles.get(roles.size() - 1);
+    public FactionRole getDefaultRole() {
+        return roles.get(getDefaultRoleId());
     }
 
     /**
@@ -340,10 +363,7 @@ public class Faction extends DatabaseEntity {
      */
     @Nullable
     public FactionRole getRole(final UUID roleId) {
-        return roles.stream()
-                .filter(role -> roleId.equals(role.getId()))
-                .findFirst()
-                .orElse(null);
+        return roles.get(roleId);
     }
 
     /**
@@ -352,34 +372,10 @@ public class Faction extends DatabaseEntity {
      * @return The role with the given name, or null if it doesn't exist
      */
     public FactionRole getRoleByName(final String roleName) {
-        return roles.stream()
+        return roles.values().stream()
                 .filter(role -> roleName.equals(role.getName()))
                 .findFirst()
                 .orElse(null);
-    }
-
-    /**
-     * Get the index a role by its ID
-     * @param roleId The ID of the role
-     * @return The index of the role with the given ID, or -1 if it doesn't exist
-     */
-    public int getRoleIndex(final UUID roleId) {
-        return IntStream.range(0, roles.size())
-                .filter(i -> roleId.equals(roles.get(i).getId()))
-                .findFirst()
-                .orElse(-1);
-    }
-
-    /**
-     * Get the index a role by its name
-     * @param roleName The name of the role
-     * @return The index of the role with the given name, or -1 if it doesn't exist
-     */
-    public int getRoleIndexByName(final String roleName) {
-        return IntStream.range(0, roles.size())
-                .filter(i -> roleName.equals(roles.get(i).getName()))
-                .findAny()
-                .orElse(-1);
     }
 
     /**
@@ -393,45 +389,29 @@ public class Faction extends DatabaseEntity {
             return null;
         }
 
-        final int parentIndex = roles.indexOf(roleParent);
-        if (parentIndex == -1) {
-            return null;
-        }
-
-        final FactionRole newRole = new FactionRole(roleName);
+        final FactionRole newRole = new FactionRole(roleName, roleParent);
         newRole.markDirty();
-        this.roles.add(parentIndex + 1, newRole);
+        this.roles.put(newRole.getId(), newRole);
 
         return newRole;
     }
 
     /**
      * Change the parent of a role
-     * @param roleId The id of the role to change
-     * @param newParentId The new parent of the role
+     * @param role The role to change
+     * @param newParent The new parent of the role
      */
-    public void setRoleParent(@NotNull final UUID roleId, final UUID newParentId) {
-        final FactionRole role = getRole(roleId);
-        if (role == null || roleId.equals(newParentId)) {
+    public void setRoleParent(@NotNull final FactionRole role, @NotNull final FactionRole newParent) {
+        if (role.isRoot() || role.equals(newParent)) {
             return;
         }
 
-        if (role.getId().equals(getOwnerRole().getId())
-                || role.getId().equals(getRecruitRole().getId())) {
-            return;
-        }
-        final FactionRole newParentRole = getRole(newParentId);
-        if (newParentRole == null) {
-            return;
-        }
+        // Is root confirms it is not null
+        //noinspection DataFlowIssue
+        role.getParent().removeChild(role);
 
-        if (newParentRole.getId().equals(getRecruitRole().getId())) {
-            return;
-        }
 
-        roles.remove(role);
-        final int newIndex = roles.indexOf(newParentRole) + 1;
-        roles.add(newIndex, role);
+        role.setParent(newParent);
 
         markDirty();
     }
@@ -441,27 +421,24 @@ public class Faction extends DatabaseEntity {
      * @param role The role to remove
      */
     public void removeRole(@NotNull final FactionRole role) {
-        if (role.getId().equals(getOwnerRole().getId())) {
-            return;
-        }
+        if (role.getId().equals(getOwnerRole().getId())) return;
 
-        if (role.getId().equals(getRecruitRole().getId())) {
-            return;
-        }
+        if (role.getId().equals(getDefaultRoleId())) return;
 
-        final UUID newRole = getRoles().get(getRoleIndex(role.getId()) - 1).getId();
+        if (!role.getChildren().isEmpty()) return;
+
         for (final FactionPlayer fPlayer : getPlayers()) {
             if (!fPlayer.getRoleId().equals(role.getId())) {
                 continue;
             }
 
-            final FactionPlayerChangeRoleEvent event = new FactionPlayerChangeRoleEvent(null, fPlayer, getRole(newRole), FactionPlayerChangeRoleEvent.EChangeRoleReason.REMOVED);
-            MinecraftForge.EVENT_BUS.post(event);
+            fPlayer.setRole(role.getId());
 
-            fPlayer.setRole(event.getNewRole().getId());
+            final FactionPlayerChangeRoleEvent.Post event = new FactionPlayerChangeRoleEvent.Post(null, fPlayer, role, getDefaultRole(), FactionPlayerChangeRoleEvent.EChangeRoleReason.REMOVED);
+            MinecraftForge.EVENT_BUS.post(event);
         }
 
-        roles.remove(role);
+        roles.remove(role.getId());
 
         markDirty();
     }
@@ -990,7 +967,7 @@ public class Faction extends DatabaseEntity {
         super.markClean();
 
         // We need to make the roles as clean as well
-        roles.forEach(DatabaseEntity::markClean);
+        roles.values().forEach(DatabaseEntity::markClean);
     }
 
     /**
@@ -999,7 +976,7 @@ public class Faction extends DatabaseEntity {
     @Override
     public boolean isDirty() {
         // Account for dirty roles
-        return super.isDirty() || roles.stream()
+        return super.isDirty() || roles.values().stream()
                 .map(DatabaseEntity::isDirty)
                 .reduce(Boolean.FALSE, Boolean::logicalOr);
     }

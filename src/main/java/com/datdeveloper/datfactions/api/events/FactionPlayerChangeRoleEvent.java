@@ -10,9 +10,10 @@ import org.jetbrains.annotations.Nullable;
 
 /**
  * Events for when a player changes role in a faction
- *
+ * @see FactionPlayerChangeRoleEvent.Pre
+ * @see FactionPlayerChangeRoleEvent.Post
  */
-public class FactionPlayerChangeRoleEvent extends FactionPlayerEvent {
+public abstract class FactionPlayerChangeRoleEvent extends FactionPlayerEvent {
     /**
      * The player's new role
      */
@@ -45,6 +46,12 @@ public class FactionPlayerChangeRoleEvent extends FactionPlayerEvent {
     }
 
     /**
+     * Get the role of the player before the change
+     * @return The previous role of the player
+     */
+    public abstract FactionRole getOldRole();
+
+    /**
      * Get the faction the player belongs to
      * @return The player's faction
      */
@@ -73,7 +80,7 @@ public class FactionPlayerChangeRoleEvent extends FactionPlayerEvent {
      * </p>
      */
     @Cancelable
-    public class Pre extends FactionPlayerChangeRoleEvent {
+    public static class Pre extends FactionPlayerChangeRoleEvent {
 
         /**
          * @param instigator The CommandSource that instigated the event
@@ -88,12 +95,17 @@ public class FactionPlayerChangeRoleEvent extends FactionPlayerEvent {
             super(instigator, player, newRole, reason);
         }
 
+        @Override
+        public FactionRole getOldRole() {
+            return player.getRole();
+        }
+
         /**
          * Set the role the player will take
          * @param newRole The role the player will take
          */
         public void setNewRole(@NotNull final FactionRole newRole) {
-            if (player.getFaction().getRoles().stream().noneMatch(role -> role.equals(newRole))) {
+            if (getPlayerFaction().getRole(newRole.getId()) == null) {
                 throw new IllegalArgumentException("newRole must be a role that belongs to the player's faction");
             }
 
@@ -111,15 +123,24 @@ public class FactionPlayerChangeRoleEvent extends FactionPlayerEvent {
      * <br>
      * The intention of this event is to allow observing changes to player roles to update other resources
      */
-    public class Post extends FactionPlayerChangeRoleEvent {
+    public static class Post extends FactionPlayerChangeRoleEvent {
+        protected final FactionRole oldRole;
+
         /**
          * @param instigator The CommandSource that instigated the event
          * @param player     The player changing role
          * @param newRole    The role in the faction the player will get
          * @param reason     The reason the player changed role
+         * @param oldRole
          */
-        public Post(@Nullable final CommandSource instigator, @NotNull final FactionPlayer player, @NotNull final FactionRole newRole, final EChangeRoleReason reason) {
+        public Post(@Nullable final CommandSource instigator, @NotNull final FactionPlayer player, final FactionRole oldRole, @NotNull final FactionRole newRole, final EChangeRoleReason reason) {
             super(instigator, player, newRole, reason);
+            this.oldRole = oldRole;
+        }
+
+        @Override
+        public FactionRole getOldRole() {
+            return oldRole;
         }
     }
 

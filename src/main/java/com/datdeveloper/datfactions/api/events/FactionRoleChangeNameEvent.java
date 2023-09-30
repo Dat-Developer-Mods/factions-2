@@ -48,13 +48,13 @@ public abstract class FactionRoleChangeNameEvent extends FactionRoleEvent {
      * <br>
      * The purpose of this event is to allow modifying/checking a role's submitted name before it is applied.
      * For example, to filter or deny profanity
-     * <p>After this event, the new name will be checked to ensure it is below the configured maximum length</p>
+     * <p>After this event, the new name will be checked to ensure it is below the configured maximum length and unique</p>
      * <p>
      *     This event is {@linkplain Cancelable cancellable}, and does not {@linkplain HasResult have a result}. <br>
      *     If the event is cancelled, the faction's description will not change.
      * </p>
      */
-    public class Pre extends FactionRoleChangeNameEvent {
+    public static class Pre extends FactionRoleChangeNameEvent {
         /**
          * @param instigator The CommandSource that instigated the event
          * @param faction    The faction the event is about
@@ -85,7 +85,7 @@ public abstract class FactionRoleChangeNameEvent extends FactionRoleEvent {
      * <br>
      * The intention of this event is to allow observing role name changes to update other resources
      */
-    public class Post extends FactionRoleChangeNameEvent {
+    public static class Post extends FactionRoleChangeNameEvent {
         /** The old name of the role */
         protected final String oldName;
 

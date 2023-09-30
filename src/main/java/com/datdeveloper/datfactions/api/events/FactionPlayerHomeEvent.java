@@ -50,7 +50,7 @@ public class FactionPlayerHomeEvent extends FactionPlayerEvent {
      * </p>
      */
     @Cancelable
-    public class Pre extends FactionPlayerHomeEvent {
+    public static class Pre extends FactionPlayerHomeEvent {
         /**
          * @param instigator The CommandSource that instigated the event
          * @param player     The player the event is for
@@ -65,7 +65,7 @@ public class FactionPlayerHomeEvent extends FactionPlayerEvent {
      *<br>
      * The intention of this event is to allow observing when a player teleports to their home.
      */
-    public class Post extends FactionPlayerHomeEvent {
+    public static class Post extends FactionPlayerHomeEvent {
         /** The player's location before they teleported */
         protected BlockPos previousPosition;
 

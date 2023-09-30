@@ -33,7 +33,7 @@ public abstract class FactionNewPlayerEvent extends FactionPlayerEvent {
      */
     public abstract @Nullable FactionRole getStartingRole();
 
-    public class Pre extends FactionNewPlayerEvent {
+    public static class Pre extends FactionNewPlayerEvent {
         /** The faction the player will start in */
         @Nullable
         protected Faction startingFaction;
@@ -75,7 +75,7 @@ public abstract class FactionNewPlayerEvent extends FactionPlayerEvent {
             if (startingFaction == null && startingRole != null
                     || startingFaction != null && startingRole == null) {
                 throw new IllegalArgumentException("Both newRole and newFaction must be null, or not null");
-            } else if (startingFaction != null && startingFaction.getRoles().stream().noneMatch(role -> role.equals(startingRole))) {
+            } else if (startingRole == null || startingFaction.getRole(startingRole.getId()) == null) {
                 throw new IllegalArgumentException("newRole must be a role that belongs to newFaction");
             }
 
@@ -90,7 +90,7 @@ public abstract class FactionNewPlayerEvent extends FactionPlayerEvent {
         public void setStartingRole(final FactionRole startingRole) {
             if (getStartingFaction() == null) {
                 throw new IllegalArgumentException("You can't set the newRole when the player isn't joining a faction");
-            } if (startingRole == null || getStartingFaction().getRoles().stream().noneMatch(role -> role.equals(startingRole))) {
+            } else if (startingRole == null || getStartingFaction().getRole(startingRole.getId()) == null) {
                 throw new IllegalArgumentException("newRole must be a role that belongs to newFaction");
             }
 
@@ -98,7 +98,7 @@ public abstract class FactionNewPlayerEvent extends FactionPlayerEvent {
         }
     }
 
-    public class Post extends FactionNewPlayerEvent {
+    public static class Post extends FactionNewPlayerEvent {
         /**
          * @param instigator The CommandSource that instigated the event
          * @param player     The player the event is for

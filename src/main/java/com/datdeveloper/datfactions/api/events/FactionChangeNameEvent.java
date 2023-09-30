@@ -61,7 +61,7 @@ public abstract class FactionChangeNameEvent extends FactionEvent {
      * </p>
      */
     @Cancelable
-    public class Pre extends FactionChangeNameEvent {
+    public static class Pre extends FactionChangeNameEvent {
         /**
          * @param instigator The CommandSource that instigated the event
          * @param faction    The faction the event is about
@@ -83,7 +83,7 @@ public abstract class FactionChangeNameEvent extends FactionEvent {
      * <br>
      * The intention of this event is to allow observing changes to the name to update other resources
      */
-    public class Post extends FactionChangeNameEvent {
+    public static class Post extends FactionChangeNameEvent {
         /** The old name of the faction */
         final String oldName;
 

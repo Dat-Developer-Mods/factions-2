@@ -61,7 +61,7 @@ public abstract class FactionChangeMotdEvent extends FactionEvent {
      * </p>
      */
     @Cancelable
-    public class Pre extends FactionChangeMotdEvent {
+    public static class Pre extends FactionChangeMotdEvent {
         /**
          * @param instigator The CommandSource that instigated the event
          * @param faction The faction the event is about
@@ -83,7 +83,7 @@ public abstract class FactionChangeMotdEvent extends FactionEvent {
      * <br>
      * The intention of this event is to allow observing changes to the MOTD to update other resources
      */
-    public class Post extends FactionChangeMotdEvent {
+    public static class Post extends FactionChangeMotdEvent {
         /** The old MOTD of the faction */
         final String oldMotd;
 

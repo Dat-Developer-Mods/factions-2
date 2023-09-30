@@ -93,7 +93,7 @@ public abstract class FactionPlayerChangeMembershipEvent extends FactionPlayerEv
      * </p>
      */
     @HasResult
-    public class Pre extends FactionPlayerChangeMembershipEvent {
+    public static class Pre extends FactionPlayerChangeMembershipEvent {
         /**
          * @param instigator The CommandSource that instigated the event
          * @param player     The player changing faction
@@ -135,7 +135,7 @@ public abstract class FactionPlayerChangeMembershipEvent extends FactionPlayerEv
             if (newFaction == null && newRole != null
                     || newFaction != null && newRole == null) {
                 throw new IllegalArgumentException("Both newRole and newFaction must be null, or not null");
-            } else if (newFaction != null && newFaction.getRoles().stream().noneMatch(role -> role.equals(newRole))) {
+            } else if (newFaction != null && newFaction.getRole(newRole.getId()) == null) {
                 throw new IllegalArgumentException("newRole must be a role that belongs to newFaction");
             }
 
@@ -151,7 +151,7 @@ public abstract class FactionPlayerChangeMembershipEvent extends FactionPlayerEv
         public void setNewRole(@Nullable final FactionRole newRole) {
             if (getNewFaction() == null) {
                 throw new IllegalArgumentException("You can't set the newRole when the player isn't joining a faction");
-            } if (newRole == null || getNewFaction().getRoles().stream().noneMatch(role -> role.equals(newRole))) {
+            } if (newRole == null || getNewFaction().getRole(newRole.getId()) == null) {
                 throw new IllegalArgumentException("newRole must be a role that belongs to newFaction");
             }
 
@@ -170,7 +170,7 @@ public abstract class FactionPlayerChangeMembershipEvent extends FactionPlayerEv
      * <br>
      * The intention of this event is to allow observing player faction member changes to update other resources
      */
-    public class Post extends FactionPlayerChangeMembershipEvent {
+    public static class Post extends FactionPlayerChangeMembershipEvent {
         /** The player's previous faction */
         @Nullable
         private final Faction oldFaction;

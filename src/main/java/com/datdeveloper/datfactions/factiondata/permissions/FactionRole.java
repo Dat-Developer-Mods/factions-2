@@ -1,55 +1,93 @@
 package com.datdeveloper.datfactions.factiondata.permissions;
 
 import com.datdeveloper.datfactions.database.DatabaseEntity;
-import com.datdeveloper.datfactions.factiondata.Faction;
 import com.datdeveloper.datfactions.factiondata.FactionCollection;
 import com.datdeveloper.datmoddingapi.util.DatChatFormatting;
+import com.google.common.collect.Sets;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.*;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
 /**
  * A role inside the faction, representing the permissions a player has in the faction
+ * <br>
+ * Roles are a hierarchical tree. Where Roles can have multiple children, and the higher up the tree the more authority
  */
 public class FactionRole extends DatabaseEntity {
-    /**
-     * The role's ID
-     */
+    /** The role's ID */
     final UUID id;
 
-    /**
-     * The name of the role
-     */
+    /** The parent of this role */
+    @Nullable
+    FactionRole parent;
+
+    /** The name of the role */
     String name;
 
-    /**
-     * If the role has total permissions on the faction
-     */
+    /** If the role has total permissions on the faction */
     boolean administrator;
 
-    /**
-     * The permissions the role has
-     */
+    /** The child roles of this role */
+    final transient List<FactionRole> children;
+
+    /** The permissions the role has */
     Set<ERolePermissions> permissions;
 
-    public FactionRole(final String name) {
+    public FactionRole(final String name, final @Nullable FactionRole parent) {
         this.id = UUID.randomUUID();
+
+        if (parent != null) {
+            this.parent = parent;
+            parent.addChild(this);
+        } else {
+            this.parent = null;
+        }
+
         this.name = name;
         this.administrator = false;
+        children = new ArrayList<>();
         permissions = new HashSet<>();
     }
 
     /**
      * Copy Constructor
-     * @param role The role to copy
+     * @param role      The role to copy
+     * @param newParent The new parent this copied role is now a child of
      */
-    public FactionRole(final FactionRole role) {
+    public FactionRole(final FactionRole role, final @Nullable FactionRole newParent) {
         this.id = UUID.randomUUID();
+        this.parent = newParent;
+
+        if (parent != null) parent.addChild(this);
+
         this.name = role.name;
         this.administrator = role.administrator;
+
+        // Children are added by the child when they're constructed
+        this.children = new ArrayList<>();
+
         // Enums are immutable, so we can reuse the enum, just not the set
         permissions = new HashSet<>(role.permissions);
+    }
+
+    /**
+     * Make a deep copy of this role, duplicating all children recursively
+     * @param newParent The new parent of this role
+     * @param oldToNewMap A map that stores the old keys against the copied role for mapping old keys to their duplicates
+     * @return A deep copy of the role
+     */
+    public FactionRole deepCopy(final @Nullable FactionRole newParent, final @NotNull Map<UUID, FactionRole> oldToNewMap) {
+        final FactionRole newRole = new FactionRole(this, newParent);
+        oldToNewMap.put(id, newRole);
+
+        for (final FactionRole child : children) {
+            newRole.addChild(child.deepCopy(newRole, oldToNewMap));
+        }
+
+        return newRole;
     }
 
     /* ========================================= */
@@ -84,6 +122,58 @@ public class FactionRole extends DatabaseEntity {
     public void setAdministrator(final boolean administrator) {
         this.administrator = administrator;
         markDirty();
+    }
+
+    /* ========================================= */
+    /* Hierarchy
+    /* ========================================= */
+
+    /**
+     * Check if this node is the root of the hierarchy
+     * @return True if this node is the route of the hierarchy
+     */
+    public boolean isRoot() {
+        return getParent() == null;
+    }
+
+    public @Nullable FactionRole getParent() {
+        return parent;
+    }
+
+    public void setParent(final @Nullable FactionRole parent) {
+        this.parent = parent;
+        if (parent != null) parent.addChild(this);
+    }
+
+    public List<FactionRole> getChildren() {
+        return children;
+    }
+
+    /**
+     * Get the child object at the given index
+     * @param index The index of the child in the children array
+     * @return The child object
+     */
+    public FactionRole getChild(final int index) {
+        return children.get(index);
+    }
+
+    /**
+     * Add a new child to the role
+     * <br>
+     * This child must have this role set as its parent
+     * @param role The child to add
+     */
+    public void addChild(final FactionRole role) {
+        children.add(role);
+    }
+
+    /**
+     * Remove a child from the role
+     * @param child The child to remove
+     */
+    public void removeChild(final FactionRole child) {
+        children.remove(child);
     }
 
     /* ========================================= */
@@ -160,16 +250,39 @@ public class FactionRole extends DatabaseEntity {
         if (isAdministrator()) {
             message.append("\n")
                     .append(
-                        Component.literal("Admin")
-                                .withStyle(ChatFormatting.DARK_PURPLE)
+                            Component.literal("Admin")
+                                    .withStyle(ChatFormatting.DARK_PURPLE)
                     );
+        }
+
+        if (parent != null) {
+            message.append("\n")
+                    .append(
+                            Component.literal("Superior: ")
+                                    .withStyle(DatChatFormatting.TextColour.INFO)
+                    )
+                    .append(ChatFormatting.WHITE.toString())
+                    .append(parent.getNameWithDescription());
+        }
+
+        if (!children.isEmpty()) {
+            final List<MutableComponent> subordinates = children.stream()
+                    .map(FactionRole::getNameWithDescription)
+                    .toList();
+
+            message.append("\n")
+                    .append(
+                            Component.literal("Subordinates(s): ")
+                                    .withStyle(DatChatFormatting.TextColour.INFO)
+                    )
+                    .append(ChatFormatting.WHITE.toString())
+                    .append(ComponentUtils.formatList(subordinates, ComponentUtils.DEFAULT_SEPARATOR));
         }
 
         if (!permissions.isEmpty()) {
             final List<MutableComponent> permissions = getPermissions().stream()
                     .sorted()
-                    .map(ERolePermissions::getChatComponent
-                    )
+                    .map(ERolePermissions::getChatComponent)
                     .toList();
             message.append("\n")
                     .append(
@@ -236,43 +349,44 @@ public class FactionRole extends DatabaseEntity {
      * Get a list of the default roles
      * This should only be used to generate the template, to get the server's default roles you should look there
      * @see FactionCollection#getTemplate()
-     * @return a list of the default roles
+     * @return a list of the default roles, where the last element is the recruit
      */
     public static List<FactionRole> getDefaultRoles() {
-        final List<FactionRole> roles = new ArrayList<>();
-        roles.add(defaultOwnerRole());
-        roles.add(defaultOfficerRole());
-        roles.add(defaultMemberRole());
-        roles.add(defaultRecruitRole());
+        final FactionRole owner;
+        {
+            owner = new FactionRole("Owner", null);
+            owner.administrator = true;
+        }
 
-        return roles;
+        final FactionRole officer;
+        {
+            officer = new FactionRole("Officer", owner);
+            officer.permissions = defaultOfficerPermissions();
+        }
+
+        final FactionRole member;
+        {
+            member = new FactionRole("Member", officer);
+            member.permissions = defaultMemberRolePermissions();
+        }
+
+        final FactionRole recruit;
+        {
+            recruit = new FactionRole("Member", officer);
+            recruit.permissions = defaultRecruitRolePermissions();
+        }
+
+        return List.of(owner, officer, member, recruit);
     }
 
     /**
-     * Get the default owner role
-     * This should only be used to generate the template, to get the server's default owner role you should look there
+     * Get the permissions of the default officer role
+     * This should only be used to generate the template
      * @see FactionCollection#getTemplate()
-     * @see Faction#getOwnerRole()
-     * @return the default Owner role
+     * @return the default Officer role's permissions
      */
-    public static FactionRole defaultOwnerRole() {
-        final FactionRole owner = new FactionRole("Owner");
-
-        owner.administrator = true;
-
-        return owner;
-    }
-
-    /**
-     * Get the default officer role
-     * This should only be used to generate the template and is not guaranteed to be one of the default roles
-     * @see FactionCollection#getTemplate()
-     * @return the default Officer role
-     */
-    public static FactionRole defaultOfficerRole() {
-        final FactionRole officer = new FactionRole("Officer");
-
-        officer.permissions = new HashSet<>(Arrays.asList(
+    public static Set<ERolePermissions> defaultOfficerPermissions() {
+        return Sets.newHashSet(
                 // Player
                 ERolePermissions.KICK,
                 ERolePermissions.SETROLE,
@@ -321,21 +435,17 @@ public class FactionRole extends DatabaseEntity {
                 // Misc
                 ERolePermissions.HOME,
                 ERolePermissions.SETHOME
-        ));
-
-        return officer;
+        );
     }
 
     /**
-     * Get the default member role
-     * This should only be used to generate the template and is not guaranteed to be one of the default roles
+     * Get the permissions of the default member role
+     * This should only be used to generate the template
      * @see FactionCollection#getTemplate()
-     * @return the default Member role
+     * @return the default Member role's permissions
      */
-    public static FactionRole defaultMemberRole() {
-        final FactionRole member = new FactionRole("Member");
-
-        member.permissions = new HashSet<>(Arrays.asList(
+    public static Set<ERolePermissions> defaultMemberRolePermissions() {
+        return Sets.newHashSet(
                 // Land
                 ERolePermissions.CLAIMONE,
                 ERolePermissions.UNCLAIMONE,
@@ -358,26 +468,19 @@ public class FactionRole extends DatabaseEntity {
 
                 // Misc
                 ERolePermissions.HOME
-        ));
-
-        return member;
+        );
     }
     /**
-     * Get the default recruit role
-     * This should only be used to generate the template, to get the server's default recruit role you should look there
+     * Get the default recruit role's permissions
+     * This should only be used to generate the template
      * @see FactionCollection#getTemplate()
-     * @see Faction#getRecruitRole()
-     * @return the default Recruit role
+     * @return the default Recruit role's permissions
      */
-    public static FactionRole defaultRecruitRole() {
-        final FactionRole recruit = new FactionRole("Recruit");
-
-        recruit.permissions = new HashSet<>(Arrays.asList(
+    public static Set<ERolePermissions> defaultRecruitRolePermissions() {
+        return Sets.newHashSet(
                 ERolePermissions.FACTIONCHAT,
                 ERolePermissions.HOME
-        ));
-
-        return recruit;
+        );
     }
 
     /* ========================================= */

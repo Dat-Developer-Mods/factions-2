@@ -31,7 +31,7 @@ public class FactionDisbandEvent extends FactionEvent {
      * </p>
      */
     @Cancelable
-    public class Pre extends FactionDisbandEvent {
+    public static class Pre extends FactionDisbandEvent {
         /**
          * @param instigator The CommandSource that instigated the event
          * @param faction    The faction the event is about
@@ -51,7 +51,7 @@ public class FactionDisbandEvent extends FactionEvent {
      * immediately following this event.
      * </p>
      */
-    public class Post extends FactionDisbandEvent {
+    public static class Post extends FactionDisbandEvent {
         /**
          * @param instigator The CommandSource that instigated the event
          * @param faction    The faction the event is about

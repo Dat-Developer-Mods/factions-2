@@ -8,9 +8,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Fired when a faction creates a role
- * <br>
- * Cancellable, and changes to newRoleName and newRoleParent will be reflected
+ * Events for when a faction creates a new role
  */
 @Cancelable
 public class FactionRoleCreateEvent extends FactionEvent {
@@ -20,7 +18,7 @@ public class FactionRoleCreateEvent extends FactionEvent {
     String newRoleName;
 
     /**
-     * The role that the new role will be directly superior to
+     * The parent to be of the new role
      */
     FactionRole newRoleParent;
 
@@ -28,45 +26,57 @@ public class FactionRoleCreateEvent extends FactionEvent {
      * @param instigator The CommandSource that instigated the event
      * @param faction The faction the event is about
      * @param newRoleName The name of the new role
-     * @param newRoleParent The parent of the role
+     * @param newRoleIndex The index to be of the new role
      */
-    public FactionRoleCreateEvent(@Nullable final CommandSource instigator, @NotNull final Faction faction, final String newRoleName, final FactionRole newRoleParent) {
+    public FactionRoleCreateEvent(@Nullable final CommandSource instigator, @NotNull final Faction faction, final String newRoleName, final int newRoleIndex) {
         super(instigator, faction);
         this.newRoleName = newRoleName;
-        this.newRoleParent = newRoleParent;
+        this.newRoleIndex = newRoleIndex;
     }
 
-    /**
-     * Get the name of the new role
-     * @return the name of the new role
-     */
     public String getNewRoleName() {
         return newRoleName;
     }
 
+    public int getNewRoleIndex() {
+        return newRoleIndex;
+    }
+
     /**
-     * Set the name of the new role
-     * @param newRoleName The new role's name
+     * Fired before a faction creates a new Role
+     * <br>
+     * The purpose of this event is to allow modifying/checking a faction's new role
      */
+    public static class Pre extends FactionRoleCreateEvent {
+        /**
+         * @param instigator   The CommandSource that instigated the event
+         * @param faction      The faction the event is about
+         * @param newRoleName  The name of the new role
+         * @param newRoleIndex The index to be of the new role
+         */
+        public Pre(@Nullable final CommandSource instigator,
+                   @NotNull final Faction faction,
+                   final String newRoleName,
+                   final int newRoleIndex) {
+            super(instigator, faction, newRoleName, newRoleIndex);
+        }
+
     public void setNewRoleName(final String newRoleName) {
         this.newRoleName = newRoleName;
     }
 
     /**
-     * Get the parent of the new role
-     * @return the parent of the new role
+     * Set the new index of the role
+     * @param newRoleIndex The new index of the role
+     * @throws IllegalArgumentException When the index is less than 1 (since the owner is 0 and cannot be replaced)
+     * or greater than the number of existing roles
      */
-    public FactionRole getNewRoleParent() {
-        return newRoleParent;
+    public void setNewRoleIndex(final int newRoleIndex) {
+        if (newRoleIndex < 1 || newRoleIndex > faction.getRoles().size()) {
+            throw new IllegalArgumentException("The index must be greater than 0 (cannot replace the owner) and"
+                    + " less than " + faction.getRoles().size() + " (the number of roles there are)");
+        }
+        this.newRoleIndex = newRoleIndex;
     }
-
-    /**
-     * Set the parent of the new role
-     * @param newRoleParent The new parent of the role
-     * @throws IllegalArgumentException when trying to set the parent to null or the recruit role
-     */
-    public void setNewRoleParent(final FactionRole newRoleParent) {
-        if (newRoleParent == null || !faction.getRoles().contains(newRoleParent) || newRoleParent.equals(faction.getRecruitRole())) throw new IllegalArgumentException("newRoleParent must be a valid role that isn't the recruit role");
-        this.newRoleParent = newRoleParent;
     }
 }

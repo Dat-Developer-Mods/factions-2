@@ -47,7 +47,7 @@ public class FactionRoleChangePermissionsEvent extends FactionRoleEvent {
      * <br>
      * Supplies a setter for the permissions
      */
-    protected class Pre extends FactionRoleChangePermissionsEvent {
+    protected static class Pre extends FactionRoleChangePermissionsEvent {
         /**
          * @param instigator  The CommandSource that instigated the event
          * @param faction     The faction the event is about
@@ -84,7 +84,7 @@ public class FactionRoleChangePermissionsEvent extends FactionRoleEvent {
      * </ul>
      */
     @HasResult
-    public class PreAdd extends Pre {
+    public static class PreAdd extends Pre {
         /**
          * @param instigator  The CommandSource that instigated the event
          * @param faction     The faction the event is about
@@ -116,7 +116,7 @@ public class FactionRoleChangePermissionsEvent extends FactionRoleEvent {
      * </ul>
      */
     @HasResult
-    public class PreRemove extends Pre {
+    public static class PreRemove extends Pre {
         /**
          * @param instigator  The CommandSource that instigated the event
          * @param faction     The faction the event is about
@@ -136,7 +136,7 @@ public class FactionRoleChangePermissionsEvent extends FactionRoleEvent {
      * <br>
      * Sets the flags set to unmodifiable
      */
-    public class Post extends FactionRoleChangePermissionsEvent {
+    public static class Post extends FactionRoleChangePermissionsEvent {
         /**
          * @param instigator  The CommandSource that instigated the event
          * @param faction     The faction the event is about
@@ -156,7 +156,7 @@ public class FactionRoleChangePermissionsEvent extends FactionRoleEvent {
      * <br>
      * The intention of this event is to allow observing permission additions for roles to update other resources
      */
-    public class PostAdd extends Post {
+    public static class PostAdd extends Post {
         /**
          * @param instigator  The CommandSource that instigated the event
          * @param faction     The faction the event is about
@@ -173,7 +173,7 @@ public class FactionRoleChangePermissionsEvent extends FactionRoleEvent {
      * <br>
      * The intention of this event is to allow observing permission removals for roles to update other resources
      */
-    public class PostRemove extends Post {
+    public static class PostRemove extends Post {
         /**
          * @param instigator  The CommandSource that instigated the event
          * @param faction     The faction the event is about

@@ -52,7 +52,7 @@ public abstract class FactionChangeOwnerEvent extends FactionEvent {
      * </p>
      */
     @Cancelable
-    public class Pre extends FactionChangeOwnerEvent {
+    public static class Pre extends FactionChangeOwnerEvent {
         /**
          * @param instigator The CommandSource that instigated the event
          * @param faction    The faction the event is about
@@ -88,7 +88,7 @@ public abstract class FactionChangeOwnerEvent extends FactionEvent {
      * <br>
      * The intention of this event is to allow observing faction owner changes to update other resources
      */
-    public class Post extends FactionChangeOwnerEvent {
+    public static class Post extends FactionChangeOwnerEvent {
         /** The old owner of the faction */
         final FactionPlayer oldOwner;
 

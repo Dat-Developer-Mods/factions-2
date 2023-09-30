@@ -63,7 +63,7 @@ public abstract class FactionChangeRelationEvent extends FactionEvent {
      * </p>
      */
     @Cancelable
-    public class Pre extends FactionChangeRelationEvent {
+    public static class Pre extends FactionChangeRelationEvent {
         /**
          * @param instigator   The CommandSource that instigated the event
          * @param faction      The faction the event is about
@@ -109,7 +109,7 @@ public abstract class FactionChangeRelationEvent extends FactionEvent {
      * <br>
      * The intention of this event is to allow observing relation changes to update other resources
      */
-    public class Post extends FactionChangeRelationEvent {
+    public static class Post extends FactionChangeRelationEvent {
         /** The previous relation with the faction */
         final EFactionRelation oldRelation;
 

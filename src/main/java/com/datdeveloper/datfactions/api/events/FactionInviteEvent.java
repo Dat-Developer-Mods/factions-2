@@ -66,7 +66,7 @@ public class FactionInviteEvent extends FactionEvent {
      * </p>
      */
     @Cancelable
-    public class Pre extends FactionInviteEvent {
+    public static class Pre extends FactionInviteEvent {
         /**
          * @param instigator    The CommandSource that instigated the event
          * @param faction       The faction the event is about
@@ -91,7 +91,7 @@ public class FactionInviteEvent extends FactionEvent {
      * <br>
      * The intention of this event is to allow observing faction invites
      */
-    public class Post extends FactionInviteEvent {
+    public static class Post extends FactionInviteEvent {
         /**
          * @param instigator    The CommandSource that instigated the event
          * @param faction       The faction the event is about

@@ -67,7 +67,7 @@ public class FactionJoinCommand {
                 c.getSource().source,
                 fPlayer,
                 target,
-                target.getRecruitRole(),
+                target.getDefaultRoleId(),
                 FactionPlayerChangeMembershipEvent.EChangeFactionReason.JOIN
         );
         MinecraftForge.EVENT_BUS.post(event);

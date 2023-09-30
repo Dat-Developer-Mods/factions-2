@@ -44,7 +44,7 @@ public abstract class FactionChangeFlagsEvent extends FactionEvent {
      * <br>
      * Supplies a setter for the flags
      */
-    public class Pre extends FactionChangeFlagsEvent {
+    public static class Pre extends FactionChangeFlagsEvent {
         /**
          * @param instigator The CommandSource that instigated the event
          * @param faction    The faction the event is about
@@ -80,7 +80,7 @@ public abstract class FactionChangeFlagsEvent extends FactionEvent {
      * </ul>
      */
     @HasResult
-    public class PreAdd extends Pre {
+    public static class PreAdd extends Pre {
         /**
          * @param instigator The CommandSource that instigated the event
          * @param faction    The faction the event is about
@@ -108,7 +108,7 @@ public abstract class FactionChangeFlagsEvent extends FactionEvent {
      * </ul>
      */
     @HasResult
-    public class PreRemove extends FactionChangeFlagsEvent {
+    public static class PreRemove extends FactionChangeFlagsEvent {
         /**
          * @param instigator The CommandSource that instigated the event
          * @param faction    The faction the event is about
@@ -124,7 +124,7 @@ public abstract class FactionChangeFlagsEvent extends FactionEvent {
      * <br>
      * Sets the flags set to unmodifiable
      */
-    private class Post extends FactionChangeFlagsEvent {
+    private static class Post extends FactionChangeFlagsEvent {
         /**
          * @param instigator The CommandSource that instigated the event
          * @param faction    The faction the event is about
@@ -140,7 +140,7 @@ public abstract class FactionChangeFlagsEvent extends FactionEvent {
      * <br>
      * The intention of this event is to allow observing flag additions to update other resources
      */
-    public class PostAdd extends Post {
+    public static class PostAdd extends Post {
         /**
          * @param instigator The CommandSource that instigated the event
          * @param faction    The faction the event is about
@@ -156,7 +156,7 @@ public abstract class FactionChangeFlagsEvent extends FactionEvent {
      * <br>
      * The intention of this event is to allow observing flag removals to update other resources
      */
-    public class PostRemove extends Post {
+    public static class PostRemove extends Post {
         /**
          * @param instigator The CommandSource that instigated the event
          * @param faction    The faction the event is about
