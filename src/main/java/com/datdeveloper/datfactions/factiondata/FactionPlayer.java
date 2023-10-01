@@ -5,8 +5,8 @@ import com.datdeveloper.datfactions.api.events.FactionPlayerChangeMembershipEven
 import com.datdeveloper.datfactions.database.DatabaseEntity;
 import com.datdeveloper.datfactions.factiondata.permissions.FactionRole;
 import com.datdeveloper.datfactions.factiondata.relations.EFactionRelation;
-import com.datdeveloper.datfactions.util.AgeUtil;
 import com.datdeveloper.datfactions.util.RelationUtil;
+import com.datdeveloper.datmoddingapi.util.AgeUtil;
 import com.datdeveloper.datmoddingapi.util.DatChatFormatting;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.*;
@@ -316,7 +316,7 @@ public class FactionPlayer extends DatabaseEntity {
         // Last Online
         if (!isPlayerOnline()) {
             message.append("\n")
-                    .append(DatChatFormatting.TextColour.INFO + "Last Online: " + ChatFormatting.WHITE + AgeUtil.calculateAgeString(getLastActiveTime()) + " ago");
+                    .append(DatChatFormatting.TextColour.INFO + "Last Online: " + ChatFormatting.WHITE + AgeUtil.getFriendlyRelativeTime(getLastActiveTime()));
         }
 
         return message;
@@ -364,7 +364,7 @@ public class FactionPlayer extends DatabaseEntity {
         // Last Online
         if (!isPlayerOnline()) {
             component.append("\n")
-                    .append(DatChatFormatting.TextColour.INFO + "Last Online: " + ChatFormatting.WHITE + AgeUtil.calculateAgeString(getLastActiveTime()) + " ago");
+                    .append(DatChatFormatting.TextColour.INFO + "Last Online: " + ChatFormatting.WHITE + AgeUtil.getFriendlyRelativeTime(getLastActiveTime()));
         }
 
         return component;
@@ -381,6 +381,7 @@ public class FactionPlayer extends DatabaseEntity {
      * @param message The message to send to the player
      */
     public void sendHotbarMessage(final Component message) {
+        // TODO: Remove in favour of Notification Util
         final ServerPlayer player = getServerPlayer();
         if (player == null) return;
         player.connection.send(new ClientboundSetActionBarTextPacket(message));

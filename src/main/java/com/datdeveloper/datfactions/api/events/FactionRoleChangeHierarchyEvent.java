@@ -61,7 +61,16 @@ public abstract class FactionRoleChangeHierarchyEvent extends FactionRoleEvent {
             super(instigator, faction, role, newParent);
         }
 
+        /**
+         * Set the new parent of the role
+         * @param newParent The new parent
+         * @throws IllegalArgumentException When newParent doesn't belong to the faction
+         */
         public void setNewParent(final FactionRole newParent) {
+            if (!faction.hasRole(newParent)) {
+                throw new IllegalArgumentException("newParent must be a role that belongs to the faction");
+            }
+
             this.newParent = newParent;
         }
 

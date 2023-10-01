@@ -13,6 +13,9 @@ public enum EFactionFlags {
     FRIENDLYFIRE(false, "Allows faction members to harm each other"),
     TITLED(false, "Shows faction member's role title in their chat messages"),
     OPENBUILD(false, "Allows non-members to build on this faction's chunks"),
+    RANKTRUMPS(false, "A role's authority over another is determined by the roles' level, rather than the hierarchy"),
+
+    // Admin
     SHELTERED(true, "The members of the faction are protected from harm on their own chunks"),
     OPENSHELTER(true, "All players are protected from harm on this faction's chunks"),
     NOPOWER(true, "You don't lose power/gain when you die/kill in this faction's land"),

@@ -333,6 +333,15 @@ public class Faction extends DatabaseEntity {
     }
 
     /**
+     * Check if the given role belongs to the faction
+     * @param role The role to check
+     * @return True if the role belongs to the faction
+     */
+    public boolean hasRole(final FactionRole role) {
+        return roles.containsKey(role.getId());
+    }
+
+    /**
      * Get the role that represents the owner of the faction
      * @return the owner role of the faction
      */

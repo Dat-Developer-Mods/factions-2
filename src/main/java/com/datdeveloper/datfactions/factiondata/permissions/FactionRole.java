@@ -136,6 +136,55 @@ public class FactionRole extends DatabaseEntity {
         return getParent() == null;
     }
 
+    /**
+     * Get how far down the hierarchy the role is
+     * <br>
+     * For example, if the role has a parent, and that role has a parent (which is the owner), then the depth would be 2
+     * @return The level in the hierarchy of the role
+     */
+    public int getRoleLevel() {
+        FactionRole nextParent = getParent();
+        int count = 0;
+        while (nextParent != null) {
+            nextParent = nextParent.getParent();
+            ++count;
+        }
+
+        return count;
+    }
+
+    /**
+     * Get how many levels there are below this role
+     * @return The number of levels below this role
+     */
+    public int getRoleDepth() {
+        int maxDepth = 0;
+        for (final FactionRole child : children) {
+            final int childDepth = child.getRoleDepth() + 1;
+            if (childDepth > maxDepth) maxDepth = childDepth;
+        }
+
+        return maxDepth;
+    }
+
+    /**
+     * Check if this role has authority over the given role
+     * <br>
+     * A role will have authority over another if the other role is in the
+     * @param otherRole  The role whom to check if this faction has authority over
+     * @param rankTrumps When true, authority will be determined based on the role level
+     * @return True if this role has authority over the given role
+     */
+    public boolean hasAuthorityOver(final FactionRole otherRole, final boolean rankTrumps) {
+        if (rankTrumps) return getRoleLevel() < otherRole.getRoleLevel();
+
+        for (final FactionRole child : children) {
+            if (child.equals(otherRole) || child.hasAuthorityOver(otherRole, false)) return true;
+        }
+
+        return false;
+    }
+
     public @Nullable FactionRole getParent() {
         return parent;
     }
