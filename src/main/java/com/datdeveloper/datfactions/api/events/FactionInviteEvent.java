@@ -2,7 +2,7 @@ package com.datdeveloper.datfactions.api.events;
 
 import com.datdeveloper.datfactions.factiondata.Faction;
 import com.datdeveloper.datfactions.factiondata.FactionPlayer;
-import net.minecraft.commands.CommandSource;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.eventbus.api.Cancelable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -20,13 +20,12 @@ public class FactionInviteEvent extends FactionEvent {
     final EInviteType inviteType;
 
     /**
-     * @param instigator The CommandSource that instigated the event
      * @param faction    The faction the event is about
      * @param player     The player invited to/uninvited from the faction
      * @param inviteType The type of invite (invited or uninvited)
      */
-    protected FactionInviteEvent(@Nullable final CommandSource instigator, @NotNull final Faction faction, final @NotNull FactionPlayer player, final EInviteType inviteType) {
-        super(instigator, faction);
+    protected FactionInviteEvent(@NotNull final Faction faction, final @NotNull FactionPlayer player, final EInviteType inviteType) {
+        super(faction);
         this.player = player;
         this.inviteType = inviteType;
     }
@@ -66,15 +65,19 @@ public class FactionInviteEvent extends FactionEvent {
      * </p>
      */
     @Cancelable
-    public static class Pre extends FactionInviteEvent {
+    public static class Pre extends FactionInviteEvent implements IFactionPreEvent {
+        /** The instigator of the action (if there is one) */
+        private final ServerPlayer instigator;
+
         /**
-         * @param instigator    The CommandSource that instigated the event
+         * @param instigator    The player that instigated the event
          * @param faction       The faction the event is about
          * @param player        The player invited to/uninvited from the faction
          * @param inviteType    The type of invite (invited or uninvited)
          */
-        public Pre(@Nullable final CommandSource instigator, @NotNull final Faction faction, final FactionPlayer player, final EInviteType inviteType) {
-            super(instigator, faction, player, inviteType);
+        public Pre(@Nullable final ServerPlayer instigator, @NotNull final Faction faction, final FactionPlayer player, final EInviteType inviteType) {
+            super(faction, player, inviteType);
+            this.instigator = instigator;
         }
 
         /**
@@ -83,6 +86,12 @@ public class FactionInviteEvent extends FactionEvent {
          */
         public void setInvitedPlayer(final FactionPlayer newInvitedPlayer) {
             this.player = newInvitedPlayer;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public @Nullable ServerPlayer getInstigator() {
+            return instigator;
         }
     }
 
@@ -93,13 +102,12 @@ public class FactionInviteEvent extends FactionEvent {
      */
     public static class Post extends FactionInviteEvent {
         /**
-         * @param instigator    The CommandSource that instigated the event
          * @param faction       The faction the event is about
          * @param player        The player invited to/uninvited from the faction
          * @param inviteType    The type of invite (invited or uninvited)
          */
-        public Post(@Nullable final CommandSource instigator, @NotNull final Faction faction, final FactionPlayer player, final EInviteType inviteType) {
-            super(instigator, faction, player, inviteType);
+        public Post(@NotNull final Faction faction, final FactionPlayer player, final EInviteType inviteType) {
+            super(faction, player, inviteType);
         }
     }
 }

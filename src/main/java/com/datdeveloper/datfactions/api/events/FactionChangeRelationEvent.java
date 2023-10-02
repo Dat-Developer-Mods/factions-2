@@ -4,7 +4,7 @@ import com.datdeveloper.datfactions.factiondata.EFactionFlags;
 import com.datdeveloper.datfactions.factiondata.Faction;
 import com.datdeveloper.datfactions.factiondata.relations.EFactionRelation;
 import com.datdeveloper.datfactions.factiondata.relations.FactionRelation;
-import net.minecraft.commands.CommandSource;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.eventbus.api.Cancelable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -23,13 +23,12 @@ public abstract class FactionChangeRelationEvent extends FactionEvent {
     EFactionRelation newRelation;
 
     /**
-     * @param instigator The CommandSource that instigated the event
      * @param faction The faction the event is about
      * @param otherFaction The faction the relation is with
      * @param newRelation The New Relation
      */
-    protected FactionChangeRelationEvent(@Nullable final CommandSource instigator, @NotNull final Faction faction, @NotNull final Faction otherFaction, final EFactionRelation newRelation) {
-        super(instigator, faction);
+    protected FactionChangeRelationEvent(@NotNull final Faction faction, @NotNull final Faction otherFaction, final EFactionRelation newRelation) {
+        super(faction);
         this.otherFaction = otherFaction;
         this.newRelation = newRelation;
     }
@@ -63,15 +62,19 @@ public abstract class FactionChangeRelationEvent extends FactionEvent {
      * </p>
      */
     @Cancelable
-    public static class Pre extends FactionChangeRelationEvent {
+    public static class Pre extends FactionChangeRelationEvent implements IFactionPreEvent {
+        /** The instigator of the action (if there is one) */
+        private final ServerPlayer instigator;
+
         /**
-         * @param instigator   The CommandSource that instigated the event
+         * @param instigator   The player that instigated the event
          * @param faction      The faction the event is about
          * @param otherFaction The faction the relation is with
          * @param newRelation  the New Relation
          */
-        public Pre(@Nullable final CommandSource instigator, @NotNull final Faction faction, @NotNull final Faction otherFaction, final EFactionRelation newRelation) {
-            super(instigator, faction, otherFaction, newRelation);
+        public Pre(@Nullable final ServerPlayer instigator, @NotNull final Faction faction, @NotNull final Faction otherFaction, final EFactionRelation newRelation) {
+            super(faction, otherFaction, newRelation);
+            this.instigator = instigator;
         }
 
         /** {@inheritDoc} */
@@ -102,6 +105,12 @@ public abstract class FactionChangeRelationEvent extends FactionEvent {
 
             this.otherFaction = otherFaction;
         }
+
+        /** {@inheritDoc} */
+        @Override
+        public @Nullable ServerPlayer getInstigator() {
+            return instigator;
+        }
     }
 
     /**
@@ -114,14 +123,13 @@ public abstract class FactionChangeRelationEvent extends FactionEvent {
         final EFactionRelation oldRelation;
 
         /**
-         * @param instigator   The CommandSource that instigated the event
          * @param faction      The faction the event is about
          * @param otherFaction The faction the relation is with
          * @param newRelation  The New Relation
          * @param oldRelation  The previous relation
          */
-        public Post(@Nullable final CommandSource instigator, @NotNull final Faction faction, @NotNull final Faction otherFaction, final EFactionRelation newRelation, final EFactionRelation oldRelation) {
-            super(instigator, faction, otherFaction, newRelation);
+        public Post(@NotNull final Faction faction, @NotNull final Faction otherFaction, final EFactionRelation newRelation, final EFactionRelation oldRelation) {
+            super(faction, otherFaction, newRelation);
             this.oldRelation = oldRelation;
         }
 

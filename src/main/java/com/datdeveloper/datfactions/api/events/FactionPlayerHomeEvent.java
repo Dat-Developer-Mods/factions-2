@@ -1,9 +1,9 @@
 package com.datdeveloper.datfactions.api.events;
 
 import com.datdeveloper.datfactions.factiondata.FactionPlayer;
-import net.minecraft.commands.CommandSource;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.eventbus.api.Cancelable;
 import org.jetbrains.annotations.NotNull;
@@ -16,11 +16,10 @@ import org.jetbrains.annotations.Nullable;
  */
 public class FactionPlayerHomeEvent extends FactionPlayerEvent {
     /**
-     * @param instigator The CommandSource that instigated the event
      * @param player The player the event is for
      */
-    protected FactionPlayerHomeEvent(@Nullable final CommandSource instigator, @NotNull final FactionPlayer player) {
-        super(instigator, player);
+    protected FactionPlayerHomeEvent(@NotNull final FactionPlayer player) {
+        super(player);
     }
 
     /**
@@ -50,13 +49,23 @@ public class FactionPlayerHomeEvent extends FactionPlayerEvent {
      * </p>
      */
     @Cancelable
-    public static class Pre extends FactionPlayerHomeEvent {
+    public static class Pre extends FactionPlayerHomeEvent implements IFactionPreEvent {
+        /** The instigator of the action (if there is one) */
+        private final ServerPlayer instigator;
+
         /**
-         * @param instigator The CommandSource that instigated the event
+         * @param instigator The player that instigated the event
          * @param player     The player the event is for
          */
-        protected Pre(@Nullable final CommandSource instigator, @NotNull final FactionPlayer player) {
-            super(instigator, player);
+        protected Pre(@Nullable final ServerPlayer instigator, @NotNull final FactionPlayer player) {
+            super(player);
+            this.instigator = instigator;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public @Nullable ServerPlayer getInstigator() {
+            return instigator;
         }
     }
 
@@ -73,14 +82,12 @@ public class FactionPlayerHomeEvent extends FactionPlayerEvent {
         protected ResourceKey<Level> previousLevel;
 
         /**
-         * @param instigator The CommandSource that instigated the event
          * @param player     The player the event is for
          */
-        protected Post(@Nullable final CommandSource instigator,
-                       @NotNull final FactionPlayer player,
+        protected Post(@NotNull final FactionPlayer player,
                        final BlockPos previousPosition,
                        final ResourceKey<Level> previousLevel) {
-            super(instigator, player);
+            super(player);
             this.previousPosition = previousPosition;
             this.previousLevel = previousLevel;
         }

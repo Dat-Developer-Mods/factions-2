@@ -86,7 +86,7 @@ public class FactionCollection extends BaseCollection<UUID, Faction> {
         final Map<FactionLevel, List<ChunkPos>> allFactionChunks = FLevelCollection.getInstance().getAllFactionChunks(faction);
         for (final FactionLevel factionLevel : allFactionChunks.keySet()) {
             final List<ChunkPos> chunks = allFactionChunks.get(factionLevel);
-            final FactionLandChangeOwnerEvent event = new FactionLandChangeOwnerEvent(null, chunks, factionLevel, null, FactionLandChangeOwnerEvent.EChangeOwnerReason.DISBAND);
+            final FactionLandChangeOwnerEvent event = new FactionLandChangeOwnerEvent(chunks, factionLevel, null, FactionLandChangeOwnerEvent.EChangeOwnerReason.DISBAND);
             MinecraftForge.EVENT_BUS.post(event);
 
             factionLevel.setChunksOwner(chunks, event.getNewOwner());
@@ -94,7 +94,7 @@ public class FactionCollection extends BaseCollection<UUID, Faction> {
 
         // Remove from players
         for (final FactionPlayer player : players) {
-            final FactionPlayerChangeMembershipEvent event = new FactionPlayerChangeMembershipEvent(null, player, null, null, FactionPlayerChangeMembershipEvent.EChangeFactionReason.DISBAND);
+            final FactionPlayerChangeMembershipEvent event = new FactionPlayerChangeMembershipEvent(player, null, null, FactionPlayerChangeMembershipEvent.EChangeFactionReason.DISBAND);
             MinecraftForge.EVENT_BUS.post(event);
 
             final Faction newFaction = event.getNewFaction();

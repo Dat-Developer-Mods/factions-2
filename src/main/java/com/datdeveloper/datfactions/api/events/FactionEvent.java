@@ -1,25 +1,22 @@
 package com.datdeveloper.datfactions.api.events;
 
 import com.datdeveloper.datfactions.factiondata.Faction;
-import net.minecraft.commands.CommandSource;
+import net.minecraftforge.eventbus.api.Event;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 /**
  * Parent to Events that occur on a faction
  */
-public class FactionEvent extends BaseFactionEvent {
+public class FactionEvent extends Event {
     /**
      * The faction the player is currently in
      */
     final Faction faction;
 
     /**
-     * @param instigator The CommandSource that instigated the event
      * @param faction The faction the event is about
      */
-    protected FactionEvent(@Nullable final CommandSource instigator, @NotNull final Faction faction) {
-        super(instigator);
+    protected FactionEvent(@NotNull final Faction faction) {
         this.faction = faction;
     }
 

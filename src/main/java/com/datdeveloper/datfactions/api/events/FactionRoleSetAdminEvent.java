@@ -2,7 +2,7 @@ package com.datdeveloper.datfactions.api.events;
 
 import com.datdeveloper.datfactions.factiondata.Faction;
 import com.datdeveloper.datfactions.factiondata.permissions.FactionRole;
-import net.minecraft.commands.CommandSource;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.eventbus.api.Cancelable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -20,13 +20,12 @@ public abstract class FactionRoleSetAdminEvent extends FactionRoleEvent {
     final boolean newAdmin;
 
     /**
-     * @param instigator The CommandSource that instigated the event
      * @param faction The faction the event is about
      * @param role The role changing admin state
      * @param newAdmin The new admin state of the role
      */
-    protected FactionRoleSetAdminEvent(@Nullable final CommandSource instigator, @NotNull final Faction faction, @NotNull final FactionRole role, final boolean newAdmin) {
-        super(instigator, faction, role);
+    protected FactionRoleSetAdminEvent(@NotNull final Faction faction, @NotNull final FactionRole role, final boolean newAdmin) {
+        super(faction, role);
         this.newAdmin = newAdmin;
     }
 
@@ -55,21 +54,31 @@ public abstract class FactionRoleSetAdminEvent extends FactionRoleEvent {
      * </p>
      */
     @Cancelable
-    public static class Pre extends FactionRoleSetAdminEvent {
+    public static class Pre extends FactionRoleSetAdminEvent implements IFactionPreEvent {
+        /** The instigator of the action (if there is one) */
+        private final ServerPlayer instigator;
+
         /**
-         * @param instigator The CommandSource that instigated the event
+         * @param instigator The player that instigated the event
          * @param faction    The faction the event is about
          * @param role       The role changing admin state
          * @param newAdmin   The new admin state of the role
          */
-        public Pre(@Nullable final CommandSource instigator, @NotNull final Faction faction, @NotNull final FactionRole role, final boolean newAdmin) {
-            super(instigator, faction, role, newAdmin);
+        public Pre(@Nullable final ServerPlayer instigator, @NotNull final Faction faction, @NotNull final FactionRole role, final boolean newAdmin) {
+            super(faction, role, newAdmin);
+            this.instigator = instigator;
         }
 
         /** {@inheritDoc} */
         @Override
         public boolean wasAdmin() {
             return role.isAdministrator();
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public @Nullable ServerPlayer getInstigator() {
+            return instigator;
         }
     }
 
@@ -82,18 +91,16 @@ public abstract class FactionRoleSetAdminEvent extends FactionRoleEvent {
         final boolean wasAdmin;
 
         /**
-         * @param instigator The CommandSource that instigated the event
          * @param faction    The faction the event is about
          * @param role       The role changing admin state
+         * @param wasAdmin   Whether the role was previously admin
          * @param newAdmin   The new admin state of the role
-         * @param wasAdmin
          */
-        public Post(@Nullable final CommandSource instigator,
-                       @NotNull final Faction faction,
-                       @NotNull final FactionRole role,
-                       final boolean wasAdmin,
-                       final boolean newAdmin) {
-            super(instigator, faction, role, newAdmin);
+        public Post(@NotNull final Faction faction,
+                    @NotNull final FactionRole role,
+                    final boolean wasAdmin,
+                    final boolean newAdmin) {
+            super(faction, role, newAdmin);
             this.wasAdmin = wasAdmin;
         }
 

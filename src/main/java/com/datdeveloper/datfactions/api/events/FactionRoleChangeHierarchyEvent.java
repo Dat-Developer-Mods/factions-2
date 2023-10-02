@@ -2,7 +2,7 @@ package com.datdeveloper.datfactions.api.events;
 
 import com.datdeveloper.datfactions.factiondata.Faction;
 import com.datdeveloper.datfactions.factiondata.permissions.FactionRole;
-import net.minecraft.commands.CommandSource;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.eventbus.api.Cancelable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -19,13 +19,12 @@ public abstract class FactionRoleChangeHierarchyEvent extends FactionRoleEvent {
     FactionRole newParent;
 
     /**
-     * @param instigator The CommandSource that instigated the event
      * @param faction The faction the event is about
      * @param role The role changing order
      * @param newParent The new parent of the role
      */
-    protected FactionRoleChangeHierarchyEvent(@Nullable final CommandSource instigator, @NotNull final Faction faction, @NotNull final FactionRole role, final FactionRole newParent) {
-        super(instigator, faction, role);
+    protected FactionRoleChangeHierarchyEvent(@NotNull final Faction faction, @NotNull final FactionRole role, final FactionRole newParent) {
+        super(faction, role);
         this.newParent = newParent;
     }
 
@@ -50,15 +49,19 @@ public abstract class FactionRoleChangeHierarchyEvent extends FactionRoleEvent {
       </p>
      */
     @Cancelable
-    public static class Pre extends FactionRoleChangeHierarchyEvent {
+    public static class Pre extends FactionRoleChangeHierarchyEvent implements IFactionPreEvent {
+        /** The instigator of the action (if there is one) */
+        private final ServerPlayer instigator;
+
         /**
-         * @param instigator The CommandSource that instigated the event
+         * @param instigator The player that instigated the event
          * @param faction    The faction the event is about
          * @param role       The role changing order
          * @param newParent   The new parent of the role
          */
-        public Pre(@Nullable final CommandSource instigator, @NotNull final Faction faction, @NotNull final FactionRole role, final FactionRole newParent) {
-            super(instigator, faction, role, newParent);
+        public Pre(@Nullable final ServerPlayer instigator, @NotNull final Faction faction, @NotNull final FactionRole role, final FactionRole newParent) {
+            super(faction, role, newParent);
+            this.instigator = instigator;
         }
 
         /**
@@ -79,6 +82,12 @@ public abstract class FactionRoleChangeHierarchyEvent extends FactionRoleEvent {
         public FactionRole getOldParent() {
             return role.getParent();
         }
+
+        /** {@inheritDoc} */
+        @Override
+        public @Nullable ServerPlayer getInstigator() {
+            return instigator;
+        }
     }
 
     /**
@@ -91,18 +100,16 @@ public abstract class FactionRoleChangeHierarchyEvent extends FactionRoleEvent {
         private final FactionRole oldParent;
 
         /**
-         * @param instigator The CommandSource that instigated the event
          * @param faction    The faction the event is about
          * @param role       The role changing order
          * @param newParent  The new parent of the role
          * @param oldParent  The previous parent of the role
          */
-        public Post(@Nullable final CommandSource instigator,
-                       @NotNull final Faction faction,
-                       @NotNull final FactionRole role,
-                       final FactionRole oldParent,
-                       final FactionRole newParent) {
-            super(instigator, faction, role, newParent);
+        public Post(@NotNull final Faction faction,
+                    @NotNull final FactionRole role,
+                    final FactionRole oldParent,
+                    final FactionRole newParent) {
+            super(faction, role, newParent);
             this.oldParent = oldParent;
         }
 

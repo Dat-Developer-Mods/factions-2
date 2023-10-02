@@ -2,7 +2,7 @@ package com.datdeveloper.datfactions.api.events;
 
 import com.datdeveloper.datfactions.factiondata.Faction;
 import com.datdeveloper.datfactions.factiondata.FactionPlayer;
-import net.minecraft.commands.CommandSource;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.eventbus.api.Cancelable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -17,12 +17,11 @@ public abstract class FactionChangeOwnerEvent extends FactionEvent {
     FactionPlayer newOwner;
 
     /**
-     * @param instigator The CommandSource that instigated the event
      * @param faction The faction the event is about
      * @param newOwner The new owner of the faction
      */
-    protected FactionChangeOwnerEvent(@Nullable final CommandSource instigator, @NotNull final Faction faction, @Nullable final FactionPlayer newOwner) {
-        super(instigator, faction);
+    protected FactionChangeOwnerEvent(@NotNull final Faction faction, @Nullable final FactionPlayer newOwner) {
+        super(faction);
         this.newOwner = newOwner;
     }
 
@@ -52,14 +51,18 @@ public abstract class FactionChangeOwnerEvent extends FactionEvent {
      * </p>
      */
     @Cancelable
-    public static class Pre extends FactionChangeOwnerEvent {
+    public static class Pre extends FactionChangeOwnerEvent implements IFactionPreEvent {
+        /** The instigator of the action (if there is one) */
+        private final ServerPlayer instigator;
+
         /**
-         * @param instigator The CommandSource that instigated the event
+         * @param instigator The player that instigated the event
          * @param faction    The faction the event is about
          * @param newOwner   The new owner of the faction
          */
-        protected Pre(@Nullable final CommandSource instigator, @NotNull final Faction faction, @Nullable final FactionPlayer newOwner) {
-            super(instigator, faction, newOwner);
+        protected Pre(@Nullable final ServerPlayer instigator, @NotNull final Faction faction, @Nullable final FactionPlayer newOwner) {
+            super(faction, newOwner);
+            this.instigator = instigator;
         }
 
         /** {@inheritDoc} */
@@ -81,6 +84,12 @@ public abstract class FactionChangeOwnerEvent extends FactionEvent {
 
             this.newOwner = newOwner;
         }
+
+        /** {@inheritDoc} */
+        @Override
+        public @Nullable ServerPlayer getInstigator() {
+            return instigator;
+        }
     }
 
     /**
@@ -93,13 +102,12 @@ public abstract class FactionChangeOwnerEvent extends FactionEvent {
         final FactionPlayer oldOwner;
 
         /**
-         * @param instigator The CommandSource that instigated the event
          * @param faction    The faction the event is about
          * @param newOwner   The new owner of the faction
          * @param oldOwner   The original owner of the faction
          */
-        protected Post(@Nullable final CommandSource instigator, @NotNull final Faction faction, final FactionPlayer newOwner, final FactionPlayer olderOwner, final FactionPlayer oldOwner) {
-            super(instigator, faction, newOwner);
+        protected Post(@NotNull final Faction faction, final FactionPlayer newOwner, final FactionPlayer olderOwner, final FactionPlayer oldOwner) {
+            super(faction, newOwner);
             this.oldOwner = oldOwner;
         }
 

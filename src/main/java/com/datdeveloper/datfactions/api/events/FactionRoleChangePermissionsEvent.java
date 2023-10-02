@@ -3,7 +3,8 @@ package com.datdeveloper.datfactions.api.events;
 import com.datdeveloper.datfactions.factiondata.Faction;
 import com.datdeveloper.datfactions.factiondata.permissions.ERolePermissions;
 import com.datdeveloper.datfactions.factiondata.permissions.FactionRole;
-import net.minecraft.commands.CommandSource;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -24,13 +25,12 @@ public class FactionRoleChangePermissionsEvent extends FactionRoleEvent {
     Set<ERolePermissions> permissions;
 
     /**
-     * @param instigator The CommandSource that instigated the event
      * @param faction The faction the event is about
      * @param role The role gaining/losing the permissions
      * @param permissions The permissions being added to/removed from the role
      */
-    protected FactionRoleChangePermissionsEvent(@Nullable final CommandSource instigator, @NotNull final Faction faction, @NotNull final FactionRole role, final Set<ERolePermissions> permissions) {
-        super(instigator, faction, role);
+    protected FactionRoleChangePermissionsEvent(@NotNull final Faction faction, @NotNull final FactionRole role, final Set<ERolePermissions> permissions) {
+        super(faction, role);
         this.permissions = permissions;
     }
 
@@ -47,15 +47,23 @@ public class FactionRoleChangePermissionsEvent extends FactionRoleEvent {
      * <br>
      * Supplies a setter for the permissions
      */
-    protected static class Pre extends FactionRoleChangePermissionsEvent {
+    @HasResult
+    protected static class Pre extends FactionRoleChangePermissionsEvent implements IFactionPreEvent, IFactionEventDenyReason {
+        /** The instigator of the action (if there is one) */
+        private final ServerPlayer instigator;
+
+        /** A reason for why the event was denied */
+        private Component denyReason = null;
+
         /**
-         * @param instigator  The CommandSource that instigated the event
+         * @param instigator  The player that instigated the event
          * @param faction     The faction the event is about
          * @param role        The role gaining/losing the permissions
          * @param permissions The permissions being added to/removed from the role
          */
-        public Pre(@Nullable final CommandSource instigator, @NotNull final Faction faction, @NotNull final FactionRole role, final Set<ERolePermissions> permissions) {
-            super(instigator, faction, role, permissions);
+        public Pre(@Nullable final ServerPlayer instigator, @NotNull final Faction faction, @NotNull final FactionRole role, final Set<ERolePermissions> permissions) {
+            super(faction, role, permissions);
+            this.instigator = instigator;
         }
 
         /**
@@ -64,6 +72,24 @@ public class FactionRoleChangePermissionsEvent extends FactionRoleEvent {
          */
         public void setPermissions(final Set<ERolePermissions> permissions) {
             this.permissions = permissions;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public @Nullable ServerPlayer getInstigator() {
+            return instigator;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public Component getDenyReason() {
+            return denyReason;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public void setDenyReason(final Component denyReason) {
+            this.denyReason = denyReason;
         }
     }
 
@@ -82,16 +108,20 @@ public class FactionRoleChangePermissionsEvent extends FactionRoleEvent {
      *     <li>Default - The additional permissions will be accepted if the player already has those permissions</li>
      *     <li>Deny - The check will fail, and the permissions will not be added.</li>
      * </ul>
+     * <p>
+     *     When setting the result to deny, you should provide a reason with {@link #setDenyReason(Component)} to
+     *     allow commands to give a reason for not finishing
+     * </p>
      */
     @HasResult
     public static class PreAdd extends Pre {
         /**
-         * @param instigator  The CommandSource that instigated the event
+         * @param instigator  The player that instigated the event
          * @param faction     The faction the event is about
          * @param role        The role gaining/losing the permissions
          * @param permissions The permissions being added to the role
          */
-        public PreAdd(@Nullable final CommandSource instigator,
+        public PreAdd(@Nullable final ServerPlayer instigator,
                    @NotNull final Faction faction,
                    @NotNull final FactionRole role,
                    final Set<ERolePermissions> permissions) {
@@ -114,16 +144,20 @@ public class FactionRoleChangePermissionsEvent extends FactionRoleEvent {
      *     <li>Default - The removal of the permissions will be accepted if the player already has those permissions</li>
      *     <li>Deny - The check will fail, and the permissions will not be removed.</li>
      * </ul>
+     * <p>
+     *     When setting the result to deny, you should provide a reason with {@link #setDenyReason(Component)} to
+     *     allow commands to give a reason for not finishing
+     * </p>
      */
     @HasResult
     public static class PreRemove extends Pre {
         /**
-         * @param instigator  The CommandSource that instigated the event
+         * @param instigator  The player that instigated the event
          * @param faction     The faction the event is about
          * @param role        The role gaining/losing the permissions
          * @param permissions The permissions being added to/removed from the role
          */
-        public PreRemove(@Nullable final CommandSource instigator,
+        public PreRemove(@Nullable final ServerPlayer instigator,
                          @NotNull final Faction faction,
                          @NotNull final FactionRole role,
                          final Set<ERolePermissions> permissions) {
@@ -138,16 +172,14 @@ public class FactionRoleChangePermissionsEvent extends FactionRoleEvent {
      */
     public static class Post extends FactionRoleChangePermissionsEvent {
         /**
-         * @param instigator  The CommandSource that instigated the event
          * @param faction     The faction the event is about
          * @param role        The role gaining/losing the permissions
          * @param permissions The permissions being added to/removed from the role
          */
-        protected Post(@Nullable final CommandSource instigator,
-                       @NotNull final Faction faction,
+        protected Post(@NotNull final Faction faction,
                        @NotNull final FactionRole role,
                        final Set<ERolePermissions> permissions) {
-            super(instigator, faction, role, Collections.unmodifiableSet(permissions));
+            super(faction, role, Collections.unmodifiableSet(permissions));
         }
     }
 
@@ -158,13 +190,12 @@ public class FactionRoleChangePermissionsEvent extends FactionRoleEvent {
      */
     public static class PostAdd extends Post {
         /**
-         * @param instigator  The CommandSource that instigated the event
          * @param faction     The faction the event is about
          * @param role        The role gaining/losing the permissions
          * @param permissions The permissions being added to/removed from the role
          */
-        protected PostAdd(@Nullable final CommandSource instigator, @NotNull final Faction faction, @NotNull final FactionRole role, final Set<ERolePermissions> permissions) {
-            super(instigator, faction, role, permissions);
+        protected PostAdd(@NotNull final Faction faction, @NotNull final FactionRole role, final Set<ERolePermissions> permissions) {
+            super(faction, role, permissions);
         }
     }
 
@@ -175,13 +206,12 @@ public class FactionRoleChangePermissionsEvent extends FactionRoleEvent {
      */
     public static class PostRemove extends Post {
         /**
-         * @param instigator  The CommandSource that instigated the event
          * @param faction     The faction the event is about
          * @param role        The role gaining/losing the permissions
          * @param permissions The permissions being added to/removed from the role
          */
-        protected PostRemove(@Nullable CommandSource instigator, @NotNull Faction faction, @NotNull FactionRole role, Set<ERolePermissions> permissions) {
-            super(instigator, faction, role, permissions);
+        protected PostRemove(@NotNull final Faction faction, @NotNull final FactionRole role, final Set<ERolePermissions> permissions) {
+            super(faction, role, permissions);
         }
     }
 }

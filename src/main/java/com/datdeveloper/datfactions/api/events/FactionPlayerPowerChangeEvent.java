@@ -3,7 +3,6 @@ package com.datdeveloper.datfactions.api.events;
 import com.datdeveloper.datfactions.factiondata.FPlayerCollection;
 import com.datdeveloper.datfactions.factiondata.FactionPlayer;
 import com.datdeveloper.datfactions.factiondata.PowerMultiplier;
-import net.minecraft.commands.CommandSource;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraftforge.eventbus.api.Cancelable;
@@ -45,7 +44,6 @@ public class FactionPlayerPowerChangeEvent extends FactionPlayerEvent {
     final EPowerChangeReason reason;
 
     /**
-     * @param instigator The CommandSource that instigated the event
      * @param player The player the event is for
      * @param otherEntity The other player involved (If there is one)
      * @param basePowerChange The change in power
@@ -53,14 +51,13 @@ public class FactionPlayerPowerChangeEvent extends FactionPlayerEvent {
      * @param multipliers The multipliers for the change in power and max power
      * @param reason The reason for changing power
      */
-    protected FactionPlayerPowerChangeEvent(@Nullable final CommandSource instigator,
-                                         @NotNull final FactionPlayer player,
-                                         @Nullable final Entity otherEntity,
-                                         final int basePowerChange,
-                                         final int baseMaxPowerChange,
-                                         final List<PowerMultiplier> multipliers,
-                                         final EPowerChangeReason reason) {
-        super(instigator, player);
+    protected FactionPlayerPowerChangeEvent(@NotNull final FactionPlayer player,
+                                            @Nullable final Entity otherEntity,
+                                            final int basePowerChange,
+                                            final int baseMaxPowerChange,
+                                            final List<PowerMultiplier> multipliers,
+                                            final EPowerChangeReason reason) {
+        super(player);
         this.otherEntity = otherEntity;
         this.basePowerChange = basePowerChange;
         this.baseMaxPowerChange = baseMaxPowerChange;
@@ -169,17 +166,21 @@ public class FactionPlayerPowerChangeEvent extends FactionPlayerEvent {
      * </p>
      */
     @Cancelable
-    public static class Pre extends FactionPlayerPowerChangeEvent {
+    public static class Pre extends FactionPlayerPowerChangeEvent implements IFactionPreEvent {
+        /** The instigator of the action (if there is one) */
+        private final ServerPlayer instigator;
+
         /**
-         * @param instigator            The CommandSource that instigated the event
+         * @param instigator            The player that instigated the event
          * @param player                The player the event is for
          * @param otherEntity           The other entity involved (If there is one)
          * @param basePowerChange       The change in power
          * @param baseMaxPowerChange    The change in power
          * @param reason                The reason for changing power
          */
-        public Pre(@Nullable final CommandSource instigator, @NotNull final FactionPlayer player, @Nullable final Entity otherEntity, final int basePowerChange, final int baseMaxPowerChange, final List<PowerMultiplier> multipliers, final EPowerChangeReason reason) {
-            super(instigator, player, otherEntity, basePowerChange, baseMaxPowerChange, multipliers, reason);
+        public Pre(@Nullable final ServerPlayer instigator, @NotNull final FactionPlayer player, @Nullable final Entity otherEntity, final int basePowerChange, final int baseMaxPowerChange, final List<PowerMultiplier> multipliers, final EPowerChangeReason reason) {
+            super(player, otherEntity, basePowerChange, baseMaxPowerChange, multipliers, reason);
+            this.instigator = instigator;
         }
 
         /**
@@ -213,6 +214,12 @@ public class FactionPlayerPowerChangeEvent extends FactionPlayerEvent {
         public void setMultipliers(final List<PowerMultiplier> multipliers) {
             this.multipliers = multipliers;
         }
+
+        /** {@inheritDoc} */
+        @Override
+        public @Nullable ServerPlayer getInstigator() {
+            return instigator;
+        }
     }
 
     /**
@@ -222,15 +229,14 @@ public class FactionPlayerPowerChangeEvent extends FactionPlayerEvent {
      */
     public static class Post extends FactionPlayerPowerChangeEvent {
         /**
-         * @param instigator     The CommandSource that instigated the event
          * @param player         The player the event is for
          * @param otherEntity    The other entity involved (If there is one)
          * @param basePowerChange    The change in power
          * @param baseMaxPowerChange The change in power
          * @param reason         The reason for changing power
          */
-        public Post(@Nullable final CommandSource instigator, @NotNull final FactionPlayer player, @Nullable final Entity otherEntity, final int basePowerChange, final int baseMaxPowerChange, final List<PowerMultiplier> multipliers, final EPowerChangeReason reason) {
-            super(instigator, player, otherEntity, basePowerChange, baseMaxPowerChange, Collections.unmodifiableList(multipliers), reason);
+        public Post(@NotNull final FactionPlayer player, @Nullable final Entity otherEntity, final int basePowerChange, final int baseMaxPowerChange, final List<PowerMultiplier> multipliers, final EPowerChangeReason reason) {
+            super(player, otherEntity, basePowerChange, baseMaxPowerChange, Collections.unmodifiableList(multipliers), reason);
         }
     }
 }

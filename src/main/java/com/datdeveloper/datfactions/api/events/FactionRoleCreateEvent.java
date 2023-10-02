@@ -2,7 +2,7 @@ package com.datdeveloper.datfactions.api.events;
 
 import com.datdeveloper.datfactions.factiondata.Faction;
 import com.datdeveloper.datfactions.factiondata.permissions.FactionRole;
-import net.minecraft.commands.CommandSource;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.eventbus.api.Cancelable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -15,11 +15,10 @@ import org.jetbrains.annotations.Nullable;
 @Cancelable
 public class FactionRoleCreateEvent extends FactionEvent {
     /**
-     * @param instigator The CommandSource that instigated the event
      * @param faction The faction the event is about
      */
-    protected FactionRoleCreateEvent(@Nullable final CommandSource instigator, @NotNull final Faction faction) {
-        super(instigator, faction);
+    protected FactionRoleCreateEvent(@NotNull final Faction faction) {
+        super(faction);
     }
 
     /**
@@ -29,7 +28,10 @@ public class FactionRoleCreateEvent extends FactionEvent {
      * to filter/deny roles with names containing profanity.
      */
     @Cancelable
-    public static class Pre extends FactionRoleCreateEvent {
+    public static class Pre extends FactionRoleCreateEvent implements IFactionPreEvent {
+        /** The instigator of the action (if there is one) */
+        private final ServerPlayer instigator;
+
         /**
          * The name of the new role
          */
@@ -40,16 +42,17 @@ public class FactionRoleCreateEvent extends FactionEvent {
          */
         @NotNull FactionRole newRoleParent;
         /**
-         * @param instigator   The CommandSource that instigated the event
+         * @param instigator   The player that instigated the event
          * @param faction      The faction the event is about
          * @param newRoleName  The name of the new role
          * @param newRoleParent The parent to be of the new role
          */
-        public Pre(@Nullable final CommandSource instigator,
+        public Pre(@Nullable final ServerPlayer instigator,
                    @NotNull final Faction faction,
                    final String newRoleName,
                    final FactionRole newRoleParent) {
-            super(instigator, faction);
+            super(faction);
+            this.instigator = instigator;
             this.newRoleName = newRoleName;
             this.newRoleParent = newRoleParent;
         }
@@ -78,6 +81,12 @@ public class FactionRoleCreateEvent extends FactionEvent {
 
             this.newRoleParent = newRoleParent;
         }
+
+        /** {@inheritDoc} */
+        @Override
+        public @Nullable ServerPlayer getInstigator() {
+            return instigator;
+        }
     }
 
     /**
@@ -91,12 +100,11 @@ public class FactionRoleCreateEvent extends FactionEvent {
          */
         @NotNull final FactionRole newRole;
         /**
-         * @param instigator    The CommandSource that instigated the event
          * @param faction       The faction the event is about
          * @param newRole       The newly created role
          */
-        public Post(@Nullable final CommandSource instigator, @NotNull final Faction faction, @NotNull final FactionRole newRole) {
-            super(instigator, faction);
+        public Post(@NotNull final Faction faction, @NotNull final FactionRole newRole) {
+            super(faction);
             this.newRole = newRole;
         }
 

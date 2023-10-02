@@ -1,14 +1,13 @@
 package com.datdeveloper.datfactions.api.events;
 
 import com.datdeveloper.datfactions.factiondata.FactionPlayer;
-import net.minecraft.commands.CommandSource;
+import net.minecraftforge.eventbus.api.Event;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 /**
  * Parent to events that happen on a faction player
  */
-public class FactionPlayerEvent extends BaseFactionEvent {
+public class FactionPlayerEvent extends Event {
     /**
      * The player the event is for
      */
@@ -16,11 +15,9 @@ public class FactionPlayerEvent extends BaseFactionEvent {
     final FactionPlayer player;
 
     /**
-     * @param instigator The CommandSource that instigated the event
      * @param player The player the event is for
      */
-    public FactionPlayerEvent(@Nullable final CommandSource instigator, @NotNull final FactionPlayer player) {
-        super(instigator);
+    public FactionPlayerEvent(@NotNull final FactionPlayer player) {
         this.player = player;
     }
 

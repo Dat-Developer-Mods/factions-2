@@ -3,7 +3,8 @@ package com.datdeveloper.datfactions.api.events;
 import com.datdeveloper.datfactions.factiondata.Faction;
 import com.datdeveloper.datfactions.factiondata.FactionPlayer;
 import com.datdeveloper.datfactions.factiondata.permissions.FactionRole;
-import net.minecraft.commands.CommandSource;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -31,14 +32,13 @@ public abstract class FactionPlayerChangeMembershipEvent extends FactionPlayerEv
     final EChangeFactionReason reason;
 
     /**
-     * @param instigator The CommandSource that instigated the event
      * @param player The player changing faction
      * @param newFaction The faction the player is changing to
      * @param newRole The role in the faction the player will get
      * @param reason The reason the player changed faction
      */
-    protected FactionPlayerChangeMembershipEvent(@Nullable final CommandSource instigator, @NotNull final FactionPlayer player, @Nullable final Faction newFaction, @Nullable final FactionRole newRole, final EChangeFactionReason reason) {
-        super(instigator, player);
+    protected FactionPlayerChangeMembershipEvent(@NotNull final FactionPlayer player, @Nullable final Faction newFaction, @Nullable final FactionRole newRole, final EChangeFactionReason reason) {
+        super(player);
         this.newFaction = newFaction;
         this.newRole = newRole;
         this.reason = reason;
@@ -91,22 +91,33 @@ public abstract class FactionPlayerChangeMembershipEvent extends FactionPlayerEv
      *     To change the result of this event, use {@link #setResult}.<br>
      *     See the JavaDoc of the {@linkplain EChangeFactionReason reason} as to how the Result will be interpreted
      * </p>
+     * <p>
+     *     When setting the result to deny, you should provide a reason with {@link #setDenyReason(Component)} to
+     *     allow commands to give a reason for not finishing
+     * </p>
      */
     @HasResult
-    public static class Pre extends FactionPlayerChangeMembershipEvent {
+    public static class Pre extends FactionPlayerChangeMembershipEvent implements IFactionPreEvent, IFactionEventDenyReason {
+        /** The instigator of the action (if there is one) */
+        private final ServerPlayer instigator;
+
+        /** A reason for why the event was denied */
+        private Component denyReason = null;
+
         /**
-         * @param instigator The CommandSource that instigated the event
+         * @param instigator The player that instigated the event
          * @param player     The player changing faction
          * @param newFaction The faction the player is changing to
          * @param newRole    The role in the faction the player will get
          * @param reason     The reason the player changed faction
          */
-        public Pre(@Nullable final CommandSource instigator,
+        public Pre(@Nullable final ServerPlayer instigator,
                    @NotNull final FactionPlayer player,
                    @Nullable final Faction newFaction,
                    @Nullable final FactionRole newRole,
                    final EChangeFactionReason reason) {
-            super(instigator, player, newFaction, newRole, reason);
+            super(player, newFaction, newRole, reason);
+            this.instigator = instigator;
 
             if (reason.hasPre) throw new UnsupportedOperationException("You cannot use a " + reason.name() + " reason " +
                     "in a pre event");
@@ -158,6 +169,24 @@ public abstract class FactionPlayerChangeMembershipEvent extends FactionPlayerEv
             this.newRole = newRole;
         }
 
+        /** {@inheritDoc} */
+        @Override
+        public @Nullable ServerPlayer getInstigator() {
+            return instigator;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public Component getDenyReason() {
+            return denyReason;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public void setDenyReason(final Component denyReason) {
+            this.denyReason = denyReason;
+        }
+
         @Override
         public boolean hasResult() {
             // Only have a result when the reason is one of these
@@ -180,22 +209,20 @@ public abstract class FactionPlayerChangeMembershipEvent extends FactionPlayerEv
         private final FactionRole oldRole;
 
         /**
-         * @param instigator The CommandSource that instigated the event
          * @param player     The player changing faction
          * @param newFaction The faction the player is changing to
          * @param newRole    The role in the faction the player will get
          * @param reason     The reason the player changed faction
-         * @param oldFaction
-         * @param oldRole
+         * @param oldFaction The old faction of the player
+         * @param oldRole    The old role of the player
          */
-        public Post(@Nullable final CommandSource instigator,
-                    @NotNull final FactionPlayer player,
+        public Post(@NotNull final FactionPlayer player,
                     @Nullable final Faction newFaction,
                     @Nullable final FactionRole newRole,
                     final EChangeFactionReason reason,
                     final @Nullable Faction oldFaction,
                     final @Nullable FactionRole oldRole) {
-            super(instigator, player, newFaction, newRole, reason);
+            super(player, newFaction, newRole, reason);
             this.oldFaction = oldFaction;
             this.oldRole = oldRole;
         }

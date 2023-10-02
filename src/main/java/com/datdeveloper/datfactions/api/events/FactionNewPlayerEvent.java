@@ -3,7 +3,7 @@ package com.datdeveloper.datfactions.api.events;
 import com.datdeveloper.datfactions.factiondata.Faction;
 import com.datdeveloper.datfactions.factiondata.FactionPlayer;
 import com.datdeveloper.datfactions.factiondata.permissions.FactionRole;
-import net.minecraft.commands.CommandSource;
+import net.minecraft.server.level.ServerPlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -14,11 +14,10 @@ import org.jetbrains.annotations.Nullable;
  */
 public abstract class FactionNewPlayerEvent extends FactionPlayerEvent {
     /**
-     * @param instigator The CommandSource that instigated the event
      * @param player     The player the event is for
      */
-    protected FactionNewPlayerEvent(@Nullable final CommandSource instigator, @NotNull final FactionPlayer player) {
-        super(instigator, player);
+    protected FactionNewPlayerEvent(@NotNull final FactionPlayer player) {
+        super(player);
     }
 
     /**
@@ -33,7 +32,7 @@ public abstract class FactionNewPlayerEvent extends FactionPlayerEvent {
      */
     public abstract @Nullable FactionRole getStartingRole();
 
-    public static class Pre extends FactionNewPlayerEvent {
+    public static class Pre extends FactionNewPlayerEvent implements IFactionPreEvent {
         /** The faction the player will start in */
         @Nullable
         protected Faction startingFaction;
@@ -43,11 +42,10 @@ public abstract class FactionNewPlayerEvent extends FactionPlayerEvent {
         protected FactionRole startingRole;
 
         /**
-         * @param instigator The CommandSource that instigated the event
          * @param player     The player the event is for
          */
-        public Pre(@Nullable final CommandSource instigator, @NotNull final FactionPlayer player) {
-            super(instigator, player);
+        public Pre(@NotNull final FactionPlayer player) {
+            super(player);
             startingFaction = player.getFaction();
             startingRole = player.getRole();
         }
@@ -96,15 +94,20 @@ public abstract class FactionNewPlayerEvent extends FactionPlayerEvent {
 
             this.startingRole = startingRole;
         }
+
+        /** {@inheritDoc} */
+        @Override
+        public @Nullable ServerPlayer getInstigator() {
+            return null;
+        }
     }
 
     public static class Post extends FactionNewPlayerEvent {
         /**
-         * @param instigator The CommandSource that instigated the event
          * @param player     The player the event is for
          */
-        public Post(@Nullable final CommandSource instigator, @NotNull final FactionPlayer player) {
-            super(instigator, player);
+        public Post(@NotNull final FactionPlayer player) {
+            super(player);
         }
 
         /** {@inheritDoc} */

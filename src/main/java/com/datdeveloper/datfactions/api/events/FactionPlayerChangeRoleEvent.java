@@ -3,7 +3,7 @@ package com.datdeveloper.datfactions.api.events;
 import com.datdeveloper.datfactions.factiondata.Faction;
 import com.datdeveloper.datfactions.factiondata.FactionPlayer;
 import com.datdeveloper.datfactions.factiondata.permissions.FactionRole;
-import net.minecraft.commands.CommandSource;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.eventbus.api.Cancelable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -26,13 +26,12 @@ public abstract class FactionPlayerChangeRoleEvent extends FactionPlayerEvent {
     final EChangeRoleReason reason;
 
     /**
-     * @param instigator The CommandSource that instigated the event
      * @param player The player changing role
      * @param newRole The role in the faction the player will get
      * @param reason The reason the player changed role
      */
-    protected FactionPlayerChangeRoleEvent(@Nullable final CommandSource instigator, @NotNull final FactionPlayer player, @NotNull final FactionRole newRole, final EChangeRoleReason reason) {
-        super(instigator, player);
+    protected FactionPlayerChangeRoleEvent(@NotNull final FactionPlayer player, @NotNull final FactionRole newRole, final EChangeRoleReason reason) {
+        super(player);
         this.newRole = newRole;
         this.reason = reason;
     }
@@ -80,19 +79,23 @@ public abstract class FactionPlayerChangeRoleEvent extends FactionPlayerEvent {
      * </p>
      */
     @Cancelable
-    public static class Pre extends FactionPlayerChangeRoleEvent {
+    public static class Pre extends FactionPlayerChangeRoleEvent implements IFactionPreEvent {
+        /** The instigator of the action (if there is one) */
+        private final ServerPlayer instigator;
+
 
         /**
-         * @param instigator The CommandSource that instigated the event
+         * @param instigator The player that instigated the event
          * @param player     The player changing role
          * @param newRole    The role in the faction the player will get
          * @param reason     The reason the player changed role
          */
-        public Pre(@Nullable final CommandSource instigator,
+        public Pre(@Nullable final ServerPlayer instigator,
                    @NotNull final FactionPlayer player,
                    @NotNull final FactionRole newRole,
                    final EChangeRoleReason reason) {
-            super(instigator, player, newRole, reason);
+            super(player, newRole, reason);
+            this.instigator = instigator;
         }
 
         @Override
@@ -112,6 +115,12 @@ public abstract class FactionPlayerChangeRoleEvent extends FactionPlayerEvent {
             this.newRole = newRole;
         }
 
+        /** {@inheritDoc} */
+        @Override
+        public @Nullable ServerPlayer getInstigator() {
+            return instigator;
+        }
+
         @Override
         public boolean isCancelable() {
             return getReason().cancelable;
@@ -127,14 +136,13 @@ public abstract class FactionPlayerChangeRoleEvent extends FactionPlayerEvent {
         protected final FactionRole oldRole;
 
         /**
-         * @param instigator The CommandSource that instigated the event
          * @param player     The player changing role
          * @param newRole    The role in the faction the player will get
          * @param reason     The reason the player changed role
-         * @param oldRole
+         * @param oldRole    The role the player had previously in the faction
          */
-        public Post(@Nullable final CommandSource instigator, @NotNull final FactionPlayer player, final FactionRole oldRole, @NotNull final FactionRole newRole, final EChangeRoleReason reason) {
-            super(instigator, player, newRole, reason);
+        public Post(@NotNull final FactionPlayer player, final FactionRole oldRole, @NotNull final FactionRole newRole, final EChangeRoleReason reason) {
+            super(player, newRole, reason);
             this.oldRole = oldRole;
         }
 

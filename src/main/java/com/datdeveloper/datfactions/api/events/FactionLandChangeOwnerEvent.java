@@ -2,9 +2,11 @@ package com.datdeveloper.datfactions.api.events;
 
 import com.datdeveloper.datfactions.factiondata.Faction;
 import com.datdeveloper.datfactions.factiondata.FactionLevel;
-import net.minecraft.commands.CommandSource;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.ChunkPos;
+import net.minecraftforge.eventbus.api.Event;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -16,7 +18,7 @@ import java.util.stream.Collectors;
  * @see FactionLandChangeOwnerEvent.Pre
  * @see FactionLandChangeOwnerEvent.Post
  */
-public abstract class FactionLandChangeOwnerEvent extends BaseFactionEvent {
+public abstract class FactionLandChangeOwnerEvent extends Event {
     /** The chunks being claimed */
     @NotNull
     Set<ChunkPos> chunks;
@@ -37,14 +39,12 @@ public abstract class FactionLandChangeOwnerEvent extends BaseFactionEvent {
     final EChangeOwnerReason reason;
 
     /**
-     * @param instigator The CommandSource that instigated the event
      * @param chunks The chunks that are changing owner
      * @param level The level containing the chunks
      * @param newOwner The new owner of the chunks
      * @param reason The reason the land is changing ownership
      */
-    protected FactionLandChangeOwnerEvent(@Nullable final CommandSource instigator, @NotNull final Set<ChunkPos> chunks, final @NotNull FactionLevel level, @Nullable final Faction newOwner, final EChangeOwnerReason reason) {
-        super(instigator);
+    protected FactionLandChangeOwnerEvent(@NotNull final Set<ChunkPos> chunks, final @NotNull FactionLevel level, @Nullable final Faction newOwner, final EChangeOwnerReason reason) {super();
         this.chunks = chunks;
         this.level = level;
         this.newOwner = newOwner;
@@ -118,22 +118,33 @@ public abstract class FactionLandChangeOwnerEvent extends BaseFactionEvent {
      *     <li>Default - The land will be perform the default checks as to whether the new ownership can occur</li>
      *     <li>Deny - The check will fail, and the land will not change ownership</li>
      * </ul>
+     * <p>
+     *     When setting the result to deny, you should provide a reason with {@link #setDenyReason(Component)} to
+     *     allow commands to give a reason for not finishing
+     * </p>
      */
     @HasResult
-    public static class Pre extends FactionLandChangeOwnerEvent {
+    public static class Pre extends FactionLandChangeOwnerEvent implements IFactionPreEvent, IFactionEventDenyReason {
+        /** The instigator of the action (if there is one) */
+        private final ServerPlayer instigator;
+
+        /** A reason for why the event was denied */
+        private Component denyReason = null;
+
         /**
-         * @param instigator The CommandSource that instigated the event
+         * @param instigator The player that instigated the event
          * @param chunks The chunks that are changing owner
          * @param level The level containing the chunks
          * @param newOwner The new owner of the chunks
          * @param reason The reason the land is changing ownership
          */
-        public Pre(@Nullable final CommandSource instigator, @NotNull final Collection<ChunkPos> chunks, @NotNull final FactionLevel level, @Nullable final Faction newOwner, final EChangeOwnerReason reason) {
-            super(instigator,
+        public Pre(@Nullable final ServerPlayer instigator, @NotNull final Collection<ChunkPos> chunks, @NotNull final FactionLevel level, @Nullable final Faction newOwner, final EChangeOwnerReason reason) {
+            super(
                     new HashSet<>(chunks),
                     level,
                     newOwner,
                     reason);
+            this.instigator = instigator;
         }
 
         /**
@@ -186,6 +197,24 @@ public abstract class FactionLandChangeOwnerEvent extends BaseFactionEvent {
             this.newOwner = newOwner;
         }
 
+        /** {@inheritDoc} */
+        @Override
+        public @Nullable ServerPlayer getInstigator() {
+            return instigator;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public Component getDenyReason() {
+            return denyReason;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public void setDenyReason(final Component denyReason) {
+            this.denyReason = denyReason;
+        }
+
         @Override
         public boolean hasResult() {
             // Only have a result when the reason is one of these
@@ -208,20 +237,18 @@ public abstract class FactionLandChangeOwnerEvent extends BaseFactionEvent {
         private final Map<UUID, Set<BlockPos>> previousOwners;
 
         /**
-         * @param instigator        The CommandSource that instigated the event
          * @param chunks            The chunks that are changing owner
          * @param level             The level containing the chunks
          * @param newOwner          The new owner of the chunks
          * @param previousOwners    The previous owners of the chunks
          * @param reason            The reason the land is changing ownership
          */
-        public Post(@Nullable final CommandSource instigator,
-                    @NotNull final Set<ChunkPos> chunks,
+        public Post(@NotNull final Set<ChunkPos> chunks,
                     @NotNull final FactionLevel level,
                     @Nullable final Faction newOwner,
                     final Map<UUID, Set<BlockPos>> previousOwners,
                     final EChangeOwnerReason reason) {
-            super(instigator,
+            super(
                     Collections.unmodifiableSet(chunks),
                     level,
                     newOwner,

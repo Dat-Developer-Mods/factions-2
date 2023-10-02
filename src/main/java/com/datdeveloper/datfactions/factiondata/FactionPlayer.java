@@ -2,6 +2,7 @@ package com.datdeveloper.datfactions.factiondata;
 
 import com.datdeveloper.datfactions.FactionsConfig;
 import com.datdeveloper.datfactions.api.events.FactionPlayerChangeMembershipEvent;
+import com.datdeveloper.datfactions.api.events.FactionPlayerSetChatModeEvent;
 import com.datdeveloper.datfactions.database.DatabaseEntity;
 import com.datdeveloper.datfactions.factiondata.permissions.FactionRole;
 import com.datdeveloper.datfactions.factiondata.relations.EFactionRelation;
@@ -12,6 +13,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.*;
 import net.minecraft.network.protocol.game.ClientboundSetActionBarTextPacket;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.server.ServerLifecycleHooks;
 import org.jetbrains.annotations.Nullable;
 
@@ -177,7 +179,11 @@ public class FactionPlayer extends DatabaseEntity {
     }
 
     public void setChatMode(final EFPlayerChatMode chatMode) {
+        final EFPlayerChatMode temp = this.chatMode;
         this.chatMode = chatMode;
+
+        final FactionPlayerSetChatModeEvent.Post event = new FactionPlayerSetChatModeEvent.Post(this, temp, chatMode);
+        MinecraftForge.EVENT_BUS.post(event);
     }
 
     public void setChunkAlertMode(final EFPlayerChunkAlertMode chunkAlertMode) {

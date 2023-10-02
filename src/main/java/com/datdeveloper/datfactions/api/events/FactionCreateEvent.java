@@ -1,8 +1,9 @@
 package com.datdeveloper.datfactions.api.events;
 
 import com.datdeveloper.datfactions.factiondata.Faction;
-import net.minecraft.commands.CommandSource;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.eventbus.api.Cancelable;
+import net.minecraftforge.eventbus.api.Event;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -10,14 +11,9 @@ import org.jetbrains.annotations.Nullable;
  * @see FactionCreateEvent.Pre
  * @see FactionCreateEvent.Post
  */
-public class FactionCreateEvent extends BaseFactionEvent {
+public class FactionCreateEvent extends Event {
 
-    /**
-     * @param instigator The CommandSource that instigated the event
-     */
-    protected FactionCreateEvent(@Nullable final CommandSource instigator) {
-        super(instigator);
-    }
+    protected FactionCreateEvent() {}
 
     /**
      * Fired before a faction is created
@@ -31,18 +27,22 @@ public class FactionCreateEvent extends BaseFactionEvent {
      *     This event is {@linkplain Cancelable cancellable}, and does not {@linkplain HasResult have a result}.<br>
      *     If the event is cancelled, the faction's description will not change.
      * </p>
+     *
      */
-    @HasResult
-    public static class Pre extends FactionCreateEvent {
+    @Cancelable
+    public static class Pre extends FactionCreateEvent implements IFactionPreEvent {
+        /** The instigator of the action (if there is one) */
+        private final ServerPlayer instigator;
+
         /** The name of the faction */
         String name;
 
         /**
-         * @param instigator The CommandSource that instigated the event
+         * @param instigator The player that instigated the event
          * @param name       The name for the new faction
          */
-        public Pre(@Nullable final CommandSource instigator, final String name) {
-            super(instigator);
+        public Pre(@Nullable final ServerPlayer instigator, final String name) {
+            this.instigator = instigator;
             this.name = name;
         }
 
@@ -61,6 +61,12 @@ public class FactionCreateEvent extends BaseFactionEvent {
         public void setName(final String name) {
             this.name = name;
         }
+
+        /** {@inheritDoc} */
+        @Override
+        public @Nullable ServerPlayer getInstigator() {
+            return instigator;
+        }
     }
 
     /**
@@ -73,11 +79,9 @@ public class FactionCreateEvent extends BaseFactionEvent {
         final Faction newFaction;
 
         /**
-         * @param instigator The CommandSource that instigated the event
          * @param newFaction The newly created faction
          */
-        public Post(@Nullable final CommandSource instigator, final Faction newFaction) {
-            super(instigator);
+        public Post(final Faction newFaction) {
             this.newFaction = newFaction;
         }
 

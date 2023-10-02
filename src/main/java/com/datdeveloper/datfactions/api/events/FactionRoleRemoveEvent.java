@@ -2,7 +2,7 @@ package com.datdeveloper.datfactions.api.events;
 
 import com.datdeveloper.datfactions.factiondata.Faction;
 import com.datdeveloper.datfactions.factiondata.permissions.FactionRole;
-import net.minecraft.commands.CommandSource;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.eventbus.api.Cancelable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -14,12 +14,11 @@ import org.jetbrains.annotations.Nullable;
  */
 public class FactionRoleRemoveEvent extends FactionRoleEvent {
     /**
-     * @param instigator The CommandSource that instigated the event
      * @param faction The faction the event is about
      * @param role The role being removed
      */
-    protected FactionRoleRemoveEvent(@Nullable final CommandSource instigator, @NotNull final Faction faction, @NotNull final FactionRole role) {
-        super(instigator, faction, role);
+    protected FactionRoleRemoveEvent(@NotNull final Faction faction, @NotNull final FactionRole role) {
+        super(faction, role);
     }
 
     /**
@@ -37,25 +36,34 @@ public class FactionRoleRemoveEvent extends FactionRoleEvent {
      * </p>
      */
     @Cancelable
-    public static class Pre extends FactionRoleRemoveEvent {
+    public static class Pre extends FactionRoleRemoveEvent implements IFactionPreEvent {
+        /** The instigator of the action (if there is one) */
+        private final ServerPlayer instigator;
+
         /**
-         * @param instigator The CommandSource that instigated the event
+         * @param instigator The player that instigated the event
          * @param faction    The faction the event is about
          * @param role       The role being removed
          */
-        public Pre(@Nullable final CommandSource instigator, @NotNull final Faction faction, @NotNull final FactionRole role) {
-            super(instigator, faction, role);
+        public Pre(@Nullable final ServerPlayer instigator, @NotNull final Faction faction, @NotNull final FactionRole role) {
+            super(faction, role);
+            this.instigator = instigator;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public @Nullable ServerPlayer getInstigator() {
+            return instigator;
         }
     }
 
     public static class Post extends FactionRoleRemoveEvent {
         /**
-         * @param instigator The CommandSource that instigated the event
          * @param faction    The faction the event is about
          * @param role       The role being removed
          */
-        public Post(@Nullable final CommandSource instigator, @NotNull final Faction faction, @NotNull final FactionRole role) {
-            super(instigator, faction, role);
+        public Post(@NotNull final Faction faction, @NotNull final FactionRole role) {
+            super(faction, role);
         }
     }
 }

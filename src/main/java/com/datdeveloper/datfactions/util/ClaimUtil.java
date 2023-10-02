@@ -24,7 +24,6 @@ public class ClaimUtil {
 
         // Event
         final FactionLandChangeOwnerEvent event = new FactionLandChangeOwnerEvent(
-                player,
                 chunks,
                 level,
                 faction,

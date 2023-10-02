@@ -2,7 +2,7 @@ package com.datdeveloper.datfactions.api.events;
 
 import com.datdeveloper.datfactions.factiondata.Faction;
 import com.datdeveloper.datfactions.factiondata.permissions.FactionRole;
-import net.minecraft.commands.CommandSource;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.eventbus.api.Cancelable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -19,13 +19,12 @@ public abstract class FactionRoleChangeNameEvent extends FactionRoleEvent {
     String newName;
 
     /**
-     * @param instigator The CommandSource that instigated the event
      * @param faction The faction the event is about
      * @param role The role being removed
      * @param newName The new name of the role
      */
-    protected FactionRoleChangeNameEvent(@Nullable final CommandSource instigator, @NotNull final Faction faction, @NotNull final FactionRole role, @NotNull final String newName) {
-        super(instigator, faction, role);
+    protected FactionRoleChangeNameEvent(@NotNull final Faction faction, @NotNull final FactionRole role, @NotNull final String newName) {
+        super(faction, role);
         this.newName = newName;
     }
 
@@ -54,15 +53,19 @@ public abstract class FactionRoleChangeNameEvent extends FactionRoleEvent {
      *     If the event is cancelled, the faction's description will not change.
      * </p>
      */
-    public static class Pre extends FactionRoleChangeNameEvent {
+    public static class Pre extends FactionRoleChangeNameEvent implements IFactionPreEvent {
+        /** The instigator of the action (if there is one) */
+        private final ServerPlayer instigator;
+
         /**
-         * @param instigator The CommandSource that instigated the event
+         * @param instigator The player that instigated the event
          * @param faction    The faction the event is about
          * @param role       The role being removed
          * @param newName    The new name of the role
          */
-        public Pre(@Nullable final CommandSource instigator, @NotNull final Faction faction, @NotNull final FactionRole role, @NotNull final String newName) {
-            super(instigator, faction, role, newName);
+        public Pre(@Nullable final ServerPlayer instigator, @NotNull final Faction faction, @NotNull final FactionRole role, @NotNull final String newName) {
+            super(faction, role, newName);
+            this.instigator = instigator;
         }
 
         /** {@inheritDoc} */
@@ -78,6 +81,12 @@ public abstract class FactionRoleChangeNameEvent extends FactionRoleEvent {
         public void setNewName(final String newName) {
             this.newName = newName;
         }
+
+        /** {@inheritDoc} */
+        @Override
+        public @Nullable ServerPlayer getInstigator() {
+            return instigator;
+        }
     }
 
     /**
@@ -90,17 +99,15 @@ public abstract class FactionRoleChangeNameEvent extends FactionRoleEvent {
         protected final String oldName;
 
         /**
-         * @param instigator The CommandSource that instigated the event
          * @param faction    The faction the event is about
          * @param role       The role being removed
          * @param newName    The new name of the role
          * @param oldName   The old name of the role
          */
-        protected Post(@Nullable final CommandSource instigator,
-                       @NotNull final Faction faction,
+        protected Post(@NotNull final Faction faction,
                        @NotNull final FactionRole role,
                        @NotNull final String newName, final String oldName) {
-            super(instigator, faction, role, newName);
+            super(faction, role, newName);
             this.oldName = oldName;
         }
 

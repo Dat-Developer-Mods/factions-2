@@ -1,7 +1,7 @@
 package com.datdeveloper.datfactions.api.events;
 
 import com.datdeveloper.datfactions.factiondata.Faction;
-import net.minecraft.commands.CommandSource;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.eventbus.api.Cancelable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -16,12 +16,11 @@ public abstract class FactionChangeNameEvent extends FactionEvent {
     String newName;
 
     /**
-     * @param instigator The CommandSource that instigated the event
      * @param faction The faction the event is about
      * @param newName The new name of the faction
      */
-    protected FactionChangeNameEvent(@Nullable final CommandSource instigator, @NotNull final Faction faction, final String newName) {
-        super(instigator, faction);
+    protected FactionChangeNameEvent(@NotNull final Faction faction, final String newName) {
+        super(faction);
         this.newName = newName;
     }
 
@@ -61,20 +60,30 @@ public abstract class FactionChangeNameEvent extends FactionEvent {
      * </p>
      */
     @Cancelable
-    public static class Pre extends FactionChangeNameEvent {
+    public static class Pre extends FactionChangeNameEvent implements IFactionPreEvent {
+        /** The instigator of the action (if there is one) */
+        private final ServerPlayer instigator;
+
         /**
-         * @param instigator The CommandSource that instigated the event
+         * @param instigator The player that instigated the event
          * @param faction    The faction the event is about
          * @param newName    The new name of the faction
          */
-        protected Pre(@Nullable final CommandSource instigator, @NotNull final Faction faction, final String newName) {
-            super(instigator, faction, newName);
+        protected Pre(@Nullable final ServerPlayer instigator, @NotNull final Faction faction, final String newName) {
+            super(faction, newName);
+            this.instigator = instigator;
         }
 
         /** {@inheritDoc} */
         @Override
         public String getOldName() {
             return faction.getName();
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public @Nullable ServerPlayer getInstigator() {
+            return instigator;
         }
     }
 
@@ -88,12 +97,11 @@ public abstract class FactionChangeNameEvent extends FactionEvent {
         final String oldName;
 
         /**
-         * @param instigator The CommandSource that instigated the event
          * @param faction    The faction the event is about
          * @param newName    The new name of the faction
          */
-        protected Post(@Nullable final CommandSource instigator, @NotNull final Faction faction, final String newName, final String oldName) {
-            super(instigator, faction, newName);
+        protected Post(@NotNull final Faction faction, final String newName, final String oldName) {
+            super(faction, newName);
             this.oldName = oldName;
         }
 

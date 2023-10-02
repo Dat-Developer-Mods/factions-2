@@ -106,7 +106,7 @@ public class FactionRoleCommand {
             }
         }
 
-        final FactionRoleCreateEvent event = new FactionRoleCreateEvent(source.source, faction, newRoleName, parent);
+        final FactionRoleCreateEvent event = new FactionRoleCreateEvent(faction, newRoleName, parent);
         MinecraftForge.EVENT_BUS.post(event);
         if (event.isCanceled()) return 0;
 

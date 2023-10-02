@@ -1,7 +1,7 @@
 package com.datdeveloper.datfactions.api.events;
 
 import com.datdeveloper.datfactions.factiondata.Faction;
-import net.minecraft.commands.CommandSource;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.eventbus.api.Cancelable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -16,12 +16,11 @@ public abstract class FactionChangeDescriptionEvent extends FactionEvent {
     protected String newDescription;
 
     /**
-     * @param instigator The CommandSource that instigated the event
      * @param faction The faction the event is about
      * @param newDescription The description the faction is changing to
      */
-    protected FactionChangeDescriptionEvent(@Nullable final CommandSource instigator, @NotNull final Faction faction, final String newDescription) {
-        super(instigator, faction);
+    protected FactionChangeDescriptionEvent(@NotNull final Faction faction, final String newDescription) {
+        super(faction);
         this.newDescription = newDescription;
     }
 
@@ -51,14 +50,18 @@ public abstract class FactionChangeDescriptionEvent extends FactionEvent {
      * </p>
      */
     @Cancelable
-    public static class Pre extends FactionChangeDescriptionEvent {
+    public static class Pre extends FactionChangeDescriptionEvent implements IFactionPreEvent {
+        /** The instigator of the action (if there is one) */
+        private final ServerPlayer instigator;
+
         /**
-         * @param instigator     The CommandSource that instigated the event
+         * @param instigator     The player that instigated the event
          * @param faction        The faction the event is about
          * @param newDescription The description the faction is changing to
          */
-        public Pre(final @Nullable CommandSource instigator, final @NotNull Faction faction, final String newDescription) {
-            super(instigator, faction, newDescription);
+        public Pre(final @Nullable ServerPlayer instigator, final @NotNull Faction faction, final String newDescription) {
+            super(faction, newDescription);
+            this.instigator = instigator;
         }
 
         /** {@inheritDoc} */
@@ -74,6 +77,12 @@ public abstract class FactionChangeDescriptionEvent extends FactionEvent {
         public void setNewDescription(final String newDescription) {
             this.newDescription = newDescription;
         }
+
+        /** {@inheritDoc} */
+        @Override
+        public @Nullable ServerPlayer getInstigator() {
+            return instigator;
+        }
     }
 
     /**
@@ -86,12 +95,11 @@ public abstract class FactionChangeDescriptionEvent extends FactionEvent {
         final String oldDescription;
 
         /**
-         * @param instigator     The CommandSource that instigated the event
          * @param faction        The faction the event is about
          * @param newDescription The description the faction is changing to
          */
-        public Post(final @Nullable CommandSource instigator, final @NotNull Faction faction, final String newDescription, final String oldDescription) {
-            super(instigator, faction, newDescription);
+        public Post(final @NotNull Faction faction, final String newDescription, final String oldDescription) {
+            super(faction, newDescription);
             this.oldDescription = oldDescription;
         }
 

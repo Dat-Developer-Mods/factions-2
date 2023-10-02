@@ -1,7 +1,7 @@
 package com.datdeveloper.datfactions.api.events;
 
 import com.datdeveloper.datfactions.factiondata.Faction;
-import net.minecraft.commands.CommandSource;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.eventbus.api.Cancelable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -18,12 +18,11 @@ public abstract class FactionChangeMotdEvent extends FactionEvent {
     String newMotd;
 
     /**
-     * @param instigator The CommandSource that instigated the event
      * @param faction The faction the event is about
      * @param newMotd The new MOTD of the faction
      */
-    protected FactionChangeMotdEvent(@Nullable final CommandSource instigator, @NotNull final Faction faction, final String newMotd) {
-        super(instigator, faction);
+    protected FactionChangeMotdEvent(@NotNull final Faction faction, final String newMotd) {
+        super(faction);
         this.newMotd = newMotd;
     }
 
@@ -61,20 +60,30 @@ public abstract class FactionChangeMotdEvent extends FactionEvent {
      * </p>
      */
     @Cancelable
-    public static class Pre extends FactionChangeMotdEvent {
+    public static class Pre extends FactionChangeMotdEvent implements IFactionPreEvent {
+        /** The instigator of the action (if there is one) */
+        private final ServerPlayer instigator;
+
         /**
-         * @param instigator The CommandSource that instigated the event
+         * @param instigator The player that instigated the event
          * @param faction The faction the event is about
          * @param newMotd The new MOTD of the faction
          */
-        public Pre(@Nullable final CommandSource instigator, @NotNull final Faction faction, final String newMotd) {
-            super(instigator, faction, newMotd);
+        public Pre(@Nullable final ServerPlayer instigator, @NotNull final Faction faction, final String newMotd) {
+            super(faction, newMotd);
+            this.instigator = instigator;
         }
 
         /** {@inheritDoc} */
         @Override
         public String getOldMotd() {
             return faction.getMotd();
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public @Nullable ServerPlayer getInstigator() {
+            return instigator;
         }
     }
 
@@ -88,12 +97,11 @@ public abstract class FactionChangeMotdEvent extends FactionEvent {
         final String oldMotd;
 
         /**
-         * @param instigator The CommandSource that instigated the event
          * @param faction    The faction the event is about
          * @param newMotd    The new MOTD of the faction
          */
-        public Post(@Nullable final CommandSource instigator, @NotNull final Faction faction, final String newMotd, final String oldMotd) {
-            super(instigator, faction, newMotd);
+        public Post(@NotNull final Faction faction, final String newMotd, final String oldMotd) {
+            super(faction, newMotd);
             this.oldMotd = oldMotd;
         }
 
