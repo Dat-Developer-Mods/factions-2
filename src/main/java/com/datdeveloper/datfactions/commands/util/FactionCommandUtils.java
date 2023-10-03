@@ -49,7 +49,7 @@ public class FactionCommandUtils {
     public static LiteralCommandNode<CommandSourceStack> buildRedirect(final String alias, final LiteralCommandNode<CommandSourceStack> destination) {
         // Redirects only work for nodes with children, but break the top argument-less command.
         // Manually adding the root command after setting the redirect doesn't fix it.
-        // See https://github.com/Mojang/brigadier/issues/46). Manually clone the node instead.
+        // See https://github.com/Mojang/brigadier/issues/46. Manually clone the node instead.
         final LiteralArgumentBuilder<CommandSourceStack> builder = Commands.literal(alias)
                 .requires(destination.getRequirement())
                 .forward(

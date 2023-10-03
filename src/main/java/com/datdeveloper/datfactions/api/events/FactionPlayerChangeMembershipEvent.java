@@ -93,7 +93,9 @@ public abstract class FactionPlayerChangeMembershipEvent extends FactionPlayerEv
      * </p>
      * <p>
      *     When setting the result to deny, you should provide a reason with {@link #setDenyReason(Component)} to
-     *     allow commands to give a reason for not finishing
+     *     allow commands to give a reason for not finishing.<br>
+     *
+     *     If no reason is given then no feedback will be given to the player
      * </p>
      */
     @HasResult
@@ -189,7 +191,7 @@ public abstract class FactionPlayerChangeMembershipEvent extends FactionPlayerEv
 
         @Override
         public boolean hasResult() {
-            // Only have a result when the reason is one of these
+            // Only have a result when the reason has a result
             return getReason().hasResult;
         }
     }
@@ -217,11 +219,11 @@ public abstract class FactionPlayerChangeMembershipEvent extends FactionPlayerEv
          * @param oldRole    The old role of the player
          */
         public Post(@NotNull final FactionPlayer player,
+                    @Nullable final Faction oldFaction,
+                    @Nullable final FactionRole oldRole,
                     @Nullable final Faction newFaction,
                     @Nullable final FactionRole newRole,
-                    final EChangeFactionReason reason,
-                    final @Nullable Faction oldFaction,
-                    final @Nullable FactionRole oldRole) {
+                    final EChangeFactionReason reason) {
             super(player, newFaction, newRole, reason);
             this.oldFaction = oldFaction;
             this.oldRole = oldRole;
@@ -250,18 +252,20 @@ public abstract class FactionPlayerChangeMembershipEvent extends FactionPlayerEv
          * Post only
          */
         CREATE(false, false),
+
         /**
          * Joined because they left a faction being disbanded
          * <br>
          * The pre event can be used for changing which faction the player joins after the disband
          */
         DISBAND(false, true),
+
         /**
          * Joined because they left their previous faction
          * <br>
          * Pre with result
          * <p>
-         * To change the result of the event with this reason, use {@link #setResult}. Results are interpreted in the
+         * To change the result of the event with this reason, use {@link Pre#setResult}. Results are interpreted in the
          * following manner:
          * </p>
          * <ul>
@@ -271,12 +275,13 @@ public abstract class FactionPlayerChangeMembershipEvent extends FactionPlayerEv
          * </ul>
          */
         LEAVE(true, true),
+
         /**
          * Joined because they were kicked from their previous faction
          * <br>
          * Pre with result
          * <p>
-         * To change the result of the event with this reason, use {@link #setResult}. Results are interpreted in the
+         * To change the result of the event with this reason, use {@link Pre#setResult}. Results are interpreted in the
          * following manner:
          * </p>
          * <ul>
@@ -286,12 +291,13 @@ public abstract class FactionPlayerChangeMembershipEvent extends FactionPlayerEv
          * </ul>
          */
         KICK(true, true),
+
         /**
          * Joined because they joined a faction
          * <br>
          * Pre with result
          * <p>
-         * To change the result of the event with this reason, use {@link #setResult}. Results are interpreted in the
+         * To change the result of the event with this reason, use {@link Pre#setResult}. Results are interpreted in the
          * following manner:
          * </p>
          * <ul>

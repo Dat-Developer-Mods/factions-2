@@ -3,6 +3,7 @@ package com.datdeveloper.datfactions.api.events;
 import com.datdeveloper.datfactions.factiondata.Faction;
 import com.datdeveloper.datfactions.factiondata.FactionPlayer;
 import com.datdeveloper.datfactions.factiondata.permissions.FactionRole;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.eventbus.api.Cancelable;
 import org.jetbrains.annotations.NotNull;
@@ -77,11 +78,19 @@ public abstract class FactionPlayerChangeRoleEvent extends FactionPlayerEvent {
      *     {@linkplain HasResult have a result}.<br>
      *     If the event is cancelled, the player's role will not change.
      * </p>
+     * <p>
+     *     When cancelling the event, you should provide a reason with {@link #setDenyReason(Component)} to
+     *     allow commands to give a reason for not finishing.<br>
+     *     If no reason is given then no feedback will be given to the player
+     * </p>
      */
     @Cancelable
-    public static class Pre extends FactionPlayerChangeRoleEvent implements IFactionPreEvent {
+    public static class Pre extends FactionPlayerChangeRoleEvent implements IFactionPreEvent, IFactionEventDenyReason {
         /** The instigator of the action (if there is one) */
         private final ServerPlayer instigator;
+
+        /** A reason for why the event was denied */
+        private Component denyReason = null;
 
 
         /**
@@ -119,6 +128,18 @@ public abstract class FactionPlayerChangeRoleEvent extends FactionPlayerEvent {
         @Override
         public @Nullable ServerPlayer getInstigator() {
             return instigator;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public Component getDenyReason() {
+            return denyReason;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public void setDenyReason(final Component denyReason) {
+            this.denyReason = denyReason;
         }
 
         @Override

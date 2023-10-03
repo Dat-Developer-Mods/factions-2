@@ -85,22 +85,46 @@ public abstract class FactionLandChangeOwnerEvent extends Event {
      * An enum representing the reasons why the land is changing ownership
      */
     public enum EChangeOwnerReason {
-        /** The chunks were claimed by a faction */
-        CLAIM,
+        /**
+         * The chunks were claimed by a faction
+         * <br>
+         * Pre with result
+         * <p>
+         * To change the result of the event with this reason, use {@link FactionLandChangeOwnerEvent.Pre#setResult}. Results are interpreted in the
+         * following manner:
+         * </p>
+         * <ul>
+         *     <li>Allow - The check will succeed, and the land will be claimed by the faction</li>
+         *     <li>Default - The player will leave the faction as long as they're not the owner</li>
+         *     <li>Deny - The check will fail, and the player will not leave the faction</li>
+         * </ul>
+         */
+        CLAIM(true, true),
         /** The chunks were unclaimed by a faction */
-        UNCLAIM,
+        UNCLAIM(true, true),
         /** The faction owning the chunks is being disbanded */
-        DISBAND,
+        DISBAND(false, true),
         /** The faction owning the chunks are giving them away */
-        GIFT,
+        GIFT(true, true),
         /** The faction owning the chunks was merged into another faction */
-        MERGE,
+        MERGE(false, false),
         /** An admin is making manual changes to ownership */
-        ADMIN,
+        ADMIN(false, false),
         /** A catchall special reason for operations by other mods */
-        SPECIAL,
+        SPECIAL(true, true),
         /** Same as special, but immutable so events cannot modify the chunks or level */
-        SPECIALIMMUTABLE
+        SPECIAL_NO_RESULT(false, true);
+
+        /** Whether the event can have a result */
+        public final boolean hasResult;
+
+        /** Whether the event has a pre event */
+        public final boolean hasPre;
+
+        EChangeOwnerReason(final boolean hasResult, final boolean hasPre) {
+            this.hasResult = hasResult;
+            this.hasPre = hasPre;
+        }
     }
 
     /**
@@ -120,7 +144,9 @@ public abstract class FactionLandChangeOwnerEvent extends Event {
      * </ul>
      * <p>
      *     When setting the result to deny, you should provide a reason with {@link #setDenyReason(Component)} to
-     *     allow commands to give a reason for not finishing
+     *     allow commands to give a reason for not finishing.<br>
+     *
+     *     If no reason is given then no feedback will be given to the player
      * </p>
      */
     @HasResult

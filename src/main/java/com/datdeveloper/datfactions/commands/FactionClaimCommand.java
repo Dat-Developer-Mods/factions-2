@@ -20,7 +20,6 @@ import java.util.*;
 
 public class FactionClaimCommand {
     static void register(final LiteralArgumentBuilder<CommandSourceStack> command) {
-
         final LiteralCommandNode<CommandSourceStack> claimCommand = Commands.literal("claim")
                 .requires(commandSourceStack1 -> {
                     if (!(commandSourceStack1.isPlayer() && DatPermissions.hasAnyPermissions(commandSourceStack1.source, FactionPermissions.FACTION_CLAIM_ONE, FactionPermissions.FACTION_CLAIM_SQUARE, FactionPermissions.FACTION_CLAIM_AUTO)))

@@ -2,6 +2,7 @@ package com.datdeveloper.datfactions.api.events;
 
 import com.datdeveloper.datfactions.factiondata.Faction;
 import com.datdeveloper.datfactions.factiondata.FactionPlayer;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.eventbus.api.Cancelable;
 import org.jetbrains.annotations.NotNull;
@@ -49,11 +50,19 @@ public abstract class FactionChangeOwnerEvent extends FactionEvent {
      *     This event is {@linkplain Cancelable cancellable}, and does not {@linkplain HasResult have a result}.<br>
      *     If the event is cancelled, the faction's owner will not change.
      * </p>
+     * <p>
+     *     When cancelling the event, you should provide a reason with {@link #setDenyReason(Component)} to
+     *     allow commands to give a reason for not finishing.<br>
+     *     If no reason is given then no feedback will be given to the player
+     * </p>
      */
     @Cancelable
-    public static class Pre extends FactionChangeOwnerEvent implements IFactionPreEvent {
+    public static class Pre extends FactionChangeOwnerEvent implements IFactionPreEvent, IFactionEventDenyReason {
         /** The instigator of the action (if there is one) */
         private final ServerPlayer instigator;
+
+        /** A reason for why the event was denied */
+        private Component denyReason = null;
 
         /**
          * @param instigator The player that instigated the event
@@ -89,6 +98,18 @@ public abstract class FactionChangeOwnerEvent extends FactionEvent {
         @Override
         public @Nullable ServerPlayer getInstigator() {
             return instigator;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public Component getDenyReason() {
+            return denyReason;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public void setDenyReason(final Component denyReason) {
+            this.denyReason = denyReason;
         }
     }
 

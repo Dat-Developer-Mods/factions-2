@@ -110,7 +110,9 @@ public class FactionRoleChangePermissionsEvent extends FactionRoleEvent {
      * </ul>
      * <p>
      *     When setting the result to deny, you should provide a reason with {@link #setDenyReason(Component)} to
-     *     allow commands to give a reason for not finishing
+     *     allow commands to give a reason for not finishing.<br>
+     *
+     *     If no reason is given then no feedback will be given to the player
      * </p>
      */
     @HasResult
@@ -146,7 +148,9 @@ public class FactionRoleChangePermissionsEvent extends FactionRoleEvent {
      * </ul>
      * <p>
      *     When setting the result to deny, you should provide a reason with {@link #setDenyReason(Component)} to
-     *     allow commands to give a reason for not finishing
+     *     allow commands to give a reason for not finishing.<br>
+     *
+     *     If no reason is given then no feedback will be given to the player
      * </p>
      */
     @HasResult

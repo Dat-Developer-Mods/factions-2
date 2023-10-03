@@ -179,10 +179,11 @@ public class FactionPlayer extends DatabaseEntity {
     }
 
     public void setChatMode(final EFPlayerChatMode chatMode) {
-        final EFPlayerChatMode temp = this.chatMode;
+        // Store previous chat mode for post event
+        final EFPlayerChatMode oldChatMode = this.chatMode;
         this.chatMode = chatMode;
 
-        final FactionPlayerSetChatModeEvent.Post event = new FactionPlayerSetChatModeEvent.Post(this, temp, chatMode);
+        final FactionPlayerSetChatModeEvent.Post event = new FactionPlayerSetChatModeEvent.Post(this, oldChatMode, chatMode);
         MinecraftForge.EVENT_BUS.post(event);
     }
 
@@ -195,20 +196,24 @@ public class FactionPlayer extends DatabaseEntity {
      * Sets the players faction and role
      * Updates the faction index, the player's commands, and informs the faction members of the change
      *
-     * @param factionId The ID of the new faction
-     * @param roleId The new Role ID for the player
-     * @param reason The reason the player left
+     * @param newFaction The new faction
+     * @param newRole The new Role for the player
+     * @param reason The reason the player changed faction
      */
-    public void setFaction(final UUID factionId, final UUID roleId, final FactionPlayerChangeMembershipEvent.EChangeFactionReason reason) {
-        if (Objects.equals(this.getFactionId(), factionId)) return;
+    public void setFaction(final Faction newFaction, final FactionRole newRole, final FactionPlayerChangeMembershipEvent.EChangeFactionReason reason) {
+        final UUID newFactionId = newFaction == null ? null : newFaction.getId();
+        if (Objects.equals(this.getFactionId(), newFactionId)) return;
 
+        // Store old state for post event
         final Faction oldFaction = getFaction();
-        final Faction newFaction = FactionCollection.getInstance().getByKey(factionId);
+        final FactionRole oldRole = getRole();
 
-        this.factionId = factionId;
-        this.role = roleId;
+        this.factionId = newFactionId;
+        this.role = newRole.getId();
 
         FactionIndex.getInstance().updatePlayerFaction(this);
+
+        MinecraftForge.EVENT_BUS.post(new FactionPlayerChangeMembershipEvent.Post(this, oldFaction, oldRole, newFaction, newRole, reason));
 
         // Update Factions
         if (List.of(FactionPlayerChangeMembershipEvent.EChangeFactionReason.JOIN, FactionPlayerChangeMembershipEvent.EChangeFactionReason.LEAVE, FactionPlayerChangeMembershipEvent.EChangeFactionReason.KICK).contains(reason)) {

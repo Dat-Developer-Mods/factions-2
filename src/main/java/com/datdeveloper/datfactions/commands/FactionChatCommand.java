@@ -58,7 +58,7 @@ public class FactionChatCommand {
 
                             return builder.buildFuture();
                         })
-                        .executes(FactionChatCommand::setChatTypeByName))
+                        .executes(c -> setChatTypeByName(c, c.getArgument(CHAT_TYPE_ARGUMENT, String.class))))
                 .executes(FactionChatCommand::cycleChatType)
                 .build());
     }
@@ -67,10 +67,10 @@ public class FactionChatCommand {
      * Handle setting the chat type directly
      * @param c The command Context
      * @return 1 for success
+     * throws CommandSyntaxException when an unknown chat mode is passed
      */
-    private static int setChatTypeByName(final CommandContext<CommandSourceStack> c) throws CommandSyntaxException {
+    private static int setChatTypeByName(final CommandContext<CommandSourceStack> c, final String chatName) throws CommandSyntaxException {
         final FactionPlayer fPlayer = FactionCommandUtils.getPlayerOrTemplate(c.getSource().getPlayer());
-        final String chatName = c.getArgument(CHAT_TYPE_ARGUMENT, String.class);
 
         final EFPlayerChatMode chatMode;
         try {
@@ -117,16 +117,23 @@ public class FactionChatCommand {
      * Fire event, handle result, and set the chat mode
      * @param c The command context
      * @param fPlayer The player
-     * @param chatMode The chat mode to use
+     * @param passedChatMode The chat mode to use
      * @return 1 if successful
      */
-    private static int setChatMode(final CommandContext<CommandSourceStack> c, final FactionPlayer fPlayer, final EFPlayerChatMode chatMode) {
-        final FactionPlayerSetChatModeEvent.Pre event = new FactionPlayerSetChatModeEvent.Pre(c.getSource().getPlayer(), fPlayer, chatMode);
+    private static int setChatMode(final CommandContext<CommandSourceStack> c, final FactionPlayer fPlayer, final EFPlayerChatMode passedChatMode) {
+        final FactionPlayerSetChatModeEvent.Pre event = new FactionPlayerSetChatModeEvent.Pre(c.getSource().getPlayer(), fPlayer, passedChatMode);
         MinecraftForge.EVENT_BUS.post(event);
+
         final Event.Result result = event.getResult();
+        final EFPlayerChatMode chatMode = event.getNewChatMode();
 
         if (result == Event.Result.DENY) {
-            throw new CommandRuntimeException(event.getDenyReasonOrBackup());
+            final Component reason = event.getDenyReason();
+            if (reason != null) {
+                throw new CommandRuntimeException(reason);
+            } else {
+                return 0;
+            }
         } else if (result == Event.Result.DEFAULT && !fPlayer.getRole().hasPermission(chatMode.requiredPermission)) {
             throw new CommandRuntimeException(Component.literal("You do not have permission to use ")
                     .append(Component.literal(chatMode.name().toLowerCase() + " chat")

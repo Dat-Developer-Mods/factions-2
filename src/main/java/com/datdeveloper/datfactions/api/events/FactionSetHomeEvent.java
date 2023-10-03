@@ -1,11 +1,13 @@
 package com.datdeveloper.datfactions.api.events;
 
 import com.datdeveloper.datfactions.factiondata.Faction;
+import com.datdeveloper.datfactions.factiondata.FactionLevel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.eventbus.api.Cancelable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -16,7 +18,7 @@ import org.jetbrains.annotations.Nullable;
  */
 public abstract class FactionSetHomeEvent extends FactionEvent {
     /** The new home level */
-    ResourceKey<Level> newHomeLevel;
+    FactionLevel newHomeLevel;
 
     /** The new home position */
     BlockPos newHomePos;
@@ -26,7 +28,7 @@ public abstract class FactionSetHomeEvent extends FactionEvent {
      * @param newHomeLevel The level the new home is in
      * @param newHomePos The position of the new home
      */
-    protected FactionSetHomeEvent(@NotNull final Faction faction, final ResourceKey<Level> newHomeLevel, final BlockPos newHomePos) {
+    protected FactionSetHomeEvent(@NotNull final Faction faction, final FactionLevel newHomeLevel, final BlockPos newHomePos) {
         super(faction);
         this.newHomeLevel = newHomeLevel;
         this.newHomePos = newHomePos;
@@ -34,9 +36,10 @@ public abstract class FactionSetHomeEvent extends FactionEvent {
 
     /**
      * Get the new home level
+     *
      * @return the new home level
      */
-    public ResourceKey<Level> getNewHomeLevel() {
+    public FactionLevel getNewHomeLevel() {
         return newHomeLevel;
     }
 
@@ -66,21 +69,18 @@ public abstract class FactionSetHomeEvent extends FactionEvent {
      * <br>
      * The purpose of this event is to allow modifying/checking when a faction's home changes. For example, redirecting
      * a faction home to a different level.
+     * <p>After this event, the new home will be checked to ensure it is on land owned by the player's faction</p>
      * <p>
-     *     This event {@linkplain HasResult has a result}.<br>
-     *     To change the result of this event, use {@link #setResult}. Results are interpreted in the following manner:
+     *     This event is {@linkplain Cancelable cancellable}, and does not {@linkplain HasResult have a result}. <br>
+     *     If the event is cancelled, the faction's home will not change.
      * </p>
-     * <ul>
-     *     <li>Allow - The check will succeed, and the faction home will be set</li>
-     *     <li>Default - The faction home will be set if the home location is on faction land (and that's required)</li>
-     *     <li>Deny - The check will fail, and the faction home will not change</li>
-     * </ul>
      * <p>
-     *     When setting the result to deny, you should provide a reason with {@link #setDenyReason(Component)} to
-     *     allow commands to give a reason for not finishing
+     *     When cancelling the event, you should provide a reason with {@link #setDenyReason(Component)} to
+     *     allow commands to give a reason for not finishing.<br>
+     *     If no reason is given then no feedback will be given to the player
      * </p>
      */
-    @HasResult
+    @Cancelable
     public static class Pre extends FactionSetHomeEvent implements IFactionPreEvent, IFactionEventDenyReason {
         /** The instigator of the action (if there is one) */
         private final ServerPlayer instigator;
@@ -96,7 +96,7 @@ public abstract class FactionSetHomeEvent extends FactionEvent {
          */
         public Pre(@Nullable final ServerPlayer instigator,
                    @NotNull final Faction faction,
-                   final ResourceKey<Level> newHomeLevel,
+                   final FactionLevel newHomeLevel,
                    final BlockPos newHomePos) {
             super(faction, newHomeLevel, newHomePos);
             this.instigator = instigator;
@@ -118,7 +118,7 @@ public abstract class FactionSetHomeEvent extends FactionEvent {
          * Set the new home level
          * @param newHomeLevel the new home level
          */
-        public void setNewHomeLevel(final ResourceKey<Level> newHomeLevel) {
+        public void setNewHomeLevel(final FactionLevel newHomeLevel) {
             this.newHomeLevel = newHomeLevel;
         }
 
@@ -169,7 +169,7 @@ public abstract class FactionSetHomeEvent extends FactionEvent {
         public Post(@NotNull final Faction faction,
                     final ResourceKey<Level> oldHomeLevel,
                     final BlockPos oldHomePos,
-                    final ResourceKey<Level> newHomeLevel,
+                    final FactionLevel newHomeLevel,
                     final BlockPos newHomePos) {
             super(faction, newHomeLevel, newHomePos);
             this.oldHomeLevel = oldHomeLevel;

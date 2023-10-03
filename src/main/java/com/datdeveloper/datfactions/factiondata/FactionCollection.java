@@ -1,8 +1,13 @@
 package com.datdeveloper.datfactions.factiondata;
 
+import com.datdeveloper.datfactions.FactionsConfig;
+import com.datdeveloper.datfactions.api.events.FactionCreateEvent;
+import com.datdeveloper.datfactions.api.events.FactionDisbandEvent;
 import com.datdeveloper.datfactions.api.events.FactionPlayerChangeMembershipEvent;
 import com.datdeveloper.datfactions.api.events.FactionLandChangeOwnerEvent;
 import com.datdeveloper.datfactions.database.Database;
+import com.datdeveloper.datfactions.exceptions.FactionNameTakenException;
+import com.datdeveloper.datfactions.exceptions.StringTooLongException;
 import com.datdeveloper.datfactions.factiondata.permissions.FactionRole;
 import com.datdeveloper.datfactions.factiondata.relations.EFactionRelation;
 import com.datdeveloper.datmoddingapi.util.DatChatFormatting;
@@ -54,11 +59,19 @@ public class FactionCollection extends BaseCollection<UUID, Faction> {
     /* ========================================= */
 
     public Faction createFaction(final String name) {
+        if (name.length() > FactionsConfig.getMaxFactionNameLength()) {
+            throw new StringTooLongException(FactionsConfig.getMaxFactionNameLength(), name, "That name is too long");
+        } else if (FactionCollection.getInstance().isNameTaken(name)) {
+            throw new FactionNameTakenException("That name has already been taken");
+        }
+
         final UUID factionId = UUID.randomUUID();
         final Faction newFaction = new Faction(factionId, name, template);
         map.put(factionId, newFaction);
         Database.instance.storeFaction(newFaction);
         FactionIndex.getInstance().addFaction(newFaction);
+
+        MinecraftForge.EVENT_BUS.post(new FactionCreateEvent.Post(newFaction));
 
         return newFaction;
     }
@@ -66,6 +79,8 @@ public class FactionCollection extends BaseCollection<UUID, Faction> {
     public void disbandFaction(final UUID factionId) {
         final Faction faction = map.remove(factionId);
         Database.instance.deleteFaction(faction);
+
+        MinecraftForge.EVENT_BUS.post(new FactionDisbandEvent.Post(faction));
 
         faction.sendFactionWideMessage(
                 Component.literal(DatChatFormatting.TextColour.HEADER + faction.getName())
@@ -86,7 +101,9 @@ public class FactionCollection extends BaseCollection<UUID, Faction> {
         final Map<FactionLevel, List<ChunkPos>> allFactionChunks = FLevelCollection.getInstance().getAllFactionChunks(faction);
         for (final FactionLevel factionLevel : allFactionChunks.keySet()) {
             final List<ChunkPos> chunks = allFactionChunks.get(factionLevel);
-            final FactionLandChangeOwnerEvent event = new FactionLandChangeOwnerEvent(chunks, factionLevel, null, FactionLandChangeOwnerEvent.EChangeOwnerReason.DISBAND);
+
+            // TODO: Fix event shit
+            final FactionLandChangeOwnerEvent.Pre event = new FactionLandChangeOwnerEvent.Pre(null, chunks, factionLevel, null, FactionLandChangeOwnerEvent.EChangeOwnerReason.DISBAND);
             MinecraftForge.EVENT_BUS.post(event);
 
             factionLevel.setChunksOwner(chunks, event.getNewOwner());
@@ -94,12 +111,12 @@ public class FactionCollection extends BaseCollection<UUID, Faction> {
 
         // Remove from players
         for (final FactionPlayer player : players) {
-            final FactionPlayerChangeMembershipEvent event = new FactionPlayerChangeMembershipEvent(player, null, null, FactionPlayerChangeMembershipEvent.EChangeFactionReason.DISBAND);
+            final FactionPlayerChangeMembershipEvent.Pre event = new FactionPlayerChangeMembershipEvent.Pre(null, player, null, null, FactionPlayerChangeMembershipEvent.EChangeFactionReason.DISBAND);
             MinecraftForge.EVENT_BUS.post(event);
 
             final Faction newFaction = event.getNewFaction();
             final FactionRole newRole = event.getNewRole();
-            player.setFaction(newFaction != null ? newFaction.getId() : null, newRole != null ? newRole.getId() : null, FactionPlayerChangeMembershipEvent.EChangeFactionReason.DISBAND);
+            player.setFaction(newFaction, newRole, FactionPlayerChangeMembershipEvent.EChangeFactionReason.DISBAND);
         }
     }
 

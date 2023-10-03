@@ -1,9 +1,12 @@
 package com.datdeveloper.datfactions.factiondata;
 
 import com.datdeveloper.datfactions.FactionsConfig;
-import com.datdeveloper.datfactions.api.events.FactionPlayerChangeRoleEvent;
+import com.datdeveloper.datfactions.api.events.*;
 import com.datdeveloper.datfactions.commands.util.FactionCommandUtils;
 import com.datdeveloper.datfactions.database.DatabaseEntity;
+import com.datdeveloper.datfactions.exceptions.FactionHomeLocationException;
+import com.datdeveloper.datfactions.exceptions.FactionNameTakenException;
+import com.datdeveloper.datfactions.exceptions.StringTooLongException;
 import com.datdeveloper.datfactions.factiondata.permissions.FactionRole;
 import com.datdeveloper.datfactions.factiondata.relations.EFactionRelation;
 import com.datdeveloper.datfactions.factiondata.relations.FactionRelation;
@@ -170,26 +173,71 @@ public class Faction extends DatabaseEntity {
     /* Setters                                   */
     /* ========================================= */
 
+    /**
+     * Set the name of the faction
+     * @param newName The new name of the faction
+     * @throws StringTooLongException When the new name is too long
+     * @throws FactionNameTakenException When another faction has already taken that name
+     */
     public void setName(final String newName) {
         if (newName.equals(name) || newName.isEmpty()) return;
 
+        if (newName.length() > FactionsConfig.getMaxFactionNameLength()) {
+            throw new StringTooLongException(FactionsConfig.getMaxFactionNameLength(), newName, "That name is too long");
+        } else if (FactionCollection.getInstance().isNameTaken(newName)) {
+            throw new FactionNameTakenException("That name already belongs to a faction");
+        }
+
+        final String oldName = getName();
         this.name = newName;
+
+        MinecraftForge.EVENT_BUS.post(new FactionChangeNameEvent.Post(this, oldName, newName));
+
         markDirty();
     }
 
+    /**
+     * Set the description of the faction
+     * @param newDescription The new description of the faction
+     * @throws StringTooLongException When the description is too long
+     */
     public void setDescription(final String newDescription) {
         if (newDescription.equals(description)) return;
-        
+
+        if (newDescription.length() > FactionsConfig.getMaxFactionNameLength()) {
+            throw new StringTooLongException(FactionsConfig.getMaxFactionNameLength(), newDescription, "That description is too long");
+        }
+
+        // Store old state for post event
+        final String oldDescription = getDescription();
+
         this.description = newDescription;
+
+        MinecraftForge.EVENT_BUS.post(new FactionChangeDescriptionEvent.Post(this, newDescription, oldDescription));
+
         markDirty();
     }
 
+    /**
+     * Set the MOTD of the faction
+     * @param newMotd The new MOTD of the faction
+     * @throws StringTooLongException When the new MOTD is too long
+     */
     public void setMotd(final String newMotd) {
         if (newMotd.equals(motd)) return;
 
+        if (newMotd.length() > FactionsConfig.getMaxFactionMotdLength()) {
+            throw new StringTooLongException(FactionsConfig.getMaxFactionMotdLength(), newMotd, "That MOTD is too long");
+        }
+
+        final String oldMotd = this.getMotd();
+
         this.motd = newMotd;
 
-        sendFactionWideMessage(Component.literal(DatChatFormatting.TextColour.INFO + "Your faction's MOTD has changed\n" + ChatFormatting.WHITE + getMotd()));
+        MinecraftForge.EVENT_BUS.post(new FactionChangeMotdEvent.Post(this, oldMotd, newMotd));
+
+        sendFactionWideMessage(Component.literal(DatChatFormatting.TextColour.INFO + "Your faction's MOTD has changed\n"
+                + ChatFormatting.WHITE + getMotd()));
 
         markDirty();
     }
@@ -198,10 +246,16 @@ public class Faction extends DatabaseEntity {
      * Set the level and location of faction's home
      * @param newHomeLevel The level the faction home is in
      * @param newHomeLocation The location of the faction home
+     * @throws FactionHomeLocationException When the new home is on a chunk that the faction doesn't own
      */
-    public void setFactionHome(final ResourceKey<Level> newHomeLevel, final BlockPos newHomeLocation) {
+    public void setFactionHome(final FactionLevel newHomeLevel, final BlockPos newHomeLocation) {
+        if (newHomeLevel.getSettings().isHomeRequiresOwnedChunk()
+                && !this.equals(newHomeLevel.getChunkOwningFaction(new ChunkPos(newHomeLocation)))) {
+            throw new FactionHomeLocationException("A faction must own a chunk in order to set it's home there", newHomeLocation, newHomeLevel, this);
+        }
+
         this.homeLocation = newHomeLocation;
-        this.homeLevel = newHomeLevel;
+        this.homeLevel = newHomeLevel.getId();
         markDirty();
     }
 
@@ -512,6 +566,23 @@ public class Faction extends DatabaseEntity {
         if (flags.contains(flag)) return;
 
         flags.add(flag);
+
+        MinecraftForge.EVENT_BUS.post(new FactionChangeFlagsEvent.PostAdd(this, Set.of(flag)));
+
+        updateAllPlayersCommands();
+
+        markDirty();
+    }
+
+    /**
+     * Add multiple flags to the faction
+     * @param flags The flags to add
+     */
+    public void addFlags(final Set<EFactionFlags> flags) {
+        flags.stream().filter(flag -> !hasFlag(flag)).collect(Collectors.toCollection(() -> this.flags));
+
+        MinecraftForge.EVENT_BUS.post(new FactionChangeFlagsEvent.PostAdd(this, flags));
+
         updateAllPlayersCommands();
 
         markDirty();
@@ -525,6 +596,23 @@ public class Faction extends DatabaseEntity {
         if (!flags.contains(flag)) return;
 
         flags.remove(flag);
+
+        MinecraftForge.EVENT_BUS.post(new FactionChangeFlagsEvent.PostRemove(this, Set.of(flag)));
+
+        updateAllPlayersCommands();
+
+        markDirty();
+    }
+
+    /**
+     * Remove multiple flags from the faction
+     * @param flags The flags to remove
+     */
+    public void removeFlags(final Set<EFactionFlags> flags) {
+        this.flags.removeAll(flags);
+
+        MinecraftForge.EVENT_BUS.post(new FactionChangeFlagsEvent.PostRemove(this, flags));
+
         updateAllPlayersCommands();
 
         markDirty();
@@ -561,25 +649,33 @@ public class Faction extends DatabaseEntity {
     /**
      * Change a faction relation
      * @param otherFaction The faction to create the relation with
-     * @param newRelation The relation to have with the faction
+     * @param newERelation The relation to have with the faction
      * @return the faction relation
      */
-    public FactionRelation setRelation(@NotNull final Faction otherFaction, final EFactionRelation newRelation) {
-        final FactionRelation relation = getRelation(otherFaction);
-        if ((relation == null && newRelation == EFactionRelation.NEUTRAL)
-                || (relation != null && relation.getRelation() == newRelation)) return relation;
+    public FactionRelation setRelation(@NotNull final Faction otherFaction, final EFactionRelation newERelation) {
+        final FactionRelation oldRelation = getRelation(otherFaction);
+        if ((oldRelation == null && newERelation == EFactionRelation.NEUTRAL)
+                || (oldRelation != null && oldRelation.getRelation() == newERelation)) return oldRelation;
 
-        if (newRelation == EFactionRelation.NEUTRAL) {
+        final FactionRelation newRelation;
+        if (newERelation == EFactionRelation.NEUTRAL) {
             relations.remove(otherFaction.getId());
-            return null;
+            newRelation = null;
+        } else {
+            newRelation = new FactionRelation(otherFaction.getId(), newERelation);
+            relations.put(otherFaction.getId(), newRelation);
         }
 
-        final FactionRelation factionRelation = new FactionRelation(otherFaction.getId(), newRelation);
-        relations.put(otherFaction.getId(), factionRelation);
+        MinecraftForge.EVENT_BUS.post(new FactionChangeRelationEvent.Post(
+                this,
+                otherFaction,
+                oldRelation != null ? oldRelation.getRelation() : EFactionRelation.NEUTRAL,
+                newERelation
+        ));
 
         markDirty();
 
-        return factionRelation;
+        return newRelation;
     }
 
     /**

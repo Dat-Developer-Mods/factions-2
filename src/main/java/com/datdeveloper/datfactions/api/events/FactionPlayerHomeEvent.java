@@ -2,6 +2,7 @@ package com.datdeveloper.datfactions.api.events;
 
 import com.datdeveloper.datfactions.factiondata.FactionPlayer;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
@@ -47,17 +48,25 @@ public class FactionPlayerHomeEvent extends FactionPlayerEvent {
      *     This event is {@linkplain Cancelable cancellable}, and does not {@linkplain HasResult have a result}.<br>
      *     If the event is cancelled, the player will not go to their faction's home.
      * </p>
+     * <p>
+     *     When cancelling the event, you should provide a reason with {@link #setDenyReason(Component)} to
+     *     allow commands to give a reason for not finishing.<br>
+     *     If no reason is given then no feedback will be given to the player
+     * </p>
      */
     @Cancelable
-    public static class Pre extends FactionPlayerHomeEvent implements IFactionPreEvent {
+    public static class Pre extends FactionPlayerHomeEvent implements IFactionPreEvent, IFactionEventDenyReason {
         /** The instigator of the action (if there is one) */
         private final ServerPlayer instigator;
+
+        /** A reason for why the event was denied */
+        private Component denyReason = null;
 
         /**
          * @param instigator The player that instigated the event
          * @param player     The player the event is for
          */
-        protected Pre(@Nullable final ServerPlayer instigator, @NotNull final FactionPlayer player) {
+        public Pre(@Nullable final ServerPlayer instigator, @NotNull final FactionPlayer player) {
             super(player);
             this.instigator = instigator;
         }
@@ -66,6 +75,18 @@ public class FactionPlayerHomeEvent extends FactionPlayerEvent {
         @Override
         public @Nullable ServerPlayer getInstigator() {
             return instigator;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public Component getDenyReason() {
+            return denyReason;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public void setDenyReason(final Component denyReason) {
+            this.denyReason = denyReason;
         }
     }
 
@@ -84,7 +105,7 @@ public class FactionPlayerHomeEvent extends FactionPlayerEvent {
         /**
          * @param player     The player the event is for
          */
-        protected Post(@NotNull final FactionPlayer player,
+        public Post(@NotNull final FactionPlayer player,
                        final BlockPos previousPosition,
                        final ResourceKey<Level> previousLevel) {
             super(player);
