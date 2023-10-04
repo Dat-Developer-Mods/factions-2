@@ -86,6 +86,7 @@ public class FPlayerCollection extends BaseCollection<UUID, FactionPlayer> {
     public void deregisterPlayer(final UUID id) {
         final FactionPlayer player = map.remove(id);
         player.setFaction(null, null, FactionPlayerChangeMembershipEvent.EChangeFactionReason.DELETE);
+        FactionIndex.getInstance().deletePlayer(player);
         Database.instance.deletePlayer(player);
     }
 
