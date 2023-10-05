@@ -1,6 +1,6 @@
 package com.datdeveloper.datfactions.factiondata;
 
-import com.datdeveloper.datfactions.exceptions.IndexNotLoadedException;
+import com.datdeveloper.datfactions.exceptions.FactionIndexNotLoadedException;
 
 import java.util.*;
 
@@ -31,7 +31,7 @@ public class FactionIndex {
      * @return A set of players in the faction
      */
     Set<FactionPlayer> getFactionPlayers(final Faction faction) {
-        if (!initialised) throw new IndexNotLoadedException();
+        if (!initialised) throw new FactionIndexNotLoadedException();
         final Set<FactionPlayer> players = factionToPlayerMap.get(faction);
         return players != null ? Collections.unmodifiableSet(players) : Collections.emptySet();
     }
@@ -41,7 +41,7 @@ public class FactionIndex {
      * @param player the player to update
      */
     public void updatePlayerFaction(final FactionPlayer player) {
-        if (!initialised) throw new IndexNotLoadedException();
+        if (!initialised) throw new FactionIndexNotLoadedException();
         final Faction previousFaction = playerToFactionMap.get(player);
 
         if (previousFaction != null) factionToPlayerMap.get(previousFaction).remove(player);
@@ -55,7 +55,7 @@ public class FactionIndex {
      * @param player the player
      */
     public void deletePlayer(final FactionPlayer player) {
-        if (!initialised) throw new IndexNotLoadedException();
+        if (!initialised) throw new FactionIndexNotLoadedException();
         final Faction faction = playerToFactionMap.remove(player);
         if (faction != null) {
             factionToPlayerMap.get(faction).removeIf(playerEl -> playerEl.equals(player));
@@ -71,7 +71,7 @@ public class FactionIndex {
      * @param faction The faction to add
      */
     public void addFaction(final Faction faction) {
-        if (!initialised) throw new IndexNotLoadedException();
+        if (!initialised) throw new FactionIndexNotLoadedException();
         factionToPlayerMap.put(faction, new HashSet<>());
     }
 
@@ -80,7 +80,7 @@ public class FactionIndex {
      * @param faction The ID of the faction
      */
     public void deleteFaction(final Faction faction) {
-        if (!initialised) throw new IndexNotLoadedException();
+        if (!initialised) throw new FactionIndexNotLoadedException();
         final Set<FactionPlayer> players = factionToPlayerMap.remove(faction);
 
         for (final FactionPlayer player : players) {

@@ -525,19 +525,25 @@ public class Faction extends DatabaseEntity {
 
     /**
      * Add an invite for the given player
-     * @param playerId The player to invite
+     * @param player The player to invite
      */
-    public void addInvite(final UUID playerId) {
-        playerInvites.add(playerId);
+    public void addInvite(final FactionPlayer player) {
+        playerInvites.add(player.getId());
+
+        MinecraftForge.EVENT_BUS.post(new FactionInviteEvent.Post(this, player, FactionInviteEvent.EInviteType.INVITE));
+
         markDirty();
     }
 
     /**
-     * Remove an invite to a player
-     * @param playerId The player to uninvite
+     * Remove an invite from a player
+     * @param player The player to uninvite
      */
-    public void removeInvite(final UUID playerId) {
-        playerInvites.remove(playerId);
+    public void removeInvite(final FactionPlayer player) {
+        playerInvites.remove(player.getId());
+
+        MinecraftForge.EVENT_BUS.post(new FactionInviteEvent.Post(this, player, FactionInviteEvent.EInviteType.UNINVITE));
+
         markDirty();
     }
 
