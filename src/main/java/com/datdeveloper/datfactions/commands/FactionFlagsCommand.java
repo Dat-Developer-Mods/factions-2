@@ -39,6 +39,13 @@ public class FactionFlagsCommand {
     static final CommandRuntimeException UNKNOWN_FACTION_FLAG_EXCEPTION = new CommandRuntimeException(Component.literal("Unknown faction flag"));
 
     /**
+     * The argument for the page number
+     * <br>
+     * Only used by list
+     */
+    static final String PAGE_ARG = "Page";
+    
+    /**
      * The argument for the flag
      * <br>
      * Used by add and remove
@@ -67,12 +74,6 @@ public class FactionFlagsCommand {
     /* ========================================= */
     /* Flags List
     /* ========================================= */
-    /**
-     * The argument for the page number
-     * <br>
-     * Only used by list
-     */
-    static final String PAGE_ARG = "Page";
 
     /**
      * Build the Flag List command

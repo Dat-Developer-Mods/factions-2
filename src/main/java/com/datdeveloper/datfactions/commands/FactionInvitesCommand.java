@@ -32,6 +32,9 @@ import java.util.List;
 
 import static com.datdeveloper.datfactions.commands.FactionPermissions.*;
 
+/**
+ * A command that allows factions to manage their invites to players
+ */
 public class FactionInvitesCommand {
 
     /**
@@ -160,7 +163,7 @@ public class FactionInvitesCommand {
         final FactionPlayer fPlayer = FactionCommandUtils.getPlayerOrTemplate(player);
         final Faction faction = fPlayer.getFaction();
 
-        FactionPlayer passedTarget = FPlayerCollection.getInstance().getByName(targetName);
+        final FactionPlayer passedTarget = FPlayerCollection.getInstance().getByName(targetName);
         if (passedTarget == null) {
             throw new SimpleCommandExceptionType(Component.literal("Cannot find a player with that name")).create();
         }

@@ -22,6 +22,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.common.MinecraftForge;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -288,6 +289,44 @@ public class Faction extends DatabaseEntity {
                 .filter(player -> getOwnerRole().getId().equals(player.getRoleId()))
                 .findAny()
                 .orElse(null);
+    }
+
+    /**
+     * Inform the faction of a player joining
+     * <br>
+     * This method is intended to be called by {@link FactionPlayer#setFaction}, and probably shouldn't be called
+     * for any other reason
+     * @see FactionPlayer#setFaction
+     * @param player The player joining the faction
+     */
+    @ApiStatus.Internal
+    void informPlayerJoin(final FactionPlayer player) {
+        playerInvites.remove(player.getId());
+
+        sendFactionWideMessage(
+                getNameWithDescription(this)
+                        .withStyle(RelationUtil.getRelation(this, player).formatting)
+                        .append(DatChatFormatting.TextColour.INFO + " has joined the faction"),
+                List.of(player.getId())
+        );
+    }
+
+    /**
+     * Inform the faction of a player leaving
+     * <br>
+     * This method is intended to be called by {@link FactionPlayer#setFaction}, and probably shouldn't be called
+     * for any other reason
+     * @see FactionPlayer#setFaction
+     * @param player The player leave the faction
+     */
+    @ApiStatus.Internal
+    void informPlayerLeave(final FactionPlayer player) {
+        sendFactionWideMessage(
+                player.getNameWithDescription(this)
+                        .withStyle(RelationUtil.getRelation(this, player).formatting)
+                        .append(DatChatFormatting.TextColour.INFO + " has left the faction"),
+                List.of(player.getId())
+        );
     }
 
     /* ========================================= */

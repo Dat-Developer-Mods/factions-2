@@ -22,7 +22,7 @@ import net.minecraftforge.common.MinecraftForge;
 import static com.datdeveloper.datfactions.commands.FactionPermissions.FACTION_SET_MOTD;
 
 /**
- * A command that allows a player to set the MOTD of their faction
+ * A command that allows a player to view or set the MOTD of their faction
  */
 public class FactionMotdCommand {
     /** The argument for the MOTD */

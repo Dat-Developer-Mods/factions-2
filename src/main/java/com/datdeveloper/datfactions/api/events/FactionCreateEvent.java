@@ -13,7 +13,6 @@ import org.jetbrains.annotations.Nullable;
  * @see FactionCreateEvent.Post
  */
 public class FactionCreateEvent extends Event {
-
     protected FactionCreateEvent() {}
 
     /**

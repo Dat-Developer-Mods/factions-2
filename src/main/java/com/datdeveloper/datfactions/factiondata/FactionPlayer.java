@@ -9,6 +9,7 @@ import com.datdeveloper.datfactions.factiondata.relations.EFactionRelation;
 import com.datdeveloper.datfactions.util.RelationUtil;
 import com.datdeveloper.datmoddingapi.util.AgeUtil;
 import com.datdeveloper.datmoddingapi.util.DatChatFormatting;
+import com.datdeveloper.datmoddingapi.util.ENotificationType;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.*;
 import net.minecraft.network.protocol.game.ClientboundSetActionBarTextPacket;
@@ -17,7 +18,6 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.server.ServerLifecycleHooks;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -73,7 +73,7 @@ public class FactionPlayer extends DatabaseEntity {
     /**
      * The method used to alert the player that it's moved into territory
      */
-    EFPlayerChunkAlertMode chunkAlertMode;
+    ENotificationType chunkAlertMode;
 
     /**
      * Default Constructor for Deserialization
@@ -91,7 +91,7 @@ public class FactionPlayer extends DatabaseEntity {
         this.power = this.maxPower;
         this.factionId = null;
         this.role = null;
-        this.chunkAlertMode = EFPlayerChunkAlertMode.TITLE;
+        this.chunkAlertMode = ENotificationType.TITLE;
     }
 
     public FactionPlayer(final ServerPlayer player, final FactionPlayer template) {
@@ -152,7 +152,7 @@ public class FactionPlayer extends DatabaseEntity {
         return autoClaim;
     }
 
-    public EFPlayerChunkAlertMode getChunkAlertMode() {
+    public ENotificationType getChunkAlertMode() {
         return chunkAlertMode;
     }
 
@@ -187,7 +187,7 @@ public class FactionPlayer extends DatabaseEntity {
         MinecraftForge.EVENT_BUS.post(event);
     }
 
-    public void setChunkAlertMode(final EFPlayerChunkAlertMode chunkAlertMode) {
+    public void setChunkAlertMode(final ENotificationType chunkAlertMode) {
         this.chunkAlertMode = chunkAlertMode;
         markDirty();
     }
@@ -216,21 +216,12 @@ public class FactionPlayer extends DatabaseEntity {
         MinecraftForge.EVENT_BUS.post(new FactionPlayerChangeMembershipEvent.Post(this, oldFaction, oldRole, newFaction, newRole, reason));
 
         // Update Factions
-        if (List.of(FactionPlayerChangeMembershipEvent.EChangeFactionReason.JOIN, FactionPlayerChangeMembershipEvent.EChangeFactionReason.LEAVE, FactionPlayerChangeMembershipEvent.EChangeFactionReason.KICK).contains(reason)) {
-            if (oldFaction != null) {
-                oldFaction.sendFactionWideMessage(getNameWithDescription(oldFaction)
-                                .withStyle(RelationUtil.getRelation(oldFaction, this).formatting)
-                                .append(DatChatFormatting.TextColour.INFO + " has left the faction"),
-                        List.of(getId())
-                );
-            }
-            if (newFaction != null) {
-                newFaction.sendFactionWideMessage(getNameWithDescription(newFaction)
-                                .withStyle(RelationUtil.getRelation(newFaction, this).formatting)
-                                .append(DatChatFormatting.TextColour.INFO + " has joined the faction"),
-                        List.of(getId())
-                );
-            }
+        if (oldFaction != null) {
+            oldFaction.informPlayerLeave(this);
+        }
+
+        if (newFaction != null) {
+            newFaction.informPlayerJoin(this);
         }
 
         updateCommands();

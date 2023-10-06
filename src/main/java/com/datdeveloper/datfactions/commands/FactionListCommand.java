@@ -18,7 +18,13 @@ import java.util.stream.Collectors;
 
 import static com.datdeveloper.datfactions.commands.FactionPermissions.FACTION_LIST;
 
+/**
+ * A command to allow players to list the factions on the server
+ */
 public class FactionListCommand {
+    /**
+     * Visitor to register the command
+     */
     static void register(final LiteralArgumentBuilder<CommandSourceStack> command) {
         final LiteralCommandNode<CommandSourceStack> subCommand = Commands.literal("list")
                 .requires(FactionPermissions.hasPermission(FACTION_LIST))
@@ -30,6 +36,12 @@ public class FactionListCommand {
         command.then(subCommand);
     }
 
+    /**
+     * Execute the list command
+     * @param context The command context
+     * @param page The page of the list to view
+     * @return 1 if successful
+     */
     private static int execute(final CommandContext<CommandSourceStack> context, final int page) {
         final FactionPlayer player = FPlayerCollection.getInstance().getPlayer(context.getSource().getPlayer());
         ConcurrentHandler.runConcurrentTask(() -> {
