@@ -22,13 +22,22 @@ import java.util.stream.Collectors;
 
 import static com.datdeveloper.datfactions.commands.FactionPermissions.FACTION_PLAYER_INVITES;
 
+/**
+ * A command for players to manage their invites
+ */
 public class FactionPlayerInvitesCommand {
+    /** The page argument */
+    static final String PAGE_ARG = "Page";
+
+    /**
+     * Visitor to register the command
+     */
     static void register(final LiteralArgumentBuilder<CommandSourceStack> command) {
         final LiteralCommandNode<CommandSourceStack> subCommand = Commands.literal("myinvites")
                 .requires(FactionPermissions.hasPermission(FACTION_PLAYER_INVITES))
-                .then(Commands.argument("Page", IntegerArgumentType.integer(1))
-                        .executes(c -> execute(c, c.getArgument("Page", Integer.class))))
-                .executes(c -> execute(c, 1))
+                .then(Commands.argument(PAGE_ARG, IntegerArgumentType.integer(1))
+                        .executes(c -> run(c, c.getArgument(PAGE_ARG, Integer.class))))
+                .executes(c -> run(c, 1))
                 .build();
 
         command.then(subCommand);
@@ -36,8 +45,14 @@ public class FactionPlayerInvitesCommand {
         command.then(FactionCommandUtils.buildRedirect("playerinvites", subCommand));
     }
 
-    private static int execute(final CommandContext<CommandSourceStack> context, final int page) {
-        final FactionPlayer player = FPlayerCollection.getInstance().getPlayer(context.getSource().getPlayer());
+    /**
+     * Execute the player invites command
+     * @param c The command context
+     * @param page The page of the invites list
+     * @return 1 if successful
+     */
+    private static int run(final CommandContext<CommandSourceStack> c, final int page) {
+        final FactionPlayer player = FPlayerCollection.getInstance().getPlayer(c.getSource().getPlayer());
         ConcurrentHandler.runConcurrentTask(() -> {
             final Collection<Faction> factions = FactionCollection.getInstance().getAll().values().stream()
                     .filter(faction -> faction.getPlayerInvites().contains(player.getId()))
@@ -45,7 +60,7 @@ public class FactionPlayerInvitesCommand {
                     .collect(Collectors.toList());
 
             if (factions.isEmpty()) {
-                context.getSource().sendFailure(Component.literal("You have not been invited to any factions"));
+                c.getSource().sendFailure(Component.literal("You have not been invited to any factions"));
                 return;
             }
 
@@ -54,8 +69,9 @@ public class FactionPlayerInvitesCommand {
                         .withStyle(RelationUtil.getRelation(player, faction).formatting)
             );
 
-            pager.sendPage(page, context.getSource().source);
+            pager.sendPage(page, c.getSource().source);
         });
+
         return 1;
     }
 }
