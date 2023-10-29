@@ -8,6 +8,7 @@ import com.datdeveloper.datfactions.factiondata.FactionPlayer;
 import com.datdeveloper.datfactions.util.RelationUtil;
 import com.datdeveloper.datmoddingapi.concurrentTask.ConcurrentHandler;
 import com.datdeveloper.datmoddingapi.command.util.Pager;
+import com.datdeveloper.datmoddingapi.permissions.DatPermissions;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
@@ -34,7 +35,7 @@ public class FactionPlayerInvitesCommand {
      */
     static void register(final LiteralArgumentBuilder<CommandSourceStack> command) {
         final LiteralCommandNode<CommandSourceStack> subCommand = Commands.literal("myinvites")
-                .requires(FactionPermissions.hasPermission(FACTION_PLAYER_INVITES))
+                .requires(DatPermissions.hasPermission(FACTION_PLAYER_INVITES))
                 .then(Commands.argument(PAGE_ARG, IntegerArgumentType.integer(1))
                         .executes(c -> run(c, c.getArgument(PAGE_ARG, Integer.class))))
                 .executes(c -> run(c, 1))

@@ -69,7 +69,7 @@ public abstract class FactionChangeOwnerEvent extends FactionEvent {
          * @param faction    The faction the event is about
          * @param newOwner   The new owner of the faction
          */
-        protected Pre(@Nullable final ServerPlayer instigator, @NotNull final Faction faction, @Nullable final FactionPlayer newOwner) {
+        public Pre(@Nullable final ServerPlayer instigator, @NotNull final Faction faction, @Nullable final FactionPlayer newOwner) {
             super(faction, newOwner);
             this.instigator = instigator;
         }

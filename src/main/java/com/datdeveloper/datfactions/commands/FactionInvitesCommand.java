@@ -50,8 +50,10 @@ public class FactionInvitesCommand {
                 .requires(commandSourceStack -> {
                     if (!(commandSourceStack.isPlayer() && DatPermissions.hasAnyPermissions(commandSourceStack.getPlayer(), FACTION_INVITE, FACTION_UNINVITE, FACTION_INVITE_LIST_FACTION)))
                         return false;
+
                     final FactionPlayer fPlayer = FactionCommandUtils.getPlayerOrTemplate(commandSourceStack.getPlayer());
                     final Faction faction = fPlayer.getFaction();
+
                     return faction != null && !faction.hasFlag(EFactionFlags.UNRELATEABLE) && fPlayer.getRole().hasAnyPermissions(ERolePermissions.INVITE, ERolePermissions.UNINVITE, ERolePermissions.INVITELIST);
                 })
                 .then(buildInviteListCommand())
@@ -88,7 +90,7 @@ public class FactionInvitesCommand {
     }
 
     /**
-     * Handle the list command
+     * Execute the list command
      * @param sourceStack The caller of the command
      * @param page The page of the list to view
      * @return 1 for success

@@ -534,15 +534,42 @@ public class Faction extends DatabaseEntity {
                 continue;
             }
 
-            fPlayer.setRole(role.getId());
-
-            final FactionPlayerChangeRoleEvent.Post event = new FactionPlayerChangeRoleEvent.Post(fPlayer, role, getDefaultRole(), FactionPlayerChangeRoleEvent.EChangeRoleReason.REMOVED);
-            MinecraftForge.EVENT_BUS.post(event);
+            fPlayer.setRole(role, FactionPlayerChangeRoleEvent.EChangeRoleReason.REMOVED);
         }
 
         roles.remove(role.getId());
 
         markDirty();
+    }
+
+    /**
+     * Check if a member of the faction has authority over another
+     * <br>
+     * A member will have authority over another if the other member's role is a child of the first member's role, or a
+     * child of the first member's roles' children, recursively.
+     * @param player1 The player who is being checked for having authority
+     * @param player2 The player who is being checked as a subordinate
+     * @return True of player1 has authority over player2
+     */
+    public boolean hasAuthorityOver(final FactionPlayer player1, final FactionPlayer player2) {
+        if (!this.equals(player1.getFaction()) || !this.equals(player2.getFaction())) return false;
+
+        return player1.getRole().hasAuthorityOver(player2.getRole(), hasFlag(EFactionFlags.RANKTRUMPS));
+    }
+
+    /**
+     * Check if a role of the faction has authority over another
+     * <br>
+     * A role will have authority over another if the other role is a child of the first role, or a child of the first
+     * roles' children, recursively.
+     * @param role1 The role who is being checked for having authority
+     * @param role2 The role who is being checked as a subordinate
+     * @return True of role1 has authority over role2
+     */
+    public boolean hasAuthorityOver(final FactionRole role1, final FactionRole role2) {
+        if (!this.hasRole(role1) || !this.hasRole(role2)) return false;
+
+        return role1.hasAuthorityOver(role2, hasFlag(EFactionFlags.RANKTRUMPS));
     }
 
     /* ========================================= */

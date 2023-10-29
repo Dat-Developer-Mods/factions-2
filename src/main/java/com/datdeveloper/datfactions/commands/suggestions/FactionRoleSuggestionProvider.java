@@ -35,14 +35,14 @@ public class FactionRoleSuggestionProvider implements SuggestionProvider<Command
     public CompletableFuture<Suggestions> getSuggestions(final CommandContext<CommandSourceStack> context, final SuggestionsBuilder builder) {
         final FactionPlayer fPlayer = FPlayerCollection.getInstance().getPlayer(context.getSource().getPlayer());
         final Faction faction = fPlayer.getFaction();
-        final int playerRoleIndex = faction.getRoleIndex(fPlayer.getRoleId());
+        final int playerRoleLevel = fPlayer.getRole().getRoleLevel();
 
-        for (int i = 0; i < faction.getRoles().size(); i++) {
-            if (!limitToBelowPlayer || i > playerRoleIndex || (allowSelf && i == playerRoleIndex)) {
-                final FactionRole role = faction.getRoles().get(i);
-                builder.suggest(role.getName());
-            }
-        }
+        faction.getRoles().values().stream()
+                .filter(role -> !limitToBelowPlayer
+                        || role.getRoleLevel() < playerRoleLevel
+                        || (allowSelf && role.equals(fPlayer.getRole())))
+                .map(FactionRole::getName)
+                .forEach(builder::suggest);
 
         return builder.buildFuture();
     }

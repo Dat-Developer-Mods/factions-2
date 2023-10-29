@@ -5,6 +5,7 @@ import com.datdeveloper.datfactions.commands.util.FactionCommandUtils;
 import com.datdeveloper.datfactions.factiondata.FPlayerCollection;
 import com.datdeveloper.datfactions.factiondata.FactionPlayer;
 import com.datdeveloper.datmoddingapi.concurrentTask.ConcurrentHandler;
+import com.datdeveloper.datmoddingapi.permissions.DatPermissions;
 import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
@@ -29,7 +30,7 @@ public class FactionPlayerInfoCommand {
      */
     static void register(final LiteralArgumentBuilder<CommandSourceStack> command) {
         final LiteralCommandNode<CommandSourceStack> subCommand = Commands.literal("playerinfo")
-                .requires(FactionPermissions.hasPermission(FACTION_PLAYER_INFO))
+                .requires(DatPermissions.hasPermission(FACTION_PLAYER_INFO))
                 .then(Commands.argument(TARGET_PLAYER_ARG, GameProfileArgument.gameProfile())
                         .suggests(DatSuggestionProviders.fPlayerProvider)
                         .executes(c -> executeTarget(c, GameProfileArgument.getGameProfiles(c, TARGET_PLAYER_ARG)

@@ -170,7 +170,8 @@ public class FactionRole extends DatabaseEntity {
     /**
      * Check if this role has authority over the given role
      * <br>
-     * A role will have authority over another if the other role is in the
+     * A role will have authority over another if the other role is a child of this role, or a child of this
+     * roles' children, recursively.
      * @param otherRole  The role whom to check if this faction has authority over
      * @param rankTrumps When true, authority will be determined based on the role level
      * @return True if this role has authority over the given role

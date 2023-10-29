@@ -7,6 +7,7 @@ import com.datdeveloper.datfactions.factiondata.Faction;
 import com.datdeveloper.datfactions.factiondata.FactionCollection;
 import com.datdeveloper.datfactions.factiondata.FactionPlayer;
 import com.datdeveloper.datmoddingapi.concurrentTask.ConcurrentHandler;
+import com.datdeveloper.datmoddingapi.permissions.DatPermissions;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
@@ -30,7 +31,7 @@ public class FactionInfoCommand {
      */
     static void register(final LiteralArgumentBuilder<CommandSourceStack> command) {
         final LiteralCommandNode<CommandSourceStack> subCommand = Commands.literal("info")
-                .requires(FactionPermissions.hasPermission(FACTION_INFO))
+                .requires(DatPermissions.hasPermission(FACTION_INFO))
                 .then(Commands.argument(TARGET_FACTION_ARG, StringArgumentType.word())
                         .suggests(DatSuggestionProviders.factionProvider)
                         .executes(c -> executeTarget(c, c.getArgument(TARGET_FACTION_ARG, String.class))))

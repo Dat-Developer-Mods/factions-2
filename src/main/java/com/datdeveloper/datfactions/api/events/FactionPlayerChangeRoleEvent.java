@@ -17,8 +17,10 @@ import org.jetbrains.annotations.Nullable;
 public abstract class FactionPlayerChangeRoleEvent extends FactionPlayerEvent {
     /**
      * The player's new role
+     * <p>
+     *     When this is null, it will be treated as if the player is being set to the faction's default role
+     * </p>
      */
-    @NotNull
     FactionRole newRole;
 
     /**
@@ -31,7 +33,7 @@ public abstract class FactionPlayerChangeRoleEvent extends FactionPlayerEvent {
      * @param newRole The role in the faction the player will get
      * @param reason The reason the player changed role
      */
-    protected FactionPlayerChangeRoleEvent(@NotNull final FactionPlayer player, @NotNull final FactionRole newRole, final EChangeRoleReason reason) {
+    protected FactionPlayerChangeRoleEvent(@NotNull final FactionPlayer player, final FactionRole newRole, final EChangeRoleReason reason) {
         super(player);
         this.newRole = newRole;
         this.reason = reason;
@@ -41,7 +43,7 @@ public abstract class FactionPlayerChangeRoleEvent extends FactionPlayerEvent {
      * Get the new role the player will take
      * @return the new role for the player
      */
-    public @NotNull FactionRole getNewRole() {
+    public FactionRole getNewRole() {
         return newRole;
     }
 
@@ -72,7 +74,10 @@ public abstract class FactionPlayerChangeRoleEvent extends FactionPlayerEvent {
      * <br>
      * The purpose of this event is to allow modifying/checking a player's role change. For example, to ensure that a
      * player of a specific rank in a server cannot hold a certain position in the faction.
-     * <p>After this event, the new instigator will be checked to see if they have the authority to promote the player</p>
+     * <p>
+     *     After this event, the instigator will be checked to see if they have the authority to set the player's role
+     *     to the new role
+     * </p>
      * <p>
      *     This event is {@linkplain Cancelable cancellable} (Depending on the reason), and does not
      *     {@linkplain HasResult have a result}.<br>
@@ -101,7 +106,7 @@ public abstract class FactionPlayerChangeRoleEvent extends FactionPlayerEvent {
          */
         public Pre(@Nullable final ServerPlayer instigator,
                    @NotNull final FactionPlayer player,
-                   @NotNull final FactionRole newRole,
+                   final FactionRole newRole,
                    final EChangeRoleReason reason) {
             super(player, newRole, reason);
             this.instigator = instigator;
@@ -114,9 +119,12 @@ public abstract class FactionPlayerChangeRoleEvent extends FactionPlayerEvent {
 
         /**
          * Set the role the player will take
+         * <p>
+         *     If newRole is null, then it will be treated as setting the player's role to the faction's default.
+         * </p>
          * @param newRole The role the player will take
          */
-        public void setNewRole(@NotNull final FactionRole newRole) {
+        public void setNewRole(final FactionRole newRole) {
             if (getPlayerFaction().getRole(newRole.getId()) == null) {
                 throw new IllegalArgumentException("newRole must be a role that belongs to the player's faction");
             }
@@ -186,7 +194,7 @@ public abstract class FactionPlayerChangeRoleEvent extends FactionPlayerEvent {
         /** Changed because their role was removed */
         REMOVED(false, true),
         /** Changed because the faction changed owner */
-        CHANGE_OWNER(true, true),
+        CHANGE_OWNER(false, true),
         /**
          * Changed because an admin set it
          * <br>

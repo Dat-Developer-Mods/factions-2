@@ -2,6 +2,7 @@ package com.datdeveloper.datfactions.factiondata;
 
 import com.datdeveloper.datfactions.FactionsConfig;
 import com.datdeveloper.datfactions.api.events.FactionPlayerChangeMembershipEvent;
+import com.datdeveloper.datfactions.api.events.FactionPlayerChangeRoleEvent;
 import com.datdeveloper.datfactions.api.events.FactionPlayerSetChatModeEvent;
 import com.datdeveloper.datfactions.database.DatabaseEntity;
 import com.datdeveloper.datfactions.factiondata.permissions.FactionRole;
@@ -201,7 +202,7 @@ public class FactionPlayer extends DatabaseEntity {
      * @param reason The reason the player changed faction
      */
     public void setFaction(final Faction newFaction, final FactionRole newRole, final FactionPlayerChangeMembershipEvent.EChangeFactionReason reason) {
-        final UUID newFactionId = newFaction == null ? null : newFaction.getId();
+        final UUID newFactionId = newFaction != null ? newFaction.getId() : null;
         if (Objects.equals(this.getFactionId(), newFactionId)) return;
 
         // Store old state for post event
@@ -213,7 +214,12 @@ public class FactionPlayer extends DatabaseEntity {
 
         FactionIndex.getInstance().updatePlayerFaction(this);
 
-        MinecraftForge.EVENT_BUS.post(new FactionPlayerChangeMembershipEvent.Post(this, oldFaction, oldRole, newFaction, newRole, reason));
+        MinecraftForge.EVENT_BUS.post(new FactionPlayerChangeMembershipEvent.Post(this,
+                oldFaction,
+                oldRole,
+                newFaction,
+                newRole,
+                reason));
 
         // Update Factions
         if (oldFaction != null) {
@@ -234,10 +240,21 @@ public class FactionPlayer extends DatabaseEntity {
      * <br>
      * Note that if you set the players role whilst they are not in a faction, or you set their role to a role that
      * doesn't belong to their faction, things will probably mess up rather badly
-     * @param role The new role of the player
+     *
+     * @param newRole The new role of the player
+     * @param reason The reason the role of the player changed
      */
-    public void setRole(final UUID role) {
-        this.role = role;
+    public void setRole(final FactionRole newRole, final FactionPlayerChangeRoleEvent.EChangeRoleReason reason) {
+        final UUID roleId = newRole != null ? newRole.getId() : null;
+        final FactionRole oldRole = this.getRole();
+
+        this.role = roleId;
+
+        MinecraftForge.EVENT_BUS.post(new FactionPlayerChangeRoleEvent.Post(this,
+                oldRole,
+                newRole,
+                reason));
+
         updateCommands();
         markDirty();
     }

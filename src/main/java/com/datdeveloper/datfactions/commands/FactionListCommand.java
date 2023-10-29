@@ -3,6 +3,7 @@ package com.datdeveloper.datfactions.commands;
 import com.datdeveloper.datfactions.factiondata.*;
 import com.datdeveloper.datmoddingapi.concurrentTask.ConcurrentHandler;
 import com.datdeveloper.datmoddingapi.command.util.Pager;
+import com.datdeveloper.datmoddingapi.permissions.DatPermissions;
 import com.datdeveloper.datmoddingapi.util.DatChatFormatting;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
@@ -27,7 +28,7 @@ public class FactionListCommand {
      */
     static void register(final LiteralArgumentBuilder<CommandSourceStack> command) {
         final LiteralCommandNode<CommandSourceStack> subCommand = Commands.literal("list")
-                .requires(FactionPermissions.hasPermission(FACTION_LIST))
+                .requires(DatPermissions.hasPermission(FACTION_LIST))
                 .then(Commands.argument("Page", IntegerArgumentType.integer(1))
                         .executes(c -> execute(c, c.getArgument("Page", Integer.class))))
                 .executes(c -> execute(c, 1))
