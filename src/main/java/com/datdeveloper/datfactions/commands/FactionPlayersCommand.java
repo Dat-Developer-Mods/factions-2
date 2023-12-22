@@ -42,6 +42,16 @@ import static com.datdeveloper.datfactions.commands.FactionPermissions.*;
  */
 public class FactionPlayersCommand {
     /**
+     * The argument for the player being targeted by the command
+     */
+    static final String TARGET_ARG = "Target Player";
+
+    private static final CommandSyntaxException UNKNOWN_PLAYER_EXCEPTION = new SimpleCommandExceptionType(Component.literal("Cannot find a player with that name")).create();
+
+    private static final CommandSyntaxException NOT_SAME_FACTION_EXCEPTION = new SimpleCommandExceptionType(Component.literal("That player is not in your faction")).create();
+    private static final CommandRuntimeException BAD_AUTHORITY_EXCEPTION = new CommandRuntimeException(Component.literal("You are not allowed to change the role of that player"));
+
+    /**
      * Visitor to register the command
      */
     static void register(final LiteralArgumentBuilder<CommandSourceStack> command) {
@@ -69,6 +79,11 @@ public class FactionPlayersCommand {
     /* list                                      */
     /* ========================================= */
 
+    /**
+     * The argument used for the page number
+     * <br>
+     * Only used by list
+     */
     static final String PAGE_ARG = "Page";
 
     /**
@@ -90,6 +105,10 @@ public class FactionPlayersCommand {
 
     /**
      * Handle the list command
+     * <p>
+     *     This command is executed concurrently to ensure the cost of processing the players doesn't slow down the
+     *     server
+     * </p>
      * @param sourceStack The caller of the command
      * @param page The page of the list to view
      * @return 1 for success
@@ -137,7 +156,6 @@ public class FactionPlayersCommand {
     /* ========================================= */
     /* Promote                                   */
     /* ========================================= */
-    static final String TARGET_ARG = "Target Player";
 
     /**
      * Build the promote command
@@ -172,13 +190,13 @@ public class FactionPlayersCommand {
 
         final FactionPlayer target = FPlayerCollection.getInstance().getByName(targetName);
         if (target == null) {
-            throw new SimpleCommandExceptionType(Component.literal("Cannot find a player with that name")).create();
+            throw UNKNOWN_PLAYER_EXCEPTION;
         } else if (!faction.getPlayers().contains(target)) {
-            throw new SimpleCommandExceptionType(Component.literal("That player is not in your faction")).create();
+            throw NOT_SAME_FACTION_EXCEPTION;
         } else if (!faction.hasAuthorityOver(fPlayer, target)) {
             // The player needs to have authority over the target's current role
             // This should cover when someone tries to promote the owner
-            throw new CommandRuntimeException(Component.literal("You are not allowed to promote that player"));
+            throw BAD_AUTHORITY_EXCEPTION;
         }
 
         final FactionRole newRole = target.getRole().getParent();
@@ -223,11 +241,11 @@ public class FactionPlayersCommand {
         final FactionPlayer target = FPlayerCollection.getInstance().getByName(targetName);
 
         if (target == null) {
-            throw new SimpleCommandExceptionType(Component.literal("Cannot find a player with that name")).create();
+            throw UNKNOWN_PLAYER_EXCEPTION;
         } else if (!faction.getPlayers().contains(target)) {
-            throw new SimpleCommandExceptionType(Component.literal("That player is not in your faction")).create();
+            throw NOT_SAME_FACTION_EXCEPTION;
         } else if (!faction.hasAuthorityOver(fPlayer, target)) {
-            throw new CommandRuntimeException(Component.literal("You are not allowed to demote that player"));
+            throw BAD_AUTHORITY_EXCEPTION;
         }
 
         FactionRole newRole;
@@ -244,6 +262,11 @@ public class FactionPlayersCommand {
     /* Set Role                                  */
     /* ========================================= */
 
+    /**
+     * The name of the role the player is being set to
+     * <br>
+     * Only used by Set Role
+     */
     static final String NEW_ROLE_ARG = "New Role";
 
     /**
@@ -284,11 +307,11 @@ public class FactionPlayersCommand {
         final FactionPlayer target = FPlayerCollection.getInstance().getByName(targetName);
 
         if (target == null) {
-            throw new SimpleCommandExceptionType(Component.literal("Cannot find a player with that name")).create();
+            throw UNKNOWN_PLAYER_EXCEPTION;
         } else if (!faction.getPlayers().contains(target)) {
-            throw new SimpleCommandExceptionType(Component.literal("That player is not in your faction")).create();
+            throw NOT_SAME_FACTION_EXCEPTION;
         } else if (!faction.hasAuthorityOver(fPlayer, target)) {
-            throw new CommandRuntimeException(Component.literal("You are not allowed to set the role of that player"));
+            throw BAD_AUTHORITY_EXCEPTION;
         }
 
         final FactionRole newRole = faction.getRoleByName(newRoleName);
@@ -339,9 +362,9 @@ public class FactionPlayersCommand {
         final FactionPlayer target = FPlayerCollection.getInstance().getByName(targetName);
 
         if (target == null) {
-            throw new SimpleCommandExceptionType(Component.literal("Cannot find a player with that name")).create();
+            throw UNKNOWN_PLAYER_EXCEPTION;
         } else if (!faction.getPlayers().contains(target)) {
-            throw new SimpleCommandExceptionType(Component.literal("That player is not in your faction")).create();
+            throw NOT_SAME_FACTION_EXCEPTION;
         }
 
         final FactionChangeOwnerEvent event = new FactionChangeOwnerEvent.Pre(c.getSource().getPlayer(), faction, target);
@@ -424,9 +447,9 @@ public class FactionPlayersCommand {
         final FactionPlayer target = FPlayerCollection.getInstance().getByName(targetName);
 
         if (target == null) {
-            throw new SimpleCommandExceptionType(Component.literal("Cannot find a player with that name")).create();
+            throw UNKNOWN_PLAYER_EXCEPTION;
         } else if (!faction.getPlayers().contains(target)) {
-            throw new SimpleCommandExceptionType(Component.literal("That player is not in your faction")).create();
+            throw NOT_SAME_FACTION_EXCEPTION;
         }
 
         final FactionPlayerChangeMembershipEvent.Pre event = new FactionPlayerChangeMembershipEvent.Pre(c.getSource().getPlayer(),

@@ -10,8 +10,8 @@ import com.datdeveloper.datfactions.factiondata.FactionPlayer;
 import com.datdeveloper.datfactions.factiondata.permissions.ERolePermissions;
 import com.datdeveloper.datfactions.factiondata.relations.EFactionRelation;
 import com.datdeveloper.datfactions.util.RelationUtil;
-import com.datdeveloper.datmoddingapi.concurrentTask.ConcurrentHandler;
 import com.datdeveloper.datmoddingapi.command.util.Pager;
+import com.datdeveloper.datmoddingapi.concurrentTask.ConcurrentHandler;
 import com.datdeveloper.datmoddingapi.permissions.DatPermissions;
 import com.datdeveloper.datmoddingapi.util.DatChatFormatting;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
@@ -29,6 +29,7 @@ import net.minecraftforge.common.MinecraftForge;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 
 import static com.datdeveloper.datfactions.commands.FactionPermissions.*;
 
@@ -91,6 +92,10 @@ public class FactionInvitesCommand {
 
     /**
      * Execute the list command
+     * <p>
+     *     This command is executed concurrently to ensure the cost of processing the invites doesn't slow down the
+     *     server
+     * </p>
      * @param sourceStack The caller of the command
      * @param page The page of the list to view
      * @return 1 for success
@@ -104,6 +109,7 @@ public class FactionInvitesCommand {
         ConcurrentHandler.runConcurrentTask(() -> {
             final List<FactionPlayer> values = faction.getPlayerInvites().stream()
                     .map(playerId -> FPlayerCollection.getInstance().getByKey(playerId))
+                    .filter(Objects::nonNull)
                     .sorted(Comparator.comparing(FactionPlayer::getName))
                     .toList();
 

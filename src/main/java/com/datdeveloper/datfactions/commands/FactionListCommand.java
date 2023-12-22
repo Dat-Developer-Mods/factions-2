@@ -39,6 +39,10 @@ public class FactionListCommand {
 
     /**
      * Execute the list command
+     * <p>
+     *     This command is executed concurrently to ensure the cost of processing the factions doesn't slow down the
+     *     server
+     * </p>
      * @param context The command context
      * @param page The page of the list to view
      * @return 1 if successful

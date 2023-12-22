@@ -9,7 +9,6 @@ import com.datdeveloper.datfactions.factiondata.Faction;
 import com.datdeveloper.datfactions.factiondata.FactionPlayer;
 import com.datdeveloper.datfactions.factiondata.permissions.ERolePermissions;
 import com.datdeveloper.datmoddingapi.command.util.Pager;
-import com.datdeveloper.datmoddingapi.concurrentTask.ConcurrentHandler;
 import com.datdeveloper.datmoddingapi.permissions.DatPermissions;
 import com.datdeveloper.datmoddingapi.util.DatChatFormatting;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
@@ -44,7 +43,7 @@ public class FactionFlagsCommand {
      * Only used by list
      */
     static final String PAGE_ARG = "Page";
-    
+
     /**
      * The argument for the flag
      * <br>
@@ -93,7 +92,7 @@ public class FactionFlagsCommand {
     }
 
     /**
-     * Handle the f list command
+     * Handle the list command
      * @param sourceStack The command Source
      * @param page The page of the list to view
      * @return 1 for success
@@ -103,22 +102,17 @@ public class FactionFlagsCommand {
         final FactionPlayer fPlayer = FactionCommandUtils.getPlayerOrTemplate(player);
         final Faction faction = fPlayer.getFaction();
 
-        ConcurrentHandler.runConcurrentTask(() -> {
-            if (faction.getFlags().isEmpty()) {
-                sourceStack.sendFailure(
-                        Component.literal("Your faction doesn't have any flags")
-                );
-                return;
-            }
+        if (faction.getFlags().isEmpty()) {
+            throw new CommandRuntimeException(Component.literal("Your faction doesn't have any flags"));
+        }
 
-            final Pager<EFactionFlags> pager = new Pager<>(
-                    "/f flags list",
-                    "Flags",
-                    faction.getFlags(),
-                    (EFactionFlags::getChatComponent)
-            );
-            pager.sendPage(page, sourceStack.source);
-        });
+        final Pager<EFactionFlags> pager = new Pager<>(
+                "/f flags list",
+                "Flags",
+                faction.getFlags(),
+                (EFactionFlags::getChatComponent)
+        );
+        pager.sendPage(page, sourceStack.source);
 
         return 1;
     }

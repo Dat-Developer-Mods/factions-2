@@ -3,10 +3,7 @@ package com.datdeveloper.datfactions.commands;
 import com.datdeveloper.datfactions.api.events.FactionChangeRelationEvent;
 import com.datdeveloper.datfactions.commands.suggestions.DatSuggestionProviders;
 import com.datdeveloper.datfactions.commands.util.FactionCommandUtils;
-import com.datdeveloper.datfactions.factiondata.EFactionFlags;
-import com.datdeveloper.datfactions.factiondata.Faction;
-import com.datdeveloper.datfactions.factiondata.FactionCollection;
-import com.datdeveloper.datfactions.factiondata.FactionPlayer;
+import com.datdeveloper.datfactions.factiondata.*;
 import com.datdeveloper.datfactions.factiondata.permissions.ERolePermissions;
 import com.datdeveloper.datfactions.factiondata.relations.EFactionRelation;
 import com.datdeveloper.datfactions.factiondata.relations.FactionRelation;
@@ -26,15 +23,22 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.common.MinecraftForge;
 
+import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Supplier;
 
 import static com.datdeveloper.datfactions.commands.FactionPermissions.*;
 
+/**
+ * Commands for managing a faction's relations
+ */
 public class FactionRelationCommand {
+    /**
+     * Visitor to register the command
+     */
     static void register(final LiteralArgumentBuilder<CommandSourceStack> command) {
-
-        final LiteralArgumentBuilder<CommandSourceStack> subCommand = Commands.literal("relations")
+        command.then(Commands.literal("relations")
                 .requires(commandSourceStack -> {
                     if (!(commandSourceStack.isPlayer() && DatPermissions.hasAnyPermissions(commandSourceStack.getPlayer(), FACTION_RELATION_LIST, FACTION_RELATION_WISHES, FACTION_RELATION_ALLY, FACTION_RELATION_TRUCE, FACTION_RELATION_NEUTRAL, FACTION_RELATION_ENEMY)))
                         return false;
@@ -43,19 +47,19 @@ public class FactionRelationCommand {
                     return faction != null && !faction.hasFlag(EFactionFlags.UNRELATEABLE) && fPlayer.getRole().hasAnyPermissions(ERolePermissions.RELATIONWISHES, ERolePermissions.RELATIONALLY, ERolePermissions.RELATIONTRUCE, ERolePermissions.RELATIONNEUTRAL, ERolePermissions.RELATIONENEMY);
                 })
                 .then(buildRelationListCommand())
-                .then(buildRelationWishesCommand())
                 .then(buildRelationAllyCommand())
                 .then(buildRelationTruceCommand())
                 .then(buildRelationNeutralCommand())
-                .then(buildRelationEnemyCommand());
-
-        command.then(subCommand.build());
+                .then(buildRelationEnemyCommand()).build());
     }
 
     /* ========================================= */
     /* Relation List
     /* ========================================= */
 
+    /**
+     * Build the List command
+     */
     static LiteralArgumentBuilder<CommandSourceStack> buildRelationListCommand() {
         return Commands.literal("list")
                 .requires(commandSourceStack -> {
@@ -70,14 +74,24 @@ public class FactionRelationCommand {
                 .executes(c -> executeList(c.getSource(), 1));
     }
 
+    /**
+     * Execute the list command
+     * <p>
+     *     This command is executed concurrently to ensure the cost of processing the relations doesn't slow down the
+     *     server
+     * </p>
+     * @param sourceStack The caller of the command
+     * @param page The page of the list to view
+     * @return 1 for success
+     */
     private static int executeList(final CommandSourceStack sourceStack, final int page) {
         final ServerPlayer player = sourceStack.getPlayer();
         final FactionPlayer fPlayer = FactionCommandUtils.getPlayerOrTemplate(player);
         final Faction faction = fPlayer.getFaction();
 
         ConcurrentHandler.runConcurrentTask(() -> {
-            final List<Faction> values = faction.getRelations().keySet().stream()
-                    .map(uuid -> FactionCollection.getInstance().getByKey(uuid))
+            final List<Faction> values = FactionCollection.getInstance().getAll().values().stream()
+                    .sorted(Comparator.comparing(Faction::getName))
                     .toList();
 
             if (values.isEmpty()) {
@@ -92,6 +106,7 @@ public class FactionRelationCommand {
                     "Relations",
                     values,
                     (factionEl -> {
+                        // TODO: Neaten this up
                         final FactionRelation relationTo = faction.getRelation(factionEl);
                         final FactionRelation relationFrom = factionEl.getRelation(faction);
                         final EFactionRelation eFromRelation = relationFrom != null ? relationFrom.getRelation() : EFactionRelation.NEUTRAL;
@@ -129,92 +144,6 @@ public class FactionRelationCommand {
                         }
 
                         return component;
-                    })
-            );
-            pager.sendPage(page, sourceStack.source);
-        });
-
-        return 1;
-    }
-
-    /* ========================================= */
-    /* Relation Wishes
-    /* ========================================= */
-
-    static LiteralArgumentBuilder<CommandSourceStack> buildRelationWishesCommand() {
-        return Commands.literal("wishes")
-                .requires(commandSourceStack -> {
-                    final ServerPlayer player = commandSourceStack.getPlayer();
-                    final FactionPlayer fPlayer = FactionCommandUtils.getPlayerOrTemplate(player);
-                    return DatPermissions.hasPermission(player, FACTION_RELATION_WISHES) && fPlayer.getRole().hasPermission(ERolePermissions.RELATIONWISHES);
-                })
-                .then(
-                        Commands.argument("Page", IntegerArgumentType.integer(1))
-                                .executes(c -> executeWishes(c.getSource(), c.getArgument("Page", Integer.class)))
-                )
-                .executes(c -> executeWishes(c.getSource(), 1));
-    }
-
-    private static int executeWishes(final CommandSourceStack sourceStack, final int page) {
-        final ServerPlayer player = sourceStack.getPlayer();
-        final FactionPlayer fPlayer = FactionCommandUtils.getPlayerOrTemplate(player);
-        final Faction faction = fPlayer.getFaction();
-
-        ConcurrentHandler.runConcurrentTask(() -> {
-            final List<Faction> values = FactionCollection.getInstance().getAll().values().stream()
-                    .filter(factionEl -> {
-                        final FactionRelation relationFrom = factionEl.getRelation(faction);
-                        final FactionRelation relationTo = faction.getRelation(factionEl);
-                        return (relationFrom != null && (relationTo == null || relationTo.getRelation() != relationFrom.getRelation()));
-                    })
-                    .toList();
-
-            if (values.isEmpty()) {
-                sourceStack.sendFailure(
-                        Component.literal("There are no non-reciprocated relations towards")
-                                .append(
-                                        faction.getNameWithDescription(faction)
-                                                .withStyle(EFactionRelation.SELF.formatting)
-                                )
-                );
-                return;
-            }
-
-            final Pager<Faction> pager = new Pager<>(
-                    "/f relation wishes",
-                    "Relation wishes",
-                    values,
-                    (factionEl -> {
-                            final FactionRelation relationFrom = factionEl.getRelation(faction);
-                            final FactionRelation relationTo = faction.getRelation(factionEl);
-                            final MutableComponent component = Component.empty()
-                                    .append(
-                                            factionEl.getNameWithDescription(faction)
-                                                    .withStyle(EFactionRelation.NEUTRAL.formatting)
-                                    );
-
-                            final MutableComponent fromComponent;
-                            switch (relationFrom.getRelation()) {
-                                case ALLY -> fromComponent = Component.literal(" regard us as an ally");
-                                case TRUCE -> fromComponent = Component.literal(" wants a truce with us");
-                                case ENEMY -> fromComponent = Component.literal(" regard us as an enemy");
-                                default ->
-                                        throw new IllegalStateException("Unexpected value: " + relationFrom.getRelation());
-                            }
-                            component.append(fromComponent.append(", ").withStyle(relationFrom.getRelation().formatting));
-
-                            final EFactionRelation eRelationTo = relationTo != null ? relationTo.getRelation() : EFactionRelation.NEUTRAL;
-
-                            final MutableComponent toComponent = Component.literal("but ");
-                            switch (eRelationTo) {
-                                case ALLY -> toComponent.append("we think of them as an ally");
-                                case TRUCE -> toComponent.append("we want a truce with them");
-                                case NEUTRAL -> toComponent.append("we are neutral with them");
-                                case ENEMY -> toComponent.append("we think of them as an enemy");
-                            }
-                            component.append(toComponent.withStyle(eRelationTo.formatting));
-
-                            return component;
                     })
             );
             pager.sendPage(page, sourceStack.source);
