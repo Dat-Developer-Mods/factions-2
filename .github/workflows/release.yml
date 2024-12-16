@@ -1,0 +1,78 @@
+name: Release
+
+# Controls when the workflow will run
+on:
+  push:
+    # Pattern matched against refs/tags
+    tags:
+      - '*'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
+jobs:
+  gradle:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          java-version: 17
+          distribution: 'adopt'
+          cache: gradle
+      - name: deployArtifact
+        env:
+          MAVENREPOUSER: ${{secrets.MAVENREPOUSER}}
+          MAVENREPOPASS: ${{secrets.MAVENREPOPASS}}
+        run: gradle publish
+        shell: bash
+      - name: Generate Javadoc
+        run: gradle javadoc
+        shell: bash
+      - name: Upload jar to release
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: ./build/libs/datfactions-*.jar
+  buildSite:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup Pages
+        uses: actions/configure-pages@v2
+      - name: Build with Jekyll
+        uses: actions/jekyll-build-pages@v1
+        with:
+          source: ./site
+          destination: ./_site
+  deploySite:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: [gradle, buildSite]
+    steps:
+      - name: Move javadoc
+        run: mv "./build/docs/javadoc/" "./_site/javadoc/"
+        shell: bash
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v1
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v1

@@ -1,0 +1,14 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "com.datdeveloper.datfactions.mixin",
+  "compatibilityLevel": "JAVA_8",
+  "refmap": "datfactions.refmap.json",
+  "mixins": [
+  ],
+  "client": [
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
